@@ -46,7 +46,7 @@ end
 function love.draw()
   love.graphics.print("X : "..tostring(gridPosition_x).."    Y : "..tostring(gridPosition_y))
   love.graphics.print("X_max : "..tostring(grid_dim_x).."    Y_max : "..tostring(grid_dim_y),0,10)
-  if grid_size_x then love.graphics.print("Grid_X_SIZE is defined and is : "..grid_size_x,0,20) end
+  if grid_size_x then love.graphics.print("grid_size_x is defined and is : "..grid_size_x,0,20) end
   love.graphics.print("Hello World!", x, 100)
 end
 

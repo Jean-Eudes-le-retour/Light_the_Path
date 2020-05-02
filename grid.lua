@@ -10,18 +10,18 @@ local grid = {}
 local grid_size_x = 16*2 --DEFAULT
 local grid_size_y = 9 *2 --DEFAULT
 local texture_scale = 1  --PLACEHOLDER
-local texture_size = TEXTURE_BASE_SIZE --PLACEHOLDER
+local tile_size = TEXTURE_BASE_SIZE --PLACEHOLDER
 local drawbox_pos_x, drawbox_pos_y = 0, 0
 local cursor_grid_pos_x, cursor_grid_pos_y = 0, 0
 
--- Change the grid's dimensions; also refer to grid.createDrawbox
+-- Change the grid's dimensions; also refer to grid.defineDrawbox
 function grid.setDimensions(x_res,y_res,mode,x_val,y_val)
   Grid = {} -- GLOBAL VARIABLE
   if type(x_res) == "number" then grid_size_x = math.floor(x_res) end
   if type(y_res) == "number" then grid_size_y = math.floor(y_res) end
   grid.clearGrid()
   -- maybe attempt to place objects back into the grid here (rather than resetting the objects in clearGrid())
-  return grid.createDrawbox(mode,x_val,y_val)
+  return grid.defineDrawbox(mode,x_val,y_val)
 end
 grid.init = grid.setDimensions
 
@@ -86,7 +86,7 @@ end
 -- All arguments are optional, will do x-perfect-fit y-centered by default; mode needs to contain "y" to fit to y instead;
 -- Secondary axis alignment depends on "l"/"t" for left and "r"/"b" for right (equivalent to top and bottom);
 -- x_val and y_val represent distance to screen edge (positive values on primary axis results in smaller box)
-function grid.createDrawbox(mode,x_val,y_val) 
+function grid.defineDrawbox(mode,x_val,y_val) 
   local x_dim, y_dim = love.graphics.getDimensions()
   local x_grid, y_grid = grid.getDimensions()
   x_val, y_val = x_val or 0, y_val or 0
@@ -102,14 +102,14 @@ function grid.createDrawbox(mode,x_val,y_val)
     x_grid, y_grid = y_grid, x_grid
   end
   texture_scale = x_dim/((x_grid+2*x_val)*TEXTURE_BASE_SIZE)
-  texture_size = texture_scale*TEXTURE_BASE_SIZE
-  drawbox_pos_x = math.floor(x_val*texture_size)
+  tile_size = texture_scale*TEXTURE_BASE_SIZE
+  drawbox_pos_x = math.floor(x_val*tile_size)
   if string.find(mode,"l") or string.find(mode,"t") then 
-    drawbox_pos_y = math.floor(y_val*texture_size)
+    drawbox_pos_y = math.floor(y_val*tile_size)
   elseif string.find(mode,"r") or string.find(mode,"b") then
-    drawbox_pos_y = math.floor(y_dim-(y_grid+y_val)*texture_size)
+    drawbox_pos_y = math.floor(y_dim-(y_grid+y_val)*tile_size)
   else
-    drawbox_pos_y = math.floor((y_dim-y_grid*texture_size)/2)
+    drawbox_pos_y = math.floor((y_dim-y_grid*tile_size)/2)
   end
 
   if string.find(mode,"y") then drawbox_pos_x, drawbox_pos_y = drawbox_pos_y, drawbox_pos_x end
@@ -122,8 +122,8 @@ end
 
 function grid.updatePosition(cursor_pos_x,cursor_pos_y)
   if not cursor_pos_x then cursor_pos_x, cursor_grid_pos_y = love.mouse.getPosition() end
-  cursor_grid_pos_x = math.ceil((cursor_pos_x-drawbox_pos_x)/texture_size)
-  cursor_grid_pos_y = math.ceil((cursor_pos_y-drawbox_pos_y)/texture_size)
+  cursor_grid_pos_x = math.ceil((cursor_pos_x-drawbox_pos_x)/tile_size)
+  cursor_grid_pos_y = math.ceil((cursor_pos_y-drawbox_pos_y)/tile_size)
   return cursor_grid_pos_x, cursor_grid_pos_y
 end
 
