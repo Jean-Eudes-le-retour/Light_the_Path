@@ -7,18 +7,18 @@ local bnot, band, bor, rshift, lshift = bit.bnot, bit.band, bit.bor, bit.rshift,
 -- THE MODULE MUST BE INITIALIZED; grid.init is grid.setDimensions
 local grid = {}
 
-local GRID_X_SIZE = 16*2 --DEFAULT
-local GRID_Y_SIZE = 9 *2 --DEFAULT
-local TEXTURE_SCALE = 1  --PLACEHOLDER
-local TEXTURE_SIZE = TEXTURE_BASE_SIZE --PLACEHOLDER
-local DRAWBOX_X_POS, DRAWBOX_Y_POS = 0, 0
+local grid_size_x = 16*2 --DEFAULT
+local grid_size_y = 9 *2 --DEFAULT
+local texture_scale = 1  --PLACEHOLDER
+local texture_size = TEXTURE_BASE_SIZE --PLACEHOLDER
+local drawbox_pos_x, drawbox_pos_y = 0, 0
 local cursor_grid_pos_x, cursor_grid_pos_y = 0, 0
 
 -- Change the grid's dimensions; also refer to grid.createDrawbox
 function grid.setDimensions(x_res,y_res,mode,x_val,y_val)
   Grid = {} -- GLOBAL VARIABLE
-  if type(x_res) == "number" then GRID_X_SIZE = math.floor(x_res) end
-  if type(y_res) == "number" then GRID_Y_SIZE = math.floor(y_res) end
+  if type(x_res) == "number" then grid_size_x = math.floor(x_res) end
+  if type(y_res) == "number" then grid_size_y = math.floor(y_res) end
   grid.clearGrid()
   -- maybe attempt to place objects back into the grid here (rather than resetting the objects in clearGrid())
   return grid.createDrawbox(mode,x_val,y_val)
@@ -27,12 +27,12 @@ grid.init = grid.setDimensions
 
 -- Returns the grid's dimensions (which are local to prevent external modifications)
 function grid.getDimensions()
-  return GRID_X_SIZE, GRID_Y_SIZE
+  return grid_size_x, grid_size_y
 end
 
 -- Clears the grid of all objects and resets all objects
 function grid.clearGrid()
-  for i=1,GRID_X_SIZE do
+  for i=1,grid_size_x do
     Grid[i]={}
   end
   objects.resetObjects()
@@ -40,7 +40,7 @@ end
 
 -- Place a new object within the grid. The preferred function to create new objects.
 function grid.setNewObject(t,xpos,ypos,state,rotation,colour,canMove,canChangeState,canChangeColour)
-  if xpos > GRID_X_SIZE or ypos > GRID_Y_SIZE or xpos < 1 or ypos < 1 then return nil end
+  if xpos > grid_size_x or ypos > grid_size_y or xpos < 1 or ypos < 1 then return nil end
   if Grid[xpos][ypos] then Grid[xpos][ypos]:delete() end
   Grid[xpos][ypos] = objects.newObject(t,xpos,ypos,state,rotation,colour,canMove,canChangeState,canChangeColour)
   return true
@@ -90,7 +90,7 @@ function grid.createDrawbox(mode,x_val,y_val)
   local x_dim, y_dim = love.graphics.getDimensions()
   local x_grid, y_grid = grid.getDimensions()
   x_val, y_val = x_val or 0, y_val or 0
-  DRAWBOX_X_POS, DRAWBOX_Y_POS = 0, 0
+  drawbox_pos_x, drawbox_pos_y = 0, 0
 
 --DEBUG INFO--
   debugUtils.print({x_dim,y_dim},"pos","|_dim")
@@ -101,29 +101,29 @@ function grid.createDrawbox(mode,x_val,y_val)
     x_dim, y_dim = y_dim, x_dim
     x_grid, y_grid = y_grid, x_grid
   end
-  TEXTURE_SCALE = x_dim/((x_grid+2*x_val)*TEXTURE_BASE_SIZE)
-  TEXTURE_SIZE = TEXTURE_SCALE*TEXTURE_BASE_SIZE
-  DRAWBOX_X_POS = math.floor(x_val*TEXTURE_SIZE)
+  texture_scale = x_dim/((x_grid+2*x_val)*TEXTURE_BASE_SIZE)
+  texture_size = texture_scale*TEXTURE_BASE_SIZE
+  drawbox_pos_x = math.floor(x_val*texture_size)
   if string.find(mode,"l") or string.find(mode,"t") then 
-    DRAWBOX_Y_POS = math.floor(y_val*TEXTURE_SIZE)
+    drawbox_pos_y = math.floor(y_val*texture_size)
   elseif string.find(mode,"r") or string.find(mode,"b") then
-    DRAWBOX_Y_POS = math.floor(y_dim-(y_grid+y_val)*TEXTURE_SIZE)
+    drawbox_pos_y = math.floor(y_dim-(y_grid+y_val)*texture_size)
   else
-    DRAWBOX_Y_POS = math.floor((y_dim-y_grid*TEXTURE_SIZE)/2)
+    drawbox_pos_y = math.floor((y_dim-y_grid*texture_size)/2)
   end
 
-  if string.find(mode,"y") then DRAWBOX_X_POS, DRAWBOX_Y_POS = DRAWBOX_Y_POS, DRAWBOX_X_POS end
+  if string.find(mode,"y") then drawbox_pos_x, drawbox_pos_y = drawbox_pos_y, drawbox_pos_x end
 --DEBUG INFO--
-  debugUtils.print(TEXTURE_SCALE,"texture scale factor")
-  debugUtils.print({DRAWBOX_X_POS,DRAWBOX_Y_POS},"pos","DRAWBOX_|_POS")
+  debugUtils.print(texture_scale,"texture scale factor")
+  debugUtils.print({drawbox_pos_x,drawbox_pos_y},"pos","DRAWBOX_|_POS")
 --------------
-  return DRAWBOX_X_POS, DRAWBOX_Y_POS, TEXTURE_SCALE
+  return drawbox_pos_x, drawbox_pos_y, texture_scale
 end
 
 function grid.updatePosition(cursor_pos_x,cursor_pos_y)
   if not cursor_pos_x then cursor_pos_x, cursor_grid_pos_y = love.mouse.getPosition() end
-  cursor_grid_pos_x = math.ceil((cursor_pos_x-DRAWBOX_X_POS)/TEXTURE_SIZE)
-  cursor_grid_pos_y = math.ceil((cursor_pos_y-DRAWBOX_Y_POS)/TEXTURE_SIZE)
+  cursor_grid_pos_x = math.ceil((cursor_pos_x-drawbox_pos_x)/texture_size)
+  cursor_grid_pos_y = math.ceil((cursor_pos_y-drawbox_pos_y)/texture_size)
   return cursor_grid_pos_x, cursor_grid_pos_y
 end
 
