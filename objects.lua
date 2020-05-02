@@ -38,6 +38,7 @@ function Object:new(t,xpos,ypos,state,rotation,colour,canMove,canChangeState,can
   return o
 end
 
+-- Might rename Oject:action(mode,shiftClick) so that mode depends on the tool type, and make enum
 function Object:rightClick(shiftClick)
   shiftClick = shiftClick or false
   if self.glassState or not self.canChangeState then return false end
@@ -47,17 +48,20 @@ function Object:rightClick(shiftClick)
   return true
 end
 
-function Object:changePosition(xpos,ypos) -- note that this only changes the position info for the object not the position in the grid; do not call directly or may cause weirdness
+-- Note that this only changes the position info for the object not the position in the grid; do not call directly or may cause weirdness
+function Object:changePosition(xpos,ypos)
   self.xpos = xpos
   self.ypos = ypos
 end
 
+-- Remove the reference to object within ObjectReferences. If it was externally removed from everywhere else garbage collection should handle the rest
 function Object:delete()
   UpdateObjectType[self.t] = true
   ObjectReferences[self.t][self.id] = nil
 end
 
-function objects.getNumType(t) -- will return the amount of the specified type
+-- Will return the amount of the specified type (note that this cannot be substituted for ID in 'for' loop because objects could have been deleted)
+function objects.getNumType(t) 
   local amount = 0
   for i=1,ID[t] or 0 do
     if ObjectReferences[t][i] then amount = amount+1 end
@@ -65,17 +69,20 @@ function objects.getNumType(t) -- will return the amount of the specified type
   return amount
 end
 
+-- Will return the latest ID of the specified type
 function objects.getID(t)
   return ID[t] or 0
 end
 
-function objects.resetObjects() -- must also be run once for initialization of variables (this is accomplished via grid.clearGrid() or grid.init())
+-- Must also be run once for initialization of variables (this is accomplished via grid.clearGrid() or grid.init()); note that IDs are set back to 0
+function objects.resetObjects() 
   for i = 1,numTypes do
     ID[i] = 0
     ObjectReferences[i] = {}
   end
 end
 
+-- Create a new object (does not place in grid!)
 function objects.newObject(t,xpos,ypos,state,rotation,colour,canMove,canChangeState,canChangeColour,glassState)
   return Object:new(t,xpos,ypos,state,rotation,colour,canMove,canChangeState,canChangeColour,glassState)
 end
