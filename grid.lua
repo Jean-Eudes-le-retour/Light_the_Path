@@ -47,20 +47,26 @@ function grid.setNewObject(t,xpos,ypos,state,rotation,colour,canMove,canChangeSt
 end
 
 -- Will attempt to move an object from one point to another within the grid (Might want to make the function ignore 'canMove' and test this externally before moving?)
-function grid.moveObject(o,xpos,ypos,old_xpos,old_ypos)
-  if Grid[xpos][ypos] then
-    local dest_o = Grid[xpos][ypos]
-    if dest_o.canMove then
-      Grid[old_xpos][old_ypos] = o
-      return false
+function grid.moveObject(o,xpos,ypos,old_xpos,old_ypos,force)
+  if not (xpos > grid_size_x or xpos < 1 or ypos > grid_size_y or ypos < 1) then
+    if Grid[xpos][ypos] then
+      local dest_o = Grid[xpos][ypos]
+      if force or (not dest_o.glassState and dest_o.canMove) then
+        force = true
+        dest_o:changePosition(old_xpos,old_ypos)
+        Grid[old_xpos][old_ypos] = dest_o
+      end -- implicit else force = false
     else
-      dest_o:changePosition(old_xpos,old_ypos)
-      Grid[old_xpos][old_ypos] = dest_o
+      force = true
+    end
+    if force then
+      o:changePosition(xpos,ypos)
+      Grid[xpos][ypos] = o
+      return true
     end
   end
-  o:changePosition(xpos,ypos)
-  Grid[xpos][ypos] = o
-  return true
+  Grid[old_xpos][old_ypos] = o
+  return false
 end
 
 -- Deletes the object from the grid. Then deletes the object from ObjectReferences table via Object:delete(); garbage collection should handle the rest.
