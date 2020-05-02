@@ -131,6 +131,11 @@ function grid.getPosition()
   return cursor_grid_pos_x, cursor_grid_pos_y
 end
 
+--Return top left corner outer pixel coordinates of specified tile
+function grid.getTilePosition(grid_pos_x, grid_pos_y)
+  return math.floor(drawbox_pos_x+(grid_pos_x-1)*tile_size), math.floor(drawbox_pos_y+(grid_pos_y-1)*tile_size)
+end
+
 -- NOTE THAT THESE FUNCTIONS DO NOT NEED TO BE IN GRID, IN FACT THEY SHOULD PROBABLY BE MOVED TO ANOTHER MODULE AS THEY DOESN'T REALLY RELATE TO THE GRID
 -- Used exclusively in updateWallState(), do not use.
 function grid.checkWallAt(xpos,ypos,state,index,update_self)
