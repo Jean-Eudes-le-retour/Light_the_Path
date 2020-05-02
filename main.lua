@@ -17,21 +17,25 @@ function love.load()
   local box_x, box_y = grid.init()
   grid_dim_x, grid_dim_y = grid.getDimensions()
   for i=1,grid_dim_x do
-    grid.setNewObject(nil,i,1)
+    grid.setNewObject(nil,i,1,nil,nil,nil,nil,nil,nil,0)
   end
   for i=1,grid_dim_x do
-    grid.setNewObject(TYPE_WALL,i,grid_dim_y)
+    grid.setNewObject(TYPE_WALL,i,grid_dim_y,nil,nil,nil,nil,nil,nil,0)
   end
   for i=1,grid_dim_y do
-    grid.setNewObject(TYPE_WALL,1,i)
+    grid.setNewObject(TYPE_WALL,1,i,nil,nil,nil,nil,nil,nil,0)
   end
   for i=1,grid_dim_y do
-    grid.setNewObject(TYPE_WALL,grid_dim_x,i)
+    grid.setNewObject(TYPE_WALL,grid_dim_x,i,nil,nil,nil,nil,nil,nil,0)
   end
-  grid.updateWallState()
+  grid.updateTypeState()
+  grid.updateTypeState(2)
   print(Grid[1][1].t,Grid[1][1].state,Grid[1][1].rotation)
   print(Grid[2][1].t,Grid[2][1].state,Grid[2][1].rotation)
   print(Grid[3][1].t,Grid[3][1].state,Grid[3][1].rotation)
+  print(Grid[1][1].glassState,Grid[1][1].glassRotation)
+  print(Grid[2][1].glassState,Grid[2][1].glassRotation)
+  print(Grid[3][1].glassState,Grid[3][1].glassRotation)
   x=0
   totalTime=0.0
 end

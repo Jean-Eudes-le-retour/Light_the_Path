@@ -3,14 +3,16 @@ local objects = {}
 -- 'state' defines the image used to draw the object (i.e. same image is equivalent to same state), rotation will define the rotation of said image when drawn.
 -- This is why items such as mirrors have 2 states: one for horizontal/vertical mirrors and one for diagonal mirrors. pwheel on the other hand can only take one state (but 2 rotations!)
 -- It is worth noting that color can also influence the image used to represent the object (details to be discussed)
-local Object = {t = 0, id = 0, xpos = nil, ypos = nil, state = 0, rotation = 0, colour = 0, canMove = false, canChangeState = false, canChangeColour = false}
+local Object = {t = 0, id = 0, xpos = nil, ypos = nil, state = 0, rotation = 0, colour = 0, canMove = false, canChangeState = false, canChangeColour = false, glassState = false}
 local ID = {} -- contains the ID of the newest object of each type (i.e. the amount of each types unless some have been deleted); int:ID[int:type]
 local Types =      {"wall","glass","source","receiver","mirror","dmirror","pwheel" }
 local numStates =  {    15,      1,       2,         2,       2,        2,       1 }
 UpdateObjectType = { false,  false,   false,     false,    false,   false,   false }
 ObjectReferences = {} -- contains tables of references to each object of each type sorted by type and ID; Object:ObjectReferences[int:type][int:id]
+numTypes = #Types
 
-function Object:new(t,xpos,ypos,state,rotation,colour,canMove,canChangeState,canChangeColour)
+-- SHOULD PROBABLY ADD CONSTANT TABLES OF DEFAULT VALUES DEPENDING ON OBJECT TYPE!
+function Object:new(t,xpos,ypos,state,rotation,colour,canMove,canChangeState,canChangeColour,glassState)
   o = {}
   setmetatable(o, self)
   self.__index = self
@@ -27,6 +29,9 @@ function Object:new(t,xpos,ypos,state,rotation,colour,canMove,canChangeState,can
   o.canMove = canMove or false
   o.canChangeState = canChangeState or false
   o.canChangeColour = canChangeColour or false
+  o.glassState = glassState or false
+  o.glassRotation = 0
+  if o.glassState then UpdateObjectType[TYPE_GLASS] = true end
   
   --index the object and return the reference
   ObjectReferences[o.t][o.id] = o
@@ -35,7 +40,7 @@ end
 
 function Object:rightClick(shiftClick)
   shiftClick = shiftClick or false
-  if not self.canChangeState then return false end
+  if self.glassState or not self.canChangeState then return false end
   UpdateObjectType[self.t] = true
   self.state = shiftClick and self.state-1 or self.state+1
   self.state = self.state%numStates[self.t]
@@ -65,14 +70,14 @@ function objects.getID(t)
 end
 
 function objects.resetObjects() -- must also be run once for initialization of variables (this is accomplished via grid.clearGrid() or grid.init())
-  for i = 1,#Types do
+  for i = 1,numTypes do
     ID[i] = 0
     ObjectReferences[i] = {}
   end
 end
 
-function objects.newObject(t,xpos,ypos,state,rotation,colour,canMove,canChangeState,canChangeColour)
-  return Object:new(t,xpos,ypos,state,rotation,colour,canMove,canChangeState,canChangeColour)
+function objects.newObject(t,xpos,ypos,state,rotation,colour,canMove,canChangeState,canChangeColour,glassState)
+  return Object:new(t,xpos,ypos,state,rotation,colour,canMove,canChangeState,canChangeColour,glassState)
 end
 
 return objects

@@ -39,10 +39,10 @@ function grid.clearGrid()
 end
 
 -- Place a new object within the grid. The preferred function to create new objects.
-function grid.setNewObject(t,xpos,ypos,state,rotation,colour,canMove,canChangeState,canChangeColour)
+function grid.setNewObject(t,xpos,ypos,state,rotation,colour,canMove,canChangeState,canChangeColour,glassState)
   if xpos > grid_size_x or ypos > grid_size_y or xpos < 1 or ypos < 1 then return nil end
   if Grid[xpos][ypos] then Grid[xpos][ypos]:delete() end
-  Grid[xpos][ypos] = objects.newObject(t,xpos,ypos,state,rotation,colour,canMove,canChangeState,canChangeColour)
+  Grid[xpos][ypos] = objects.newObject(t,xpos,ypos,state,rotation,colour,canMove,canChangeState,canChangeColour,glassState)
   return true
 end
 
@@ -137,32 +137,33 @@ function grid.getTilePosition(grid_pos_x, grid_pos_y)
 end
 
 -- NOTE THAT THESE FUNCTIONS DO NOT NEED TO BE IN GRID, IN FACT THEY SHOULD PROBABLY BE MOVED TO ANOTHER MODULE AS THEY DOESN'T REALLY RELATE TO THE GRID
--- Used exclusively in updateWallState(), do not use.
-function grid.checkWallAt(xpos,ypos,state,index,update_self)
-  if Grid[xpos] and Grid[xpos][ypos] and Grid[xpos][ypos].t == TYPE_WALL then
+-- Used exclusively in updateTypeState(), do not use.
+function grid.checkTypeAt(t,xpos,ypos,state,index,update_self)
+  if Grid[xpos] and Grid[xpos][ypos] and (Grid[xpos][ypos].t == t or (t == TYPE_GLASS and Grid[xpos][ypos].glassState)) then
     state = state + lshift(1,index)
-    if update_self then updateWallState(xpos,ypos,false) end
+    if update_self then updateTypeState(t,xpos,ypos,false) end
   end
   index = index+1
   return state, index
 end
 -- Update wall data of wall at x,y and neighbors if updateNeighbors. Foolproof. If nothing specified updates all walls in the game (includes non-placed walls)
-function grid.updateWallState(xpos,ypos,updateNeighbors)
+function grid.updateTypeState(t,xpos,ypos,updateNeighbors)
   local index = 0
   local state = 0
-  local wallIsPresent = false
+  t = t or TYPE_WALL
+  local typeIsPresent = false
   if updateNeighbors == nil then updateNeighbors = true end
   if xpos and ypos then
-    wallIsPresent = grid.checkGrid(xpos,ypos,TYPE_WALL)
+    typeIsPresent = grid.checkGrid(xpos,ypos,t) or (t == TYPE_GLASS) and Grid[xpos][ypos].glassState 
     for i=xpos-1,xpos+1 do
-      state, index = grid.checkWallAt(i,ypos-1,state,index,updateNeighbors)
+      state, index = grid.checkTypeAt(t,i,ypos-1,state,index,updateNeighbors)
     end
-    state, index = grid.checkWallAt(xpos+1,ypos,state,index,updateNeighbors)
+    state, index = grid.checkTypeAt(t,xpos+1,ypos,state,index,updateNeighbors)
     for i=xpos+1,xpos-1,-1 do
-      state, index = grid.checkWallAt(i,ypos+1,state,index,updateNeighbors)
+      state, index = grid.checkTypeAt(t,i,ypos+1,state,index,updateNeighbors)
     end
-    state, index = grid.checkWallAt(xpos-1,ypos,state,index,updateNeighbors)
-    if not wallIsPresent then return end
+    state, index = grid.checkTypeAt(t,xpos-1,ypos,state,index,updateNeighbors)
+    if not typeIsPresent then return end
 
     -- code allowing comparison of 15 possible wall states
     -- invert state to represent empty space with bits instead of walls
@@ -176,8 +177,12 @@ function grid.updateWallState(xpos,ypos,updateNeighbors)
     local old_bit1 = 0
     local old_bit2 = 0
     for i=0,3 do
-      if WALL_STATE_CONFIGURATIONS[state] then
-        Grid[xpos][ypos].state = WALL_STATE_CONFIGURATIONS[state]
+      if STATE_CONFIGURATIONS[state] then
+      if t == TYPE_GLASS then
+        Grid[xpos][ypos].glassState = STATE_CONFIGURATIONS[state]
+        Grid[xpos][ypos].glassRotation = (-i)%4
+      else
+        Grid[xpos][ypos].state = STATE_CONFIGURATIONS[state] end
         Grid[xpos][ypos].rotation = (-i)%4
         return true
       end
@@ -186,10 +191,18 @@ function grid.updateWallState(xpos,ypos,updateNeighbors)
       state = bor(rshift(state,2),(old_bit1+old_bit2))
     end
     return false
+  elseif t == TYPE_GLASS then
+    for j=1,numTypes do
+      if j == TYPE_GLASS then j = j+1 end
+      for i=1,objects.getID(j) do
+        local o = ObjectReferences[j][i]
+        if o then grid.updateTypeState(t,o.xpos,o.ypos,false) end -- extra precaution in case objects were externally deleted
+      end
+    end
   else
-    for i=1,objects.getID(TYPE_WALL) do
-      local o = ObjectReferences[TYPE_WALL][i]
-      if o then grid.updateWallState(o.xpos,o.ypos,false) end -- extra precaution in case objects were externally deleted
+    for i=1,objects.getID(t) do
+      local o = ObjectReferences[t][i]
+      if o then grid.updateTypeState(t,o.xpos,o.ypos,false) end -- extra precaution in case objects were externally deleted
     end
     return true
   end
