@@ -200,13 +200,13 @@ function grid.updateTypeState(t,xpos,ypos,updateNeighbors)
   elseif t == TYPE_GLASS then
     for j=1,numTypes do
       if j == TYPE_GLASS then j = j+1 end
-      for i=1,objects.getID(j) do
+      for i=1,objects.getId(j) do
         local o = ObjectReferences[j][i]
         if o then grid.updateTypeState(t,o.xpos,o.ypos,false) end -- extra precaution in case objects were externally deleted
       end
     end
   else
-    for i=1,objects.getID(t) do
+    for i=1,objects.getId(t) do
       local o = ObjectReferences[t][i]
       if o then grid.updateTypeState(t,o.xpos,o.ypos,false) end -- extra precaution in case objects were externally deleted
     end
