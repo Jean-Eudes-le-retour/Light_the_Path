@@ -57,8 +57,8 @@ tiles.reloadTextures = tiles.loadTextures
 
 function tiles.update()
   if not BG_is_drawn then print("Drawing background layer...") tiles.updateBG() BG_is_drawn = true end
-  if UpdateObjectType[TYPE_WALL] then print("Updating wall states...") tiles.updateWall() UpdateObjectType[TYPE_WALL] = false end
-  if UpdateObjectType[TYPE_GLASS] then print("Updating glass states...") tiles.updateGlass() UpdateObjectType[TYPE_GLASS] = false end
+  if UpdateObjectType[TYPE_WALL] then tiles.updateWall() UpdateObjectType[TYPE_WALL] = false end
+  if UpdateObjectType[TYPE_GLASS] then tiles.updateGlass() UpdateObjectType[TYPE_GLASS] = false end
   for i=NUM_CONNECTED_TEXTURE_TILES+1,#TYPES do
     if UpdateObjectType[i] then
       print("Updating all object graphics...")
@@ -70,7 +70,6 @@ function tiles.update()
 end
 
 function tiles.updateBG()
-  print("Background drawing script not written yet.")
   love.graphics.setCanvas(canvas_BG)
   local grid_size_x, grid_size_y = grid.getDimensions()
   for i=0,grid_size_x-1 do
@@ -84,7 +83,7 @@ function tiles.updateWall()
   print("Updating wall states...")
   tiles.updateConnectedTextureTypeState(TYPE_WALL)
 
-  print("Updating wall canvas...")
+  print("Updating wall graphics...")
   love.graphics.setCanvas(canvas_WL) 
   local o = false
   local xpos, ypos, state, rotation = 0,0,0,0
@@ -100,12 +99,30 @@ function tiles.updateWall()
     end
   end
   love.graphics.setCanvas()
-  -- draw walls to canvas...
 end
 
 function tiles.updateGlass()
+  print("Updating glass states...")
   tiles.updateConnectedTextureTypeState(TYPE_GLASS)
-  -- draw glass to canvas...
+  
+  print("Updating glass graphics...")
+  love.graphics.setCanvas(canvas_GL)
+  local o = false
+  local xpos, ypos, state, rotation = 0,0,0,0
+  for j=1,#TYPES do
+    for i=1,objects.getId(j) do
+      o = ObjectReferences[j][i]
+      if o and o.glassState then
+        xpos,ypos,state,rotation = o.xpos-1, o.ypos-1, o.glassState, o.glassRotation
+        love.graphics.drawLayer(TEXTURES[TYPE_GLASS],1,xpos*TEXTURE_BASE_SIZE,ypos*TEXTURE_BASE_SIZE)
+        xpos = xpos + ((rotation == 1 or rotation == 2) and 1 or 0)
+        if rotation > 1 then ypos = ypos+1 end
+        rotation = math.rad(90*rotation)
+        love.graphics.drawLayer(OVERLAY_TEXTURES[TYPE_GLASS],state,xpos*TEXTURE_BASE_SIZE,ypos*TEXTURE_BASE_SIZE,rotation)
+      end
+    end
+  end
+  love.graphics.setCanvas()
 end
 
 function tiles.updateObjects()
@@ -168,7 +185,6 @@ function tiles.updateConnectedTextureTypeState(t,xpos,ypos,updateNeighbors)
     return false
   elseif t == TYPE_GLASS then
     for j=1,#TYPES do
-      if j == TYPE_GLASS then j = j+1 end
       for i=1,objects.getId(j) do
         local o = ObjectReferences[j][i]
         if o then tiles.updateConnectedTextureTypeState(t,o.xpos,o.ypos,false) end -- extra precaution in case objects were externally deleted
