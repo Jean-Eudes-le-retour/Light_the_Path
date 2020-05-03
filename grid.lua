@@ -66,17 +66,19 @@ function grid.moveObject(o,xpos,ypos,old_xpos,old_ypos,force)
       return true
     end
   end
+  print("Couldn't move the object")
   Grid[old_xpos][old_ypos] = o
+  UpdateObjectType[o.t] = true
   return false
 end
 
--- Deletes the object from the grid. Then deletes the object from ObjectReferences table via Object:delete(); garbage collection should handle the rest.
-function grid.deleteObject(xpos,ypos,o)
+-- Deletes the object from the grid. Then deletes the object from ObjectReferences table via Object:delete(); garbage collection should handle the rest; optionally does not delete the object reference.
+function grid.deleteObject(xpos,ypos,o,keep_reference)
   o = o or Grid[xpos][ypos] -- if object is passed directly, it takes precedence on the coordinates (can call deleteObject(nil,nil,Object))
   if not o then return false end
   UpdateObjectType[o.t] = true
   Grid[o.xpos][o.ypos] = nil -- assumes correct info is stored in the object (shouldn't be an issue)
-  o:delete()
+  if not keep_reference then o:delete() end
   return true
 end
 

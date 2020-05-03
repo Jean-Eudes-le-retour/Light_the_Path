@@ -3,14 +3,14 @@ local objects = {}
 -- 'state' defines the image used to draw the object (i.e. same image is equivalent to same state), rotation will define the rotation of said image when drawn.
 -- This is why items such as mirrors have 2 states: one for horizontal/vertical mirrors and one for diagonal mirrors. pwheel on the other hand can only take one state (but 2 rotations!)
 -- It is worth noting that color can also influence the image used to represent the object (details to be discussed)
-local Object =          {t = 0,     id = 0, xpos = nil, ypos = nil, state = 0, rotation = 0, colour = 0, canMove = false, canChangeState = false, canChangeColour = false, glassState = false}
+local Object =          {t = 0,     id = 0, xpos = nil, ypos = nil, state = 1, rotation = 0, colour = 0, canMove = false, canChangeState = false, canChangeColour = false, glassState = false}
 local DEFAULT_WALL =    {t =     TYPE_WALL, state = 13, colour =  0, canMove = false, canChangeState = false, canChangeColour = false, glassState = false}
-local DEFAULT_GLASS =   {t =    TYPE_GLASS, state =  0, colour =  0, canMove = false, canChangeState = false, canChangeColour = false, glassState =     0}
-local DEFAULT_SOURCE =  {t =   TYPE_SOURCE, state =  0, colour =  0, canMove = false, canChangeState =  true, canChangeColour = false, glassState = false}
-local DEFAULT_RECEIVER ={t = TYPE_RECEIVER, state =  0, colour =  0, canMove = false, canChangeState = false, canChangeColour = false, glassState = false}
-local DEFAULT_MIRROR =  {t =   TYPE_MIRROR, state =  0, colour =  0, canMove =  true, canChangeState = false, canChangeColour = false, glassState = false}
-local DEFAULT_DMIRROR = {t =  TYPE_DMIRROR, state =  0, colour =  0, canMove =  true, canChangeState = false, canChangeColour = false, glassState = false}
-local DEFAULT_PWHEEL =  {t =   TYPE_PWHEEL, state =  0, colour =  0, canMove =  true, canChangeState = false, canChangeColour = false, glassState = false}
+local DEFAULT_GLASS =   {t =    TYPE_GLASS, state =  1, colour =  0, canMove = false, canChangeState = false, canChangeColour = false, glassState =     0}
+local DEFAULT_SOURCE =  {t =   TYPE_SOURCE, state =  1, colour =  0, canMove = false, canChangeState =  true, canChangeColour = false, glassState = false}
+local DEFAULT_RECEIVER ={t = TYPE_RECEIVER, state =  1, colour =  0, canMove = false, canChangeState = false, canChangeColour = false, glassState = false}
+local DEFAULT_MIRROR =  {t =   TYPE_MIRROR, state =  1, colour =  0, canMove =  true, canChangeState = false, canChangeColour = false, glassState = false}
+local DEFAULT_DMIRROR = {t =  TYPE_DMIRROR, state =  1, colour =  0, canMove =  true, canChangeState = false, canChangeColour = false, glassState = false}
+local DEFAULT_PWHEEL =  {t =   TYPE_PWHEEL, state =  1, colour =  0, canMove =  true, canChangeState = false, canChangeColour = false, glassState = false}
 local DEFAULT_OBJECT =  {DEFAULT_WALL,DEFAULT_GLASS,DEFAULT_SOURCE,DEFAULT_RECEIVER,DEFAULT_MIRROR,DEFAULT_DMIRROR,DEFAULT_PWHEEL}
 TYPES =            {"wall","glass","source","receiver","mirror","dmirror","pwheel" }
 NUM_STATES =       {     1,      1,       2,         2,       2,        2,       1 }
@@ -56,7 +56,7 @@ function Object:rightClick(shiftClick)
   if self.glassState or not self.canChangeState then return false end
   UpdateObjectType[self.t] = true
   self.state = shiftClick and self.state-1 or self.state+1
-  self.state = self.state%NUM_STATES[self.t]
+  self.state = (self.state > NUM_STATES[self.t] and 1 or self.state)
   return true
 end
 

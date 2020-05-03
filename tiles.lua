@@ -71,6 +71,7 @@ end
 
 function tiles.updateBG()
   love.graphics.setCanvas(canvas_BG)
+  love.graphics.clear()
   local grid_size_x, grid_size_y = grid.getDimensions()
   for i=0,grid_size_x-1 do
     for j=0,grid_size_y-1 do
@@ -85,11 +86,12 @@ function tiles.updateWall()
 
   print("Updating wall graphics...")
   love.graphics.setCanvas(canvas_WL) 
+  love.graphics.clear()
   local o = false
   local xpos, ypos, state, rotation = 0,0,0,0
   for i=1,objects.getId(TYPE_WALL) do
     o = ObjectReferences[TYPE_WALL][i]
-    if o then
+    if o and Grid[o.xpos][o.ypos] then
       xpos,ypos,state,rotation = o.xpos-1, o.ypos-1, o.state, o.rotation
       love.graphics.drawLayer(TEXTURES[TYPE_WALL],1,xpos*TEXTURE_BASE_SIZE,ypos*TEXTURE_BASE_SIZE)
       xpos = xpos + ((rotation == 1 or rotation == 2) and 1 or 0)
@@ -107,6 +109,7 @@ function tiles.updateGlass()
   
   print("Updating glass graphics...")
   love.graphics.setCanvas(canvas_GL)
+  love.graphics.clear()
   local o = false
   local xpos, ypos, state, rotation = 0,0,0,0
   for j=1,#TYPES do

@@ -8,6 +8,7 @@ local objects = require("objects")
 local grid = require("grid")
 local debugUtils = require("debugUtils")
 local tiles = require("tiles")
+local game = require("game")
 
 --temporary test var
 local gridPosition_x, gridPosition_y = 0, 0
@@ -51,9 +52,11 @@ function love.load()
   print(Grid[1][1].glassState,Grid[1][1].glassRotation)
   print(Grid[2][1].glassState,Grid[2][1].glassRotation)
   print(Grid[3][1].glassState,Grid[3][1].glassRotation)
+  game.init()
 end
 
 function love.update(dt)
+  game.update()
   x=x+10*dt
   totalTime = totalTime + dt --dt is in seconds
   gridPosition_x, gridPosition_y = grid.updateCursorPosition(true)
@@ -63,6 +66,7 @@ function love.draw()
   love.graphics.draw(canvas_BG,drawbox_x,drawbox_y,nil,texture_scale)
   love.graphics.draw(canvas_WL,drawbox_x,drawbox_y,nil,texture_scale)
   love.graphics.draw(canvas_GL,drawbox_x,drawbox_y,nil,texture_scale)
+  love.graphics.draw(canvas_UI)
   love.graphics.print("X : "..tostring(gridPosition_x))
   love.graphics.print("Y : "..tostring(gridPosition_y),100,0)
   love.graphics.print("X_max : "..tostring(grid_dim_x),0,10)
