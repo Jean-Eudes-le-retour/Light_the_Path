@@ -1,7 +1,5 @@
 local debugUtils = require("debugUtils")
 local objects = require("objects")
-local bit = require("bit")
-local bnot, band, bor, rshift, lshift = bit.bnot, bit.band, bit.bor, bit.rshift, bit.lshift
 
 
 -- THE MODULE MUST BE INITIALIZED; grid.init is grid.setDimensions
@@ -131,7 +129,7 @@ function grid.defineDrawbox(mode,x_val,y_val)
   if string.find(mode,"y") then drawbox_pos_x, drawbox_pos_y = drawbox_pos_y, drawbox_pos_x end
 --DEBUG INFO--
   debugUtils.print(texture_scale,"texture scale factor")
-  debugUtils.print({drawbox_pos_x,drawbox_pos_y},"pos","DRAWBOX_|_POS")
+  debugUtils.print({drawbox_pos_x,drawbox_pos_y},"pos","drawbox_|_pos")
 --------------
   local grid_x_dim, grid_y_dim = x_grid*TEXTURE_BASE_SIZE, y_grid*TEXTURE_BASE_SIZE
   BG_is_drawn = false
@@ -142,14 +140,14 @@ function grid.defineDrawbox(mode,x_val,y_val)
   return drawbox_pos_x, drawbox_pos_y, texture_scale
 end
 
-function grid.updatePosition(cursor_pos_x,cursor_pos_y)
-  if not cursor_pos_x then cursor_pos_x, cursor_grid_pos_y = love.mouse.getPosition() end
+function grid.updateCursorPosition(cursor_pos_x,cursor_pos_y)
+  if not cursor_pos_x then cursor_pos_x, cursor_pos_y = love.mouse.getPosition() end
   cursor_grid_pos_x = math.ceil((cursor_pos_x-drawbox_pos_x)/tile_size)
   cursor_grid_pos_y = math.ceil((cursor_pos_y-drawbox_pos_y)/tile_size)
   return cursor_grid_pos_x, cursor_grid_pos_y
 end
 
-function grid.getPosition()
+function grid.getCursorPosition()
   return cursor_grid_pos_x, cursor_grid_pos_y
 end
 
@@ -158,76 +156,5 @@ function grid.getTilePosition(grid_pos_x, grid_pos_y)
   return math.floor(drawbox_pos_x+(grid_pos_x-1)*tile_size), math.floor(drawbox_pos_y+(grid_pos_y-1)*tile_size)
 end
 
--- NOTE THAT THESE FUNCTIONS DO NOT NEED TO BE IN GRID, IN FACT THEY SHOULD PROBABLY BE MOVED TO ANOTHER MODULE AS THEY DOESN'T REALLY RELATE TO THE GRID
--- Used exclusively in updateTypeState(), do not use.
-function grid.checkTypeAt(t,xpos,ypos,state,index,update_self)
-  if Grid[xpos] and Grid[xpos][ypos] and (Grid[xpos][ypos].t == t or (t == TYPE_GLASS and Grid[xpos][ypos].glassState)) then
-    state = state + lshift(1,index)
-    if update_self then updateTypeState(t,xpos,ypos,false) end
-  end
-  index = index+1
-  return state, index
-end
--- Update wall data of wall at x,y and neighbors if updateNeighbors. Foolproof. If nothing specified updates all walls in the game (includes non-placed walls)
-function grid.updateTypeState(t,xpos,ypos,updateNeighbors)
-  local index = 0
-  local state = 0
-  t = t or TYPE_WALL
-  local typeIsPresent = false
-  if updateNeighbors == nil then updateNeighbors = true end
-  if xpos and ypos then
-    typeIsPresent = grid.checkGrid(xpos,ypos,t) or (t == TYPE_GLASS) and Grid[xpos][ypos].glassState 
-    for i=xpos-1,xpos+1 do
-      state, index = grid.checkTypeAt(t,i,ypos-1,state,index,updateNeighbors)
-    end
-    state, index = grid.checkTypeAt(t,xpos+1,ypos,state,index,updateNeighbors)
-    for i=xpos+1,xpos-1,-1 do
-      state, index = grid.checkTypeAt(t,i,ypos+1,state,index,updateNeighbors)
-    end
-    state, index = grid.checkTypeAt(t,xpos-1,ypos,state,index,updateNeighbors)
-    if not typeIsPresent then return end
-
-    -- code allowing comparison of 15 possible wall states
-    -- invert state to represent empty space with bits instead of walls
-    state = band(bnot(state),255)
-    -- an empty space in cardinal directions renders the information on corner blocks useless - reduce possible configurations
-    if band(state,2)~=0 then state = bor(state,7) end
-    if band(state,8)~=0 then state = bor(state,28) end
-    if band(state,32)~=0 then state = bor(state,112) end
-    if band(state,128)~=0 then state = bor(state,193) end
-    -- rotate the configuration clockwise and compare with table
-    local old_bit1 = 0
-    local old_bit2 = 0
-    for i=0,3 do
-      if STATE_CONFIGURATIONS[state] then
-      if t == TYPE_GLASS then
-        Grid[xpos][ypos].glassState = STATE_CONFIGURATIONS[state]
-        Grid[xpos][ypos].glassRotation = (-i)%4
-      else
-        Grid[xpos][ypos].state = STATE_CONFIGURATIONS[state] end
-        Grid[xpos][ypos].rotation = (-i)%4
-        return true
-      end
-      old_bit1 = band(state,1) ~= 0 and 64 or 0
-      old_bit2 = band(state,2) ~= 0 and 128 or 0
-      state = bor(rshift(state,2),(old_bit1+old_bit2))
-    end
-    return false
-  elseif t == TYPE_GLASS then
-    for j=1,#TYPES do
-      if j == TYPE_GLASS then j = j+1 end
-      for i=1,objects.getId(j) do
-        local o = ObjectReferences[j][i]
-        if o then grid.updateTypeState(t,o.xpos,o.ypos,false) end -- extra precaution in case objects were externally deleted
-      end
-    end
-  else
-    for i=1,objects.getId(t) do
-      local o = ObjectReferences[t][i]
-      if o then grid.updateTypeState(t,o.xpos,o.ypos,false) end -- extra precaution in case objects were externally deleted
-    end
-    return true
-  end
-end
 
 return grid

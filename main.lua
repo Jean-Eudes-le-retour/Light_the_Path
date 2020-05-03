@@ -10,7 +10,6 @@ local debugUtils = require("debugUtils")
 local tiles = require("tiles")
 
 --temporary test var
-local cursor_posx, cursor_posy = 0, 0
 local gridPosition_x, gridPosition_y = 0, 0
 local grid_dim_x, grid_dim_y = 0, 0
 
@@ -29,24 +28,31 @@ function love.load()
   for i=1,grid_dim_y do
     grid.setNewObject(TYPE_WALL,grid_dim_x,i,nil,nil,nil,nil,nil,nil,0)
   end
-  grid.updateTypeState()
-  grid.updateTypeState(2)
-  print(Grid[1][1].t,Grid[1][1].state,Grid[1][1].rotation)
-  print(Grid[2][1].t,Grid[2][1].state,Grid[2][1].rotation)
-  print(Grid[3][1].t,Grid[3][1].state,Grid[3][1].rotation)
+  x=0
+  totalTime=0.0
+  
+  for i=1,#UpdateObjectType do
+    print(TYPES[i]..(UpdateObjectType[i] and " NEED UPDATE" or " are set"))
+  end
+  tiles.loadTextures()
+  tiles.update()
+  for i=1,#UpdateObjectType do
+    print(TYPES[i]..(UpdateObjectType[i] and " NEED UPDATE" or " are set"))
+  end
+  
+  
+  print(TYPES[Grid[1][1].t],Grid[1][1].state,Grid[1][1].rotation)
+  print(TYPES[Grid[2][1].t],Grid[2][1].state,Grid[2][1].rotation)
+  print(TYPES[Grid[3][1].t],Grid[3][1].state,Grid[3][1].rotation)
   print(Grid[1][1].glassState,Grid[1][1].glassRotation)
   print(Grid[2][1].glassState,Grid[2][1].glassRotation)
   print(Grid[3][1].glassState,Grid[3][1].glassRotation)
-  x=0
-  totalTime=0.0
-  tiles.loadTextures()
 end
 
 function love.update(dt)
   x=x+10*dt
   totalTime = totalTime + dt --dt is in seconds
-  cursor_posx, cursor_posy = love.mouse.getPosition()
-  gridPosition_x, gridPosition_y = grid.updatePosition(cursor_posx, cursor_posy)
+  gridPosition_x, gridPosition_y = grid.updateCursorPosition()
 end
 
 function love.draw()
