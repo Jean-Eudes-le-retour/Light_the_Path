@@ -12,9 +12,10 @@ local tiles = require("tiles")
 --temporary test var
 local gridPosition_x, gridPosition_y = 0, 0
 local grid_dim_x, grid_dim_y = 0, 0
+local drawbox_x, drawbox_y, texture_scale = 0, 0, 0
 
 function love.load()
-  local box_x, box_y = grid.init()
+  drawbox_x, drawbox_y, texture_scale = grid.init()
   grid_dim_x, grid_dim_y = grid.getDimensions()
   for i=1,grid_dim_x do
     grid.setNewObject(nil,i,1,nil,nil,nil,nil,nil,nil,0)
@@ -56,12 +57,15 @@ function love.update(dt)
 end
 
 function love.draw()
+  love.graphics.draw(canvas_BG,drawbox_x,drawbox_y,nil,texture_scale)
+  love.graphics.draw(canvas_WL,drawbox_x,drawbox_y,nil,texture_scale)
   love.graphics.print("X : "..tostring(gridPosition_x))
   love.graphics.print("Y : "..tostring(gridPosition_y),100,0)
   love.graphics.print("X_max : "..tostring(grid_dim_x),0,10)
   love.graphics.print("Y_max : "..tostring(grid_dim_y),100,10)
   if grid_size_x then love.graphics.print("grid_size_x is defined and is : "..grid_size_x,0,20) end
   love.graphics.print("Hello World!", x, 100)
+  --love.graphics.drawLayer(TEXTURES[1],1,100,100,math.rad(90*2),5) -- to check how rotation is handled
 end
 
 print("123")
