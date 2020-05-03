@@ -30,9 +30,11 @@ function game.updateUI()
 
   if o_hand then
     local tile_size = grid.getTileSize()
-    local state = o.state
-    if state >= NUM_STATES[o.t] then state = 1 end
-    love.graphics.drawLayer(TEXTURES[o.t],state,cursor_x+o_displacement_x*tile_size,cursor_y+o_displacement_y*tile_size)
+    local texture_scale = grid.getTextureScale()
+    local state = o_hand.state
+    local rotation = math.rad(90*o_hand.rotation)
+    if state >= NUM_STATES[o_hand.t] then state = 1 end
+    love.graphics.drawLayer(TEXTURES[o_hand.t],state,cursor_x+o_displacement_x,cursor_y+o_displacement_y,rotation,texture_scale)
   end
   -- DRAW CUSTOM CURSORS
   
@@ -47,9 +49,13 @@ function game.onClick( x, y, button, istouch, presses )
   if not (Grid[xpos] and Grid[xpos][ypos]) then return false end
   if cursor_mode == CURSOR_MOVE then
     if Grid[xpos][ypos].glassState or not Grid[xpos][ypos].canMove then return false end
+    local tile_size = grid.getTileSize()
     o_hand = Grid[xpos][ypos]
+    local rotation = o_hand.rotation
+    xpos = xpos + ((rotation == 1 or rotation == 2) and 1 or 0)
+    if rotation > 1 then ypos = ypos+1 end
     grid.deleteObject(nil,nil,o_hand,true)
-    o_displacement_x, o_displacement_y = xpos-f_xpos, ypos-f_ypos
+    o_displacement_x, o_displacement_y = math.floor((xpos-f_xpos-1)*tile_size), math.floor((ypos-f_ypos-1)*tile_size)
   end
   -- IF OTHERS UNDEFINED FOR NOW
 
@@ -59,10 +65,7 @@ function game.onRelease( x, y, button, istouch, presses )
   local xpos, ypos = grid.getCursorPosition()
   if button == 1 and o_hand then
     local bool = grid.moveObject(o_hand,xpos,ypos,o_hand.xpos,o_hand.ypos)
-    local tmpx, tmpy, tmpid, tmpt = o.xpos, o.ypos, o.id, o.t
     o_hand = false
-    print(type(Grid[tmpx][tmpy]))
-    print(ObjectReferences[tmpt][tmpid])
     return bool
   end
 end

@@ -52,6 +52,7 @@ function grid.moveObject(o,xpos,ypos,old_xpos,old_ypos,force)
       local dest_o = Grid[xpos][ypos]
       if force or (not dest_o.glassState and dest_o.canMove) then
         force = true
+        print("Changing position of destination object")
         dest_o:changePosition(old_xpos,old_ypos)
         Grid[old_xpos][old_ypos] = dest_o
         UpdateObjectType[dest_o.t] = true
@@ -60,6 +61,7 @@ function grid.moveObject(o,xpos,ypos,old_xpos,old_ypos,force)
       force = true
     end
     if force then
+      print("Object was moved")
       o:changePosition(xpos,ypos)
       Grid[xpos][ypos] = o
       UpdateObjectType[o.t] = true
