@@ -52,12 +52,14 @@ end
 function love.update(dt)
   x=x+10*dt
   totalTime = totalTime + dt --dt is in seconds
-  gridPosition_x, gridPosition_y = grid.updateCursorPosition()
+  gridPosition_x, gridPosition_y = grid.updateCursorPosition(true)
 end
 
 function love.draw()
-  love.graphics.print("X : "..tostring(gridPosition_x).."    Y : "..tostring(gridPosition_y))
-  love.graphics.print("X_max : "..tostring(grid_dim_x).."    Y_max : "..tostring(grid_dim_y),0,10)
+  love.graphics.print("X : "..tostring(gridPosition_x))
+  love.graphics.print("Y : "..tostring(gridPosition_y),100,0)
+  love.graphics.print("X_max : "..tostring(grid_dim_x),0,10)
+  love.graphics.print("Y_max : "..tostring(grid_dim_y),100,10)
   if grid_size_x then love.graphics.print("grid_size_x is defined and is : "..grid_size_x,0,20) end
   love.graphics.print("Hello World!", x, 100)
 end

@@ -10,6 +10,7 @@ local grid_size_y = 9 *2 --DEFAULT
 local texture_scale = 1  --PLACEHOLDER
 local tile_size = TEXTURE_BASE_SIZE --PLACEHOLDER
 local drawbox_pos_x, drawbox_pos_y = 0, 0
+local cursor_grid_frac_pos_x, cursor_grid_frac_pos_y = 0, 0
 local cursor_grid_pos_x, cursor_grid_pos_y = 0, 0
 
 -- Change the grid's dimensions; also refer to grid.defineDrawbox
@@ -140,14 +141,18 @@ function grid.defineDrawbox(mode,x_val,y_val)
   return drawbox_pos_x, drawbox_pos_y, texture_scale
 end
 
-function grid.updateCursorPosition(cursor_pos_x,cursor_pos_y)
+function grid.updateCursorPosition(getFraction,cursor_pos_x,cursor_pos_y)
   if not cursor_pos_x then cursor_pos_x, cursor_pos_y = love.mouse.getPosition() end
-  cursor_grid_pos_x = math.ceil((cursor_pos_x-drawbox_pos_x)/tile_size)
-  cursor_grid_pos_y = math.ceil((cursor_pos_y-drawbox_pos_y)/tile_size)
+  cursor_grid_frac_pos_x = (cursor_pos_x-drawbox_pos_x)/tile_size
+  cursor_grid_frac_pos_y = (cursor_pos_y-drawbox_pos_y)/tile_size
+  cursor_grid_pos_x = math.ceil(cursor_grid_frac_pos_x)
+  cursor_grid_pos_y = math.ceil(cursor_grid_frac_pos_y)
+  if getFraction then return cursor_grid_frac_pos_x, cursor_grid_frac_pos_y end
   return cursor_grid_pos_x, cursor_grid_pos_y
 end
 
-function grid.getCursorPosition()
+function grid.getCursorPosition(getFraction)
+  if getFraction then return cursor_grid_frac_pos_x, cursor_grid_frac_pos_y end
   return cursor_grid_pos_x, cursor_grid_pos_y
 end
 
