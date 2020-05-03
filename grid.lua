@@ -55,6 +55,7 @@ function grid.moveObject(o,xpos,ypos,old_xpos,old_ypos,force)
         force = true
         dest_o:changePosition(old_xpos,old_ypos)
         Grid[old_xpos][old_ypos] = dest_o
+        UpdateObjectType[dest_o.t] = true
       end -- implicit else force = false
     else
       force = true
@@ -62,6 +63,7 @@ function grid.moveObject(o,xpos,ypos,old_xpos,old_ypos,force)
     if force then
       o:changePosition(xpos,ypos)
       Grid[xpos][ypos] = o
+      UpdateObjectType[o.t] = true
       return true
     end
   end
@@ -73,6 +75,7 @@ end
 function grid.deleteObject(xpos,ypos,o)
   o = o or Grid[xpos][ypos] -- if object is passed directly, it takes precedence on the coordinates (can call deleteObject(nil,nil,Object))
   if not o then return false end
+  UpdateObjectType[o.t] = true
   Grid[o.xpos][o.ypos] = nil -- assumes correct info is stored in the object (shouldn't be an issue)
   o:delete()
   return true
@@ -86,6 +89,13 @@ function grid.checkGrid(xpos,ypos,t)
   end
   if Grid[xpos] and Grid[xpos][ypos] then return Grid[xpos][ypos].t end
   return nil
+end
+
+function grid.getTileSize()
+  return tile_size
+end
+function grid.getTextureScale()
+  return texture_scale
 end
 
 -- Function calculates the variables necessary to define the grid's visual bounding box.
@@ -123,6 +133,12 @@ function grid.defineDrawbox(mode,x_val,y_val)
   debugUtils.print(texture_scale,"texture scale factor")
   debugUtils.print({drawbox_pos_x,drawbox_pos_y},"pos","DRAWBOX_|_POS")
 --------------
+  local grid_x_dim, grid_y_dim = x_grid*TEXTURE_BASE_SIZE, y_grid*TEXTURE_BASE_SIZE
+  BG_is_drawn = false
+  canvas_WL = love.graphics.newCanvas( grid_x_dim, grid_y_dim )
+  canvas_GL = love.graphics.newCanvas( grid_x_dim, grid_y_dim )
+  canvas_BG = love.graphics.newCanvas( grid_x_dim, grid_y_dim )
+  canvas_OL = love.graphics.newCanvas( grid_x_dim, grid_y_dim )
   return drawbox_pos_x, drawbox_pos_y, texture_scale
 end
 
@@ -198,7 +214,7 @@ function grid.updateTypeState(t,xpos,ypos,updateNeighbors)
     end
     return false
   elseif t == TYPE_GLASS then
-    for j=1,numTypes do
+    for j=1,#TYPES do
       if j == TYPE_GLASS then j = j+1 end
       for i=1,objects.getId(j) do
         local o = ObjectReferences[j][i]

@@ -7,6 +7,7 @@ require("constants")
 local objects = require("objects")
 local grid = require("grid")
 local debugUtils = require("debugUtils")
+local tiles = require("tiles")
 
 --temporary test var
 local cursor_posx, cursor_posy = 0, 0
@@ -38,6 +39,7 @@ function love.load()
   print(Grid[3][1].glassState,Grid[3][1].glassRotation)
   x=0
   totalTime=0.0
+  tiles.loadTextures()
 end
 
 function love.update(dt)

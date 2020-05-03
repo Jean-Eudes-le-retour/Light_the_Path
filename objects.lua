@@ -12,12 +12,11 @@ local DEFAULT_MIRROR =  {t =   TYPE_MIRROR, state =  0, colour =  0, canMove =  
 local DEFAULT_DMIRROR = {t =  TYPE_DMIRROR, state =  0, colour =  0, canMove =  true, canChangeState = false, canChangeColour = false, glassState = false}
 local DEFAULT_PWHEEL =  {t =   TYPE_PWHEEL, state =  0, colour =  0, canMove =  true, canChangeState = false, canChangeColour = false, glassState = false}
 local DEFAULT_OBJECT =  {DEFAULT_WALL,DEFAULT_GLASS,DEFAULT_SOURCE,DEFAULT_RECEIVER,DEFAULT_MIRROR,DEFAULT_DMIRROR,DEFAULT_PWHEEL}
-local TYPES =      {"wall","glass","source","receiver","mirror","dmirror","pwheel" }
-local NUM_STATES = {    15,      1,       2,         2,       2,        2,       1 }
+TYPES =            {"wall","glass","source","receiver","mirror","dmirror","pwheel" }
+NUM_STATES =       {     1,      1,       2,         2,       2,        2,       1 }
 UpdateObjectType = { false,  false,   false,     false,    false,   false,   false }
 ObjectReferences = {} -- contains tables of references to each object of each type sorted by type and Id; Object:ObjectReferences[int:type][int:id]
 local Id = {} -- contains the Id of the newest object of each type (i.e. the amount of each types unless some have been deleted); int:Id[int:type]
-numTypes = #TYPES
 
 -- SHOULD PROBABLY ADD CONSTANT TABLES OF DEFAULT VALUES DEPENDING ON OBJECT TYPE!
 function Object:new(t,xpos,ypos,state,rotation,colour,canMove,canChangeState,canChangeColour,glassState)
@@ -89,7 +88,7 @@ end
 
 -- Must also be run once for initialization of variables (this is accomplished via grid.clearGrid() or grid.init()); note that Ids are set back to 0
 function objects.resetObjects() 
-  for i = 1,numTypes do
+  for i = 1,#TYPES do
     Id[i] = 0
     ObjectReferences[i] = {}
   end

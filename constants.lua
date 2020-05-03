@@ -1,8 +1,15 @@
 -- GENERAL CONSTANTS --
 TEXTURE_BASE_SIZE = 32
+BACKGROUND_VARIANTS = 1
+NUM_OVERLAY_TEXTURES = 15
+NUM_CONNECTED_TEXTURE_TILES = 2
 STATE_CONFIGURATIONS = {[0]=0,[1]=1,[5]=2,[21]=3,[85]=4,[17]=5,[29]=6,[113]=7,[93]=8,[125]=9,[7]=10,[31]=11,[127]=12,[255]=13,[119]=14}
 
-
+function file_exists(name)
+   local f=io.open(name,"r")
+   if f~=nil then io.close(f) return true
+   else return false end
+end
 
 local function enum(n,i)
   i = i or 1
