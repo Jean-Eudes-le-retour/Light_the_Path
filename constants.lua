@@ -8,7 +8,6 @@ STATE_CONFIGURATIONS = {[1]=1,[5]=2,[21]=3,[85]=4,[17]=5,[29]=6,[113]=7,[93]=8,[
 
 function file_exists(name)
    local exists = love.filesystem.exists(name)
-   print(exists)
    if exists~=false then return true
    else return false end
 end
