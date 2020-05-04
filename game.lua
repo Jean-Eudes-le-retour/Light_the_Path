@@ -7,7 +7,6 @@ local game = {}
 
 local cursor_mode = 1
 local o_hand = false
-local o_hand = false
 local o_displacement_x, o_displacement_y = 0,0
 canvas_UI = love.graphics.newCanvas() -- WILL NEED TO MOVE INTO WHICHEVER FUNCTION CHANGES SCREEN RESOLUTION
 
@@ -16,14 +15,14 @@ function game.init()
   love.mousereleased = game.onRelease
 end
 
-function game.update()
+function game.update(dt)
   grid.updateCursorPosition()
-  game.updateUI()
+  game.updateUI(dt)
   tiles.update()
   -- all other tile updates and the such.
 end
 
-function game.updateUI()
+function game.updateUI(dt)
   love.graphics.setCanvas(canvas_UI)
   love.graphics.clear()
   local cursor_x, cursor_y = love.mouse.getPosition()
@@ -48,7 +47,7 @@ function game.onClick( x, y, button, istouch, presses )
   -- IF GAME IS ACTIVE -- DEFINE GLOBAL FLAGS SO THAT WE CAN USE MENUS AND HAVE TEXT CONVERSATION MODES TOO!
   if not (Grid[xpos] and Grid[xpos][ypos]) then return false end
   if cursor_mode == CURSOR_MOVE then
-    if Grid[xpos][ypos].glassState or not Grid[xpos][ypos].canMove then return false end
+    if (not DEVELOPER_MODE) and (Grid[xpos][ypos].glassState or not Grid[xpos][ypos].canMove) then return false end
     local tile_size = grid.getTileSize()
     o_hand = Grid[xpos][ypos]
     local rotation = o_hand.rotation

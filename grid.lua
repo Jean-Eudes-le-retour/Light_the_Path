@@ -41,8 +41,32 @@ end
 function grid.setNewObject(t,xpos,ypos,state,rotation,colour,canMove,canChangeState,canChangeColour,glassState)
   if xpos > grid_size_x or ypos > grid_size_y or xpos < 1 or ypos < 1 then return nil end
   if Grid[xpos][ypos] then Grid[xpos][ypos]:delete() end
-  Grid[xpos][ypos] = objects.newObject(t,xpos,ypos,state,rotation,colour,canMove,canChangeState,canChangeColour,glassState)
-  return true
+  local o = objects.newObject(t,xpos,ypos,state,rotation,colour,canMove,canChangeState,canChangeColour,glassState)
+  Grid[xpos][ypos] = o
+  return o
+end
+
+-- grid.setNewObject, but softer, may be preferred when programming a level (will never erase a block at destination)
+function grid.fitNewObject(t,xpos,ypos,state,rotation,colour,canMove,canChangeState,canChangeColour,glassState)
+  if (not xpos) then xpos = math.ceil(grid_size_x/2) end
+  if (not ypos) then ypos = math.ceil(grid_size_y/2) end
+  for i=0,math.max(grid_size_x-1, grid_size_y-1) do
+    for j=-i,i do
+      if j == i or j == -i then
+        for k=-i,i do
+          if (Grid[xpos+k] and (ypos+j>0 and ypos+j<grid_size_y) and (not Grid[xpos+k][ypos+j])) then 
+            return grid.setNewObject(t,xpos+k,ypos+j,state,rotation,colour,canMove,canChangeState,canChangeColour,glassState)
+          end
+        end
+      elseif (Grid[xpos-i] and (ypos+j>0 and ypos+j<grid_size_y) and (not Grid[xpos-i][ypos+j])) then
+        return grid.setNewObject(t,xpos-i,ypos+j,state,rotation,colour,canMove,canChangeState,canChangeColour,glassState)
+      elseif (Grid[xpos+i] and (ypos+j>0 and ypos+j<grid_size_y) and (not Grid[xpos+i][ypos+j])) then
+        return grid.setNewObject(t,xpos+i,ypos+j,state,rotation,colour,canMove,canChangeState,canChangeColour,glassState)
+      end
+    end
+  end
+  print("Could not fit the "..(t and TYPES[t] or "wall"))
+  return nil
 end
 
 -- Will attempt to move an object from one point to another within the grid (Might want to make the function ignore 'canMove' and test this externally before moving?)
@@ -50,7 +74,7 @@ function grid.moveObject(o,xpos,ypos,old_xpos,old_ypos,force)
   if not (xpos > grid_size_x or xpos < 1 or ypos > grid_size_y or ypos < 1) then
     if Grid[xpos][ypos] then
       local dest_o = Grid[xpos][ypos]
-      if force or (not dest_o.glassState and dest_o.canMove) then
+      if DEVELOPER_MODE or force or (not dest_o.glassState and dest_o.canMove) then
         force = true
         print("Changing position of destination object")
         dest_o:changePosition(old_xpos,old_ypos)
@@ -84,7 +108,7 @@ function grid.deleteObject(xpos,ypos,o,keep_reference)
   return true
 end
 
--- Returns whether t string matches the object at x and y OR if not specified, the object at x and y
+-- Returns whether t string matches the object at x and y OR if not specified, the object type at x and y
 function grid.checkGrid(xpos,ypos,t)
   if t then
     if Grid[xpos] and Grid[xpos][ypos] and Grid[xpos][ypos].t == t then return true end
@@ -160,7 +184,7 @@ function grid.getCursorPosition(getFraction)
   return cursor_grid_pos_x, cursor_grid_pos_y
 end
 
---Return top left corner outer pixel coordinates of specified tile
+--Return top left corner outer pixel coordinates of specified tile (UNUSED AND APPARENTLY UNNECESSARY)
 function grid.getTilePosition(grid_pos_x, grid_pos_y)
   return math.floor(drawbox_pos_x+(grid_pos_x-1)*tile_size), math.floor(drawbox_pos_y+(grid_pos_y-1)*tile_size)
 end
