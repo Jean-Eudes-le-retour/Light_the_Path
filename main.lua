@@ -31,10 +31,12 @@ function love.load()
     grid.setNewObject(TYPE_WALL,grid_dim_x,i,nil,nil,nil,nil,nil,nil,0)
   end
   math.randomseed(os.time())
-  for i=1,400 do
+  for i=1,30 do
     --grid.fitNewObject((i%2)+1)
     grid.fitNewObject((math.floor(math.random()*20)%2)+1)
   end
+  grid.fitNewObject(3)
+  grid.fitNewObject(4)
   x=0
   totalTime=0.0
 end

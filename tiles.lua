@@ -197,14 +197,14 @@ function tiles.updateObjects()
   local o = false
   local xpos, ypos, state, rotation = 0,0,0,0
   for i=NUM_CONNECTED_TEXTURE_TILES+1,#TYPES do
-    for j=1,object.getId(i) do
+    for j=1,objects.getId(i) do
       o = ObjectReferences[i][j]
       if o and Grid[o.xpos] and Grid[o.xpos][o.ypos] then
         xpos,ypos,state,rotation = o.xpos-1, o.ypos-1, o.state, o.rotation
         xpos = xpos + ((rotation == 1 or rotation == 2) and 1 or 0)
         if rotation > 1 then ypos = ypos+1 end
         rotation = math.rad(90*rotation)
-        tiles.drawTexture(TEXTURES[o.t],1,xpos*TEXTURE_BASE_SIZE,ypos*TEXTURE_BASE_SIZE,rotation,o.colour)
+        tiles.drawTexture(o.t,1,xpos*TEXTURE_BASE_SIZE,ypos*TEXTURE_BASE_SIZE,rotation,o.colour)
       end
     end
   end
