@@ -49,23 +49,17 @@ function game.onClick( x, y, button, istouch, presses )
   local xpos, ypos = grid.getCursorPosition()
   -- IF GAME IS ACTIVE -- DEFINE GLOBAL FLAGS SO THAT WE CAN USE MENUS AND HAVE TEXT CONVERSATION MODES TOO!
   if not (Grid[xpos] and Grid[xpos][ypos]) then return false end
-  if cursor_mode == CURSOR_MOVE then
-    if (not DEVELOPER_MODE) and (Grid[xpos][ypos].glassState or not Grid[xpos][ypos].canMove) then return false end
-    local tile_size = grid.getTileSize()
-    o_hand = Grid[xpos][ypos]
-    local rotation = o_hand.rotation
-    xpos = xpos + ((rotation == 1 or rotation == 2) and 1 or 0)
-    if rotation > 1 then ypos = ypos+1 end
-    grid.deleteObject(nil,nil,o_hand,true)
-    
-    
-    
-    
-    
-    
-    
-    
-    o_displacement_x, o_displacement_y = math.ceil((xpos-f_xpos-1)*tile_size), math.ceil((ypos-f_ypos-1)*tile_size)
+    if button == 1 then 
+      if cursor_mode == CURSOR_MOVE then
+      if (not DEVELOPER_MODE) and (Grid[xpos][ypos].glassState or not Grid[xpos][ypos].canMove) then return false end
+      local tile_size = grid.getTileSize()
+      o_hand = Grid[xpos][ypos]
+      local rotation = o_hand.rotation
+      xpos = xpos + ((rotation == 1 or rotation == 2) and 1 or 0)
+      if rotation > 1 then ypos = ypos+1 end
+      grid.deleteObject(nil,nil,o_hand,true)
+      o_displacement_x, o_displacement_y = math.ceil((xpos-f_xpos-1)*tile_size), math.ceil((ypos-f_ypos-1)*tile_size)
+    end
   end
   -- IF OTHERS UNDEFINED FOR NOW
 
