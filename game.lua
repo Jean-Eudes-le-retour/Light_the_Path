@@ -36,8 +36,9 @@ function game.updateUI(dt)
     local rotation = math.rad(90*o_hand.rotation)
     local state = o_hand.state
     if state >= NUM_STATES[o_hand.t] then state = 1 end
-    
-    tiles.drawTexture(o_hand.t,state,cursor_x+o_displacement_x,cursor_y+o_displacement_y,rotation,o_hand.colour,texture_scale)
+    tiles.drawTexture(o_hand.t,1,o_hand.colour)
+    love.graphics.setCanvas(canvas_UI)
+    love.graphics.draw(canvas_Texture,cursor_x+o_displacement_x,cursor_y+o_displacement_y,rotation,texture_scale)
   end
   -- DRAW CUSTOM CURSORS
   

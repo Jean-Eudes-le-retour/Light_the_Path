@@ -11,6 +11,7 @@ The canvases must be made at BASE RESOLUTION, the magnifying is done later on wh
 
 tiles = {}
 
+canvas_Texture = love.graphics.newCanvas(TEXTURE_BASE_SIZE,TEXTURE_BASE_SIZE)
 local selected_background = 1
 local mask = false
 local mask_effect = love.graphics.newShader[[
@@ -74,7 +75,7 @@ function tiles.loadTextures()
   for i=1,#TYPES do
   local path = ""
     if DEFAULT_OBJECT[i].hasMask then 
-      path = "Textures/"..TYPES[i].."_mask"
+      path = "Textures/"..TYPES[i].."_mask.png"
       if file_exists(path) then
         MASK[i] = love.graphics.newImage(path)
       else
@@ -91,15 +92,17 @@ function tiles.setColour(colour)
   love.graphics.setColor(Red,Green,Blue)
 end
 
-function tiles.drawTexture(t,state,xpos,ypos,rotation,colour,texture_scale)
+function tiles.drawTexture(t,state,colour)
   tiles.setColour(colour)
-  love.graphics.drawLayer(TEXTURES[t],state,xpos,ypos,rotation,texture_scale)
+  love.graphics.setCanvas{canvas_Texture,stencil = true}
+  love.graphics.clear()
+  love.graphics.drawLayer(TEXTURES[t],state)
   love.graphics.setColor(1,1,1)
   if MASK[t] then
     mask = MASK[t]
     love.graphics.stencil(stencilFunction, "replace", 1)
     love.graphics.setStencilTest("greater", 0)
-    love.graphics.drawLayer(TEXTURES[t],state,xpos,ypos,rotation,texture_scale)
+    love.graphics.drawLayer(TEXTURES[t],state)
     love.graphics.setStencilTest()
   end
 end
@@ -204,7 +207,9 @@ function tiles.updateObjects()
         xpos = xpos + ((rotation == 1 or rotation == 2) and 1 or 0)
         if rotation > 1 then ypos = ypos+1 end
         rotation = math.rad(90*rotation)
-        tiles.drawTexture(o.t,1,xpos*TEXTURE_BASE_SIZE,ypos*TEXTURE_BASE_SIZE,rotation,o.colour)
+        tiles.drawTexture(o.t,1,o.colour)
+        love.graphics.setCanvas(canvas_GD)
+        love.graphics.draw(canvas_Texture,xpos*TEXTURE_BASE_SIZE,ypos*TEXTURE_BASE_SIZE,rotation)
       end
     end
   end
