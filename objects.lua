@@ -6,8 +6,8 @@ local objects = {}
 local Object =          {t = 0,     id = 0, xpos = nil, ypos = nil, state = 1, rotation = 0, colour = 0, canMove = false, canChangeState = false, canChangeColour = false, glassState = false}
 local DEFAULT_WALL =    {t =     TYPE_WALL, state = 13, colour =  0, canMove = false, canChangeState = false, canChangeColour = false, glassState = false, hasMask = false}
 local DEFAULT_GLASS =   {t =    TYPE_GLASS, state =  1, colour =  0, canMove = false, canChangeState = false, canChangeColour = false, glassState =     0, hasMask = false}
-local DEFAULT_SOURCE =  {t =   TYPE_SOURCE, state =  1, colour =  8, canMove = false, canChangeState =  true, canChangeColour = false, glassState = false, hasMask =  true}
-local DEFAULT_RECEIVER ={t = TYPE_RECEIVER, state =  1, colour =  0, canMove = false, canChangeState = false, canChangeColour = false, glassState = false, hasMask =  true}
+local DEFAULT_SOURCE =  {t =   TYPE_SOURCE, state =  1, colour =  7, canMove = false, canChangeState =  true, canChangeColour = false, glassState = false, hasMask =  true}
+local DEFAULT_RECEIVER ={t = TYPE_RECEIVER, state =  1, colour =  8, canMove = false, canChangeState = false, canChangeColour = false, glassState = false, hasMask =  true}
 local DEFAULT_MIRROR =  {t =   TYPE_MIRROR, state =  1, colour =  7, canMove =  true, canChangeState = false, canChangeColour = false, glassState = false, hasMask =  true}
 local DEFAULT_PWHEEL =  {t =   TYPE_PWHEEL, state =  1, colour =  0, canMove =  true, canChangeState = false, canChangeColour = false, glassState = false, hasMask =  true}
 local DEFAULT_PRISM =   {t =    TYPE_PRISM, state =  1, colour =  0, canMove =  true, canChangeState = false, canChangeColour = false, glassState = false, hasMask = false}

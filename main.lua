@@ -17,6 +17,9 @@ local drawbox_x, drawbox_y, texture_scale = 0, 0, 0
 
 function love.load()
   drawbox_x, drawbox_y, texture_scale = game.init()
+  
+  
+  
   grid_dim_x, grid_dim_y = grid.getDimensions()
   for i=1,grid_dim_x do
     grid.setNewObject(nil,i,1,nil,nil,nil,nil,nil,nil,0)
@@ -36,6 +39,7 @@ function love.load()
     grid.fitNewObject((math.floor(math.random()*20)%2)+1)
   end
   grid.fitNewObject(3)
+  grid.fitNewObject(5)
   grid.fitNewObject(4)
   x=0
   totalTime=0.0
