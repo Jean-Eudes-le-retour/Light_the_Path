@@ -120,7 +120,6 @@ function tiles.update()
   end
   for i=NUM_CONNECTED_TEXTURE_TILES+1,#TYPES do
     if UpdateObjectType[i] then
-      print("Updating all object graphics...")
       tiles.updateObjects()
       for j=i,#TYPES do UpdateObjectType[j] = false end
     end

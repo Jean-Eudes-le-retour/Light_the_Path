@@ -42,7 +42,6 @@ function game.updateUI(dt)
   end
   -- DRAW CUSTOM CURSORS
   
-  love.graphics.setCanvas()
 end
 
 function game.onClick( x, y, button, istouch, presses )

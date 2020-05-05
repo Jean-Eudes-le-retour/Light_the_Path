@@ -53,6 +53,7 @@ function love.update(dt)
 end
 
 function love.draw()
+  love.graphics.setCanvas()
   love.graphics.draw(canvas_BG,drawbox_x,drawbox_y,nil,texture_scale)
   love.graphics.draw(canvas_GD,drawbox_x,drawbox_y,nil,texture_scale)
   love.graphics.draw(canvas_OL,drawbox_x,drawbox_y,nil,texture_scale)
