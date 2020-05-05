@@ -28,6 +28,10 @@ function grid.getDimensions()
   return grid_size_x, grid_size_y
 end
 
+function grid.getDrawboxInfo()
+  return drawbox_pos_x, drawbox_pos_y, texture_scale
+end
+
 -- Clears the grid of all objects and resets all objects
 function grid.clearGrid()
   for i=1,grid_size_x do

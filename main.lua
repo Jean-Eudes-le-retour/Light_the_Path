@@ -11,8 +11,10 @@ local game = require("game")
 local debugUtils = require("debugUtils")
 
 --temporary test var
-local gridPosition_x, gridPosition_y = 0, 0
 local grid_dim_x, grid_dim_y = 0, 0
+local grid_pos_x, grid_pos_y = 0, 0
+
+--Important variables in main
 local drawbox_x, drawbox_y, texture_scale = 0, 0, 0
 
 function love.load()
@@ -47,9 +49,11 @@ end
 
 function love.update(dt)
   game.update(dt)
+  drawbox_x, drawbox_y, texture_scale = grid.getDrawboxInfo()
+  grid_pos_x, grid_pos_y = grid.getCursorPosition(true)
+
   x=x+10*dt
   totalTime = totalTime + dt --dt is in seconds
-  gridPosition_x, gridPosition_y = grid.updateCursorPosition(true)
 end
 
 function love.draw()
@@ -59,8 +63,8 @@ function love.draw()
   love.graphics.draw(canvas_GD,drawbox_x,drawbox_y,nil,texture_scale)
   love.graphics.draw(canvas_OL,drawbox_x,drawbox_y,nil,texture_scale)
   love.graphics.draw(canvas_UI)
-  love.graphics.print("X : "..tostring(gridPosition_x))
-  love.graphics.print("Y : "..tostring(gridPosition_y),100,0)
+  love.graphics.print("X : "..tostring(grid_pos_x))
+  love.graphics.print("Y : "..tostring(grid_pos_y),100,0)
   love.graphics.print("X_max : "..tostring(grid_dim_x),0,10)
   love.graphics.print("Y_max : "..tostring(grid_dim_y),100,10)
   love.graphics.print("Hello World!", x, 40)
