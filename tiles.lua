@@ -5,13 +5,29 @@ local bnot, band, bor, bxor, rshift, lshift = bit.bnot, bit.band, bit.bor, bit.b
 
 --[[
 The point of this module is to define a function which updates the canvases IF REQUIRED by UpdateObjectType
-canvas_WL, canvas_GL, canvas_BG, canvas_OL sizes are updated when resolution changes in createDrawbox. Assume they are always at the right size.
+canvas_WL, canvas_GL, canvas_BG, canvas_OL, canvas_GD sizes are updated when resolution changes in createDrawbox. Assume they are always at the right size.
 The canvases must be made at BASE RESOLUTION, the magnifying is done later on when they will be drawn in another module.
 ]]
 
 tiles = {}
 
 local selected_background = 1
+local mask = false
+local mask_effect = love.graphics.newShader[[
+   vec4 effect (vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords) {
+      if (Texel(texture, texture_coords).rgb == vec3(0.0)) {
+         // a discarded pixel wont be applied as the stencil.
+         discard;
+      }
+      return vec4(1.0);
+   }
+]]
+local function stencilFunction()
+   love.graphics.setShader(mask_effect)
+   love.graphics.draw(mask, 0, 0)
+   love.graphics.setShader()
+end
+ 
 
 function tiles.loadTextures()
   print("Loading textures...")
@@ -52,13 +68,53 @@ function tiles.loadTextures()
     end
     OVERLAY_TEXTURES[i] = love.graphics.newArrayImage(Path)
   end
+  
+  print("Loading masks...")
+  MASK = {}
+  for i=1,#TYPES do
+  local path = ""
+    if DEFAULT_OBJECT[i].hasMask then 
+      path = "Textures/"..TYPES[i].."_mask"
+      if file_exists(path) then
+        MASK[i] = love.graphics.newImage(path)
+      else
+        print(path.." could not be opened! Not using mask...")
+      end
+    end
+  end
+    
 end
 tiles.reloadTextures = tiles.loadTextures
 
+function tiles.setColour(colour)
+  local Red, Green, Blue, Black = band(colour,1), band(colour,2), band(colour,4), band(colour,8)
+  if (Red == 0) and (Green == 0) and (Blue == 0) and (Black == 0) then Red, Green, Blue = 1,1,1 end
+  love.graphics.setColor(Red,Green,Blue)
+end
+
+function tiles.drawTexture(t,state,xpos,ypos,rotation,colour,texture_scale)
+  tiles.setColour(colour)
+  love.graphics.drawLayer(TEXTURES[t],state,xpos,ypos,rotation,texture_scale)
+  love.graphics.setColor(1,1,1)
+  if MASK[t] then
+    mask = MASK[t]
+    love.graphics.setStencil(stencilFunction)
+    love.graphics.drawLayer(TEXTURES[t],state,xpos,ypos,rotation,texture_scale)
+    love.graphics.setStencil()
+  end
+end
+
 function tiles.update()
   if not BG_is_drawn then print("Drawing background layer...") tiles.updateBG() BG_is_drawn = true end
-  if UpdateObjectType[TYPE_WALL] then tiles.updateWall() UpdateObjectType[TYPE_WALL] = false end
-  if UpdateObjectType[TYPE_GLASS] then tiles.updateGlass() UpdateObjectType[TYPE_GLASS] = false end
+  if UpdateObjectType[TYPE_WALL] or UpdateObjectType[TYPE_GLASS] then
+    if UpdateObjectType[TYPE_WALL] then tiles.updateWall() end
+    if UpdateObjectType[TYPE_GLASS] then tiles.updateGlass() end
+    love.graphics.setCanvas(canvas_OL)
+    love.graphics.clear()
+    love.graphics.draw(canvas_WL)
+    love.graphics.draw(canvas_GL)
+    love.graphics.setCanvas()
+  end
   for i=NUM_CONNECTED_TEXTURE_TILES+1,#TYPES do
     if UpdateObjectType[i] then
       print("Updating all object graphics...")
@@ -92,15 +148,18 @@ function tiles.updateWall()
   for i=1,objects.getId(TYPE_WALL) do
     o = ObjectReferences[TYPE_WALL][i]
     if o and Grid[o.xpos][o.ypos] then
+      tiles.setColour(o.colour)
       xpos,ypos,state,rotation = o.xpos-1, o.ypos-1, o.state, o.rotation
       love.graphics.drawLayer(TEXTURES[TYPE_WALL],1,xpos*TEXTURE_BASE_SIZE,ypos*TEXTURE_BASE_SIZE)
+      love.graphics.setColor(1,1,1)
+
       xpos = xpos + ((rotation == 1 or rotation == 2) and 1 or 0)
       if rotation > 1 then ypos = ypos+1 end
       rotation = math.rad(90*rotation)
       love.graphics.drawLayer(OVERLAY_TEXTURES[TYPE_WALL],state,xpos*TEXTURE_BASE_SIZE,ypos*TEXTURE_BASE_SIZE,rotation)
     end
   end
-  love.graphics.setCanvas()
+  UpdateObjectType[TYPE_WALL] = false
 end
 
 function tiles.updateGlass()
@@ -115,9 +174,12 @@ function tiles.updateGlass()
   for j=1,#TYPES do
     for i=1,objects.getId(j) do
       o = ObjectReferences[j][i]
-      if o and o.glassState then
+      if o and o.glassState and Grid[o.xpos] and Grid[o.xpos][o.ypos] then
+        tiles.setColour(o.colour)
         xpos,ypos,state,rotation = o.xpos-1, o.ypos-1, o.glassState, o.glassRotation
         love.graphics.drawLayer(TEXTURES[TYPE_GLASS],1,xpos*TEXTURE_BASE_SIZE,ypos*TEXTURE_BASE_SIZE)
+        love.graphics.setColor(1,1,1)
+        
         xpos = xpos + ((rotation == 1 or rotation == 2) and 1 or 0)
         if rotation > 1 then ypos = ypos+1 end
         rotation = math.rad(90*rotation)
@@ -125,11 +187,28 @@ function tiles.updateGlass()
       end
     end
   end
-  love.graphics.setCanvas()
+  UpdateObjectType[TYPE_GLASS] = false
 end
 
 function tiles.updateObjects()
-
+  print("Updating object graphics...")
+  love.graphics.setCanvas(canvas_GD)
+  love.graphics.clear()
+  local o = false
+  local xpos, ypos, state, rotation = 0,0,0,0
+  for i=NUM_CONNECTED_TEXTURE_TILES+1,#TYPES do
+    for j=1,object.getId(i) do
+      o = ObjectReferences[i][j]
+      if o and Grid[o.xpos] and Grid[o.xpos][o.ypos] then
+        xpos,ypos,state,rotation = o.xpos-1, o.ypos-1, o.state, o.rotation
+        xpos = xpos + ((rotation == 1 or rotation == 2) and 1 or 0)
+        if rotation > 1 then ypos = ypos+1 end
+        rotation = math.rad(90*rotation)
+        tiles.drawTexture(TEXTURES[o.t],1,xpos*TEXTURE_BASE_SIZE,ypos*TEXTURE_BASE_SIZE,rotation,o.colour)
+      end
+    end
+  end
+  love.graphics.setCanvas()
 end
 
 -- Used exclusively in updateConnectedTextureTypeState(), do not use.

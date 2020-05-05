@@ -1,7 +1,6 @@
 local debugUtils = require("debugUtils")
 local objects = require("objects")
 
-
 -- THE MODULE MUST BE INITIALIZED; grid.init is grid.setDimensions
 local grid = {}
 
@@ -80,6 +79,7 @@ function grid.moveObject(o,xpos,ypos,old_xpos,old_ypos,force)
         dest_o:changePosition(old_xpos,old_ypos)
         Grid[old_xpos][old_ypos] = dest_o
         UpdateObjectType[dest_o.t] = true
+        if dest_o.glassState then UpdateObjectType[TYPE_GLASS] = true end
       end -- implicit else force = false
     else
       force = true
@@ -89,6 +89,7 @@ function grid.moveObject(o,xpos,ypos,old_xpos,old_ypos,force)
       o:changePosition(xpos,ypos)
       Grid[xpos][ypos] = o
       UpdateObjectType[o.t] = true
+      if o.glassState then UpdateObjectType[TYPE_GLASS] = true end
       return true
     end
   end
@@ -164,8 +165,9 @@ function grid.defineDrawbox(mode,x_val,y_val)
   BG_is_drawn = false
   canvas_WL = love.graphics.newCanvas( grid_x_dim, grid_y_dim )
   canvas_GL = love.graphics.newCanvas( grid_x_dim, grid_y_dim )
-  canvas_BG = love.graphics.newCanvas( grid_x_dim, grid_y_dim )
   canvas_OL = love.graphics.newCanvas( grid_x_dim, grid_y_dim )
+  canvas_BG = love.graphics.newCanvas( grid_x_dim, grid_y_dim )
+  canvas_GD = love.graphics.newCanvas( grid_x_dim, grid_y_dim )
   return drawbox_pos_x, drawbox_pos_y, texture_scale
 end
 

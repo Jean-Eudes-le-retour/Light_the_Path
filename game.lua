@@ -13,6 +13,9 @@ canvas_UI = love.graphics.newCanvas() -- WILL NEED TO MOVE INTO WHICHEVER FUNCTI
 function game.init()
   love.mousepressed = game.onClick
   love.mousereleased = game.onRelease
+  tiles.loadTextures()
+  -- Menus = {MAIN_MENU}
+  return grid.init()
 end
 
 function game.update(dt)
@@ -28,12 +31,12 @@ function game.updateUI(dt)
   local cursor_x, cursor_y = love.mouse.getPosition()
 
   if o_hand then
-    local tile_size = grid.getTileSize()
     local texture_scale = grid.getTextureScale()
-    local state = o_hand.state
     local rotation = math.rad(90*o_hand.rotation)
+    local state = o_hand.state
     if state >= NUM_STATES[o_hand.t] then state = 1 end
-    love.graphics.drawLayer(TEXTURES[o_hand.t],state,cursor_x+o_displacement_x,cursor_y+o_displacement_y,rotation,texture_scale)
+    
+    tiles.drawTexture(o_hand.t,state,cursor_x+o_displacement_x,cursor_y+o_displacement_y,rotation,o_hand.colour,texture_scale)
   end
   -- DRAW CUSTOM CURSORS
   
@@ -54,7 +57,15 @@ function game.onClick( x, y, button, istouch, presses )
     xpos = xpos + ((rotation == 1 or rotation == 2) and 1 or 0)
     if rotation > 1 then ypos = ypos+1 end
     grid.deleteObject(nil,nil,o_hand,true)
-    o_displacement_x, o_displacement_y = math.floor((xpos-f_xpos-1)*tile_size), math.floor((ypos-f_ypos-1)*tile_size)
+    
+    
+    
+    
+    
+    
+    
+    
+    o_displacement_x, o_displacement_y = math.ceil((xpos-f_xpos-1)*tile_size), math.ceil((ypos-f_ypos-1)*tile_size)
   end
   -- IF OTHERS UNDEFINED FOR NOW
 

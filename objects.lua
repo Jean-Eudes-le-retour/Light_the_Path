@@ -4,17 +4,17 @@ local objects = {}
 -- This is why items such as mirrors have 2 states: one for horizontal/vertical mirrors and one for diagonal mirrors. pwheel on the other hand can only take one state (but 2 rotations!)
 -- It is worth noting that color can also influence the image used to represent the object (details to be discussed)
 local Object =          {t = 0,     id = 0, xpos = nil, ypos = nil, state = 1, rotation = 0, colour = 0, canMove = false, canChangeState = false, canChangeColour = false, glassState = false}
-local DEFAULT_WALL =    {t =     TYPE_WALL, state = 13, colour =  0, canMove = false, canChangeState = false, canChangeColour = false, glassState = false}
-local DEFAULT_GLASS =   {t =    TYPE_GLASS, state =  1, colour =  0, canMove = false, canChangeState = false, canChangeColour = false, glassState =     0}
-local DEFAULT_SOURCE =  {t =   TYPE_SOURCE, state =  1, colour =  0, canMove = false, canChangeState =  true, canChangeColour = false, glassState = false}
-local DEFAULT_RECEIVER ={t = TYPE_RECEIVER, state =  1, colour =  0, canMove = false, canChangeState = false, canChangeColour = false, glassState = false}
-local DEFAULT_MIRROR =  {t =   TYPE_MIRROR, state =  1, colour =  0, canMove =  true, canChangeState = false, canChangeColour = false, glassState = false}
-local DEFAULT_DMIRROR = {t =  TYPE_DMIRROR, state =  1, colour =  0, canMove =  true, canChangeState = false, canChangeColour = false, glassState = false}
-local DEFAULT_PWHEEL =  {t =   TYPE_PWHEEL, state =  1, colour =  0, canMove =  true, canChangeState = false, canChangeColour = false, glassState = false}
-local DEFAULT_OBJECT =  {DEFAULT_WALL,DEFAULT_GLASS,DEFAULT_SOURCE,DEFAULT_RECEIVER,DEFAULT_MIRROR,DEFAULT_DMIRROR,DEFAULT_PWHEEL}
-TYPES =            {"wall","glass","source","receiver","mirror","dmirror","pwheel" }
-NUM_STATES =       {     1,      1,       2,         2,       2,        2,       1 }
-UpdateObjectType = { false,  false,   false,     false,    false,   false,   false }
+local DEFAULT_WALL =    {t =     TYPE_WALL, state = 13, colour =  0, canMove = false, canChangeState = false, canChangeColour = false, glassState = false, hasMask = false}
+local DEFAULT_GLASS =   {t =    TYPE_GLASS, state =  1, colour =  0, canMove = false, canChangeState = false, canChangeColour = false, glassState =     0, hasMask = false}
+local DEFAULT_SOURCE =  {t =   TYPE_SOURCE, state =  1, colour =  8, canMove = false, canChangeState =  true, canChangeColour = false, glassState = false, hasMask =  true}
+local DEFAULT_RECEIVER ={t = TYPE_RECEIVER, state =  1, colour =  0, canMove = false, canChangeState = false, canChangeColour = false, glassState = false, hasMask =  true}
+local DEFAULT_MIRROR =  {t =   TYPE_MIRROR, state =  1, colour =  7, canMove =  true, canChangeState = false, canChangeColour = false, glassState = false, hasMask =  true}
+local DEFAULT_PWHEEL =  {t =   TYPE_PWHEEL, state =  1, colour =  0, canMove =  true, canChangeState = false, canChangeColour = false, glassState = false, hasMask =  true}
+local DEFAULT_PRISM =   {t =    TYPE_PRISM, state =  1, colour =  0, canMove =  true, canChangeState = false, canChangeColour = false, glassState = false, hasMask = false}
+DEFAULT_OBJECT =  {DEFAULT_WALL,DEFAULT_GLASS,DEFAULT_SOURCE,DEFAULT_RECEIVER,DEFAULT_MIRROR,DEFAULT_PWHEEL,DEFAULT_PRISM}
+TYPES =            {"wall","glass","source","receiver","mirror","pwheel","prism" }
+NUM_STATES =       {     1,      1,       2,         2,       2,       1,      1 }
+UpdateObjectType = { false,  false,   false,     false,   false,   false,  false }
 ObjectReferences = {} -- contains tables of references to each object of each type sorted by type and Id; Object:ObjectReferences[int:type][int:id]
 local Id = {} -- contains the Id of the newest object of each type (i.e. the amount of each types unless some have been deleted); int:Id[int:type]
 

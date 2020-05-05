@@ -16,7 +16,7 @@ local grid_dim_x, grid_dim_y = 0, 0
 local drawbox_x, drawbox_y, texture_scale = 0, 0, 0
 
 function love.load()
-  drawbox_x, drawbox_y, texture_scale = grid.init(nil,nil,nil,-0.5)
+  drawbox_x, drawbox_y, texture_scale = game.init()
   grid_dim_x, grid_dim_y = grid.getDimensions()
   for i=1,grid_dim_x do
     grid.setNewObject(nil,i,1,nil,nil,nil,nil,nil,nil,0)
@@ -30,22 +30,13 @@ function love.load()
   for i=1,grid_dim_y do
     grid.setNewObject(TYPE_WALL,grid_dim_x,i,nil,nil,nil,nil,nil,nil,0)
   end
+  math.randomseed(os.time())
   for i=1,400 do
-    grid.fitNewObject((i%2)+1)
+    --grid.fitNewObject((i%2)+1)
+    grid.fitNewObject((math.floor(math.random()*20)%2)+1)
   end
   x=0
   totalTime=0.0
-  
-  for i=1,#UpdateObjectType do
-    print(TYPES[i]..(UpdateObjectType[i] and " NEED UPDATE" or " are set"))
-  end
-  tiles.loadTextures()
-  tiles.update()
-  for i=1,#UpdateObjectType do
-    print(TYPES[i]..(UpdateObjectType[i] and " NEED UPDATE" or " are set"))
-  end
-
-  game.init()
 end
 
 function love.update(dt)
@@ -57,8 +48,8 @@ end
 
 function love.draw()
   love.graphics.draw(canvas_BG,drawbox_x,drawbox_y,nil,texture_scale)
-  love.graphics.draw(canvas_WL,drawbox_x,drawbox_y,nil,texture_scale)
-  love.graphics.draw(canvas_GL,drawbox_x,drawbox_y,nil,texture_scale)
+  love.graphics.draw(canvas_GD,drawbox_x,drawbox_y,nil,texture_scale)
+  love.graphics.draw(canvas_OL,drawbox_x,drawbox_y,nil,texture_scale)
   love.graphics.draw(canvas_UI)
   love.graphics.print("X : "..tostring(gridPosition_x))
   love.graphics.print("Y : "..tostring(gridPosition_y),100,0)
