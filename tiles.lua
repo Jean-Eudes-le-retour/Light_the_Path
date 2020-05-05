@@ -82,7 +82,6 @@ function tiles.loadTextures()
       end
     end
   end
-    
 end
 tiles.reloadTextures = tiles.loadTextures
 
@@ -98,9 +97,10 @@ function tiles.drawTexture(t,state,xpos,ypos,rotation,colour,texture_scale)
   love.graphics.setColor(1,1,1)
   if MASK[t] then
     mask = MASK[t]
-    love.graphics.setStencil(stencilFunction)
+    love.graphics.stencil(stencilFunction, "replace", 1)
+    love.graphics.setStencilTest("greater", 0)
     love.graphics.drawLayer(TEXTURES[t],state,xpos,ypos,rotation,texture_scale)
-    love.graphics.setStencil()
+    love.graphics.setStencilTest()
   end
 end
 
