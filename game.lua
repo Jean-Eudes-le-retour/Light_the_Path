@@ -38,8 +38,7 @@ function game.updateUI(dt)
     local texture_scale = grid.getTextureScale()
     local rotation = math.rad(90*o_hand.rotation)
     local state = o_hand.state
-    if state >= NUM_STATES[o_hand.t] then state = 1 end
-    tiles.drawTexture(o_hand.t,1,o_hand.color)
+    tiles.drawTexture(o_hand.t,o_hand.state,o_hand.color)
     love.graphics.setCanvas(canvas_UI)
     love.graphics.draw(canvas_Texture,cursor_x+o_displacement_x,cursor_y+o_displacement_y,rotation,texture_scale)
   end

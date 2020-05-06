@@ -56,6 +56,7 @@ end
 -- Rotate an object 90 (or 45) degrees clockwise
 function Object:rotate(invert)
   if DEFAULT_OBJECT[self.t].rotateByEights then
+  --note that textures are indexed starting at 1, if state is ever 0 texture will not load properly, hence self.state-1 at the beginning and +1 at the end
     local eight_rotation = band(self.state-1,1)+lshift(band(self.rotation,3),1)
     eight_rotation = (eight_rotation + (invert and -1 or 1))%8
     self.state = bor(band(self.state,bnot(3)),band(eight_rotation,1)+1)

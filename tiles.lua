@@ -98,6 +98,7 @@ end
 function tiles.drawTexture(t,state,color)
   love.graphics.setCanvas{canvas_Texture,stencil = true}
   love.graphics.clear()
+  if not state or state < 1 or state > NUM_STATES[t] then state = 1 end
   tiles.setColor(color)
   if MASK[t] then
     mask = MASK[t]
@@ -111,6 +112,9 @@ function tiles.drawTexture(t,state,color)
   else
     love.graphics.drawLayer(TEXTURES[t],state)
     love.graphics.setColor(1,1,1)
+  end
+  if t <= NUM_CONNECTED_TEXTURE_TILES then
+    love.graphics.drawLayer(OVERLAY_TEXTURES[t],13)
   end
 end
 
@@ -218,7 +222,7 @@ function tiles.updateObjects()
         xpos = xpos + ((rotation == 1 or rotation == 2) and 1 or 0)
         if rotation > 1 then ypos = ypos+1 end
         rotation = math.rad(90*rotation)
-        tiles.drawTexture(o.t,1,o.color)
+        tiles.drawTexture(i,state,o.color)
         love.graphics.setCanvas(canvas_GD)
         love.graphics.draw(canvas_Texture,xpos*TEXTURE_BASE_SIZE,ypos*TEXTURE_BASE_SIZE,rotation)
       end
