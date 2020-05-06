@@ -12,12 +12,12 @@ local sel_x, sel_y =  false, false
 canvas_UI = love.graphics.newCanvas() -- WILL NEED TO MOVE INTO WHICHEVER FUNCTION CHANGES SCREEN RESOLUTION
 
 -- Initializes game (Maybe we can move the definition of callback functions into main, but this gives us more control for now)
-function game.init()
+function game.init(x_res,y_res,mode,x_val,y_val)
   love.mousepressed = game.onClick
   love.mousereleased = game.onRelease
   tiles.loadTextures()
   -- Menus = {MAIN_MENU}
-  return grid.init()
+  return grid.init(x_res,y_res,mode,x_val,y_val)
 end
 
 -- Function called to update the game state and canvases

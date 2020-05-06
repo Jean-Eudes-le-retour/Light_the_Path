@@ -18,7 +18,7 @@ local grid_pos_x, grid_pos_y = 0, 0
 local drawbox_x, drawbox_y, texture_scale = 0, 0, 0
 
 function love.load()
-  drawbox_x, drawbox_y, texture_scale = game.init()
+  drawbox_x, drawbox_y, texture_scale = game.init(10,5)
   
   
 --grid.fitNewObject(t,xpos,ypos,state,rotation,color,canMove,canChangeState,canChangeColor,glassState)
@@ -36,7 +36,7 @@ function love.load()
     grid.setNewObject(TYPE_WALL,grid_dim_x,i,nil,nil,nil,nil,nil,nil,0)
   end
   math.randomseed(os.time())
-  for i=1,30 do
+  for i=1,5 do
     --grid.fitNewObject((i%2)+1)
     grid.fitNewObject((math.floor(math.random()*20)%2)+1)
   end
