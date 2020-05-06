@@ -1,5 +1,14 @@
 io.stdout:setvbuf("no")
 
+-- SETTING UP LOVE --
+
+--Prevents low-res textures from looking blurry (get that neat sharp look on the game)
+love.graphics.setDefaultFilter("nearest", "nearest")
+
+--(defaults 3rd parameter)windowflags = {fullscreen = false,fullscreentype = "desktop",vsync = 1,msaa = 0,stencil = true,depth = 0,resizable = false,borderless = false,centered = true,display = 1,minwidth = 1,minheight = 1}
+--if window_width (respectively window_height) is 0, desktop width (respectively height) will be used.
+love.window.setMode(0,0)
+
 -- SETTING UP CONSTANTS --
 require("constants")
 
@@ -16,6 +25,7 @@ local grid_pos_x, grid_pos_y = 0, 0
 
 --Important variables in main
 local drawbox_x, drawbox_y, texture_scale = 0, 0, 0
+
 
 function love.load()
   drawbox_x, drawbox_y, texture_scale = game.init(10,5)
@@ -63,8 +73,8 @@ function love.draw()
   love.graphics.draw(canvas_GD,drawbox_x,drawbox_y,nil,texture_scale)
   love.graphics.draw(canvas_OL,drawbox_x,drawbox_y,nil,texture_scale)
   love.graphics.draw(canvas_UI)
-  love.graphics.print("X : "..tostring(grid_pos_x))
-  love.graphics.print("Y : "..tostring(grid_pos_y),100,0)
+  love.graphics.print("X : "..string.sub(tostring(grid_pos_x),1,10))
+  love.graphics.print("Y : "..string.sub(tostring(grid_pos_y),1,10),100,0)
   love.graphics.print("X_max : "..tostring(grid_dim_x),0,10)
   love.graphics.print("Y_max : "..tostring(grid_dim_y),100,10)
   love.graphics.print("Hello World!", x, 40)
