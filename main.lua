@@ -4,8 +4,9 @@ io.stdout:setvbuf("no")
 
 --Prevents low-res textures from looking blurry (get that neat sharp look on the game)
 love.graphics.setDefaultFilter("nearest", "nearest")
-
---(defaults 3rd parameter)windowflags = {fullscreen = false,fullscreentype = "desktop",vsync = 1,msaa = 0,stencil = true,depth = 0,resizable = false,borderless = false,centered = true,display = 1,minwidth = 1,minheight = 1}
+--Name the window
+love.window.setTitle("Light the Path")
+--defaults 3rd parameter:windowflags = {fullscreen = false,fullscreentype = "desktop",vsync = 1,msaa = 0,stencil = true,depth = 0,resizable = false,borderless = false,centered = true,display = 1,minwidth = 1,minheight = 1}
 --if window_width (respectively window_height) is 0, desktop width (respectively height) will be used.
 love.window.setMode(0,0)
 
