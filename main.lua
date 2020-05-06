@@ -21,7 +21,7 @@ function love.load()
   drawbox_x, drawbox_y, texture_scale = game.init()
   
   
---grid.fitNewObject(t,xpos,ypos,state,rotation,colour,canMove,canChangeState,canChangeColour,glassState)
+--grid.fitNewObject(t,xpos,ypos,state,rotation,color,canMove,canChangeState,canChangeColor,glassState)
   grid_dim_x, grid_dim_y = grid.getDimensions()
   for i=1,grid_dim_x do
     grid.setNewObject(nil,i,1,nil,nil,nil,nil,nil,nil,0)

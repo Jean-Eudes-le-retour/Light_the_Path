@@ -41,16 +41,16 @@ function grid.clearGrid()
 end
 
 -- Place a new object within the grid. The preferred function to create new objects.
-function grid.setNewObject(t,xpos,ypos,state,rotation,colour,canMove,canChangeState,canChangeColour,glassState)
+function grid.setNewObject(t,xpos,ypos,state,rotation,color,canMove,canChangeState,canChangeColor,glassState)
   if xpos > grid_size_x or ypos > grid_size_y or xpos < 1 or ypos < 1 then return nil end
   if Grid[xpos][ypos] then Grid[xpos][ypos]:delete() end
-  local o = objects.newObject(t,xpos,ypos,state,rotation,colour,canMove,canChangeState,canChangeColour,glassState)
+  local o = objects.newObject(t,xpos,ypos,state,rotation,color,canMove,canChangeState,canChangeColor,glassState)
   Grid[xpos][ypos] = o
   return o
 end
 
 -- grid.setNewObject, but softer, may be preferred when programming a level (will never erase a block at destination)
-function grid.fitNewObject(t,xpos,ypos,state,rotation,colour,canMove,canChangeState,canChangeColour,glassState)
+function grid.fitNewObject(t,xpos,ypos,state,rotation,color,canMove,canChangeState,canChangeColor,glassState)
   if (not xpos) then xpos = math.ceil(grid_size_x/2) end
   if (not ypos) then ypos = math.ceil(grid_size_y/2) end
   for i=0,math.max(grid_size_x-1, grid_size_y-1) do
@@ -58,13 +58,13 @@ function grid.fitNewObject(t,xpos,ypos,state,rotation,colour,canMove,canChangeSt
       if j == i or j == -i then
         for k=-i,i do
           if (Grid[xpos+k] and (ypos+j>0 and ypos+j<grid_size_y) and (not Grid[xpos+k][ypos+j])) then 
-            return grid.setNewObject(t,xpos+k,ypos+j,state,rotation,colour,canMove,canChangeState,canChangeColour,glassState)
+            return grid.setNewObject(t,xpos+k,ypos+j,state,rotation,color,canMove,canChangeState,canChangeColor,glassState)
           end
         end
       elseif (Grid[xpos-i] and (ypos+j>0 and ypos+j<grid_size_y) and (not Grid[xpos-i][ypos+j])) then
-        return grid.setNewObject(t,xpos-i,ypos+j,state,rotation,colour,canMove,canChangeState,canChangeColour,glassState)
+        return grid.setNewObject(t,xpos-i,ypos+j,state,rotation,color,canMove,canChangeState,canChangeColor,glassState)
       elseif (Grid[xpos+i] and (ypos+j>0 and ypos+j<grid_size_y) and (not Grid[xpos+i][ypos+j])) then
-        return grid.setNewObject(t,xpos+i,ypos+j,state,rotation,colour,canMove,canChangeState,canChangeColour,glassState)
+        return grid.setNewObject(t,xpos+i,ypos+j,state,rotation,color,canMove,canChangeState,canChangeColor,glassState)
       end
     end
   end

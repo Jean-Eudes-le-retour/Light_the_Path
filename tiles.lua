@@ -86,16 +86,16 @@ function tiles.loadTextures()
 end
 tiles.reloadTextures = tiles.loadTextures
 
-function tiles.setColour(colour)
-  local Red, Green, Blue, Black = band(colour,1), band(colour,2), band(colour,4), band(colour,8)
+function tiles.setColor(color)
+  local Red, Green, Blue, Black = band(color,1), band(color,2), band(color,4), band(color,8)
   if (Red == 0) and (Green == 0) and (Blue == 0) and (Black == 0) then Red, Green, Blue = 1,1,1 end
   love.graphics.setColor(Red,Green,Blue)
 end
 
-function tiles.drawTexture(t,state,colour)
+function tiles.drawTexture(t,state,color)
   love.graphics.setCanvas{canvas_Texture,stencil = true}
   love.graphics.clear()
-  tiles.setColour(colour)
+  tiles.setColor(color)
   if MASK[t] then
     mask = MASK[t]
     love.graphics.stencil(stencilFunction, "replace", 1)
@@ -154,7 +154,7 @@ function tiles.updateWall()
   for i=1,objects.getId(TYPE_WALL) do
     o = ObjectReferences[TYPE_WALL][i]
     if o and Grid[o.xpos][o.ypos] then
-      tiles.setColour(o.colour)
+      tiles.setColor(o.color)
       xpos,ypos,state,rotation = o.xpos-1, o.ypos-1, o.state, o.rotation
       love.graphics.drawLayer(TEXTURES[TYPE_WALL],1,xpos*TEXTURE_BASE_SIZE,ypos*TEXTURE_BASE_SIZE)
       love.graphics.setColor(1,1,1)
@@ -181,7 +181,7 @@ function tiles.updateGlass()
     for i=1,objects.getId(j) do
       o = ObjectReferences[j][i]
       if o and o.glassState and Grid[o.xpos] and Grid[o.xpos][o.ypos] then
-        tiles.setColour(o.colour)
+        tiles.setColor(o.color)
         xpos,ypos,state,rotation = o.xpos-1, o.ypos-1, o.glassState, o.glassRotation
         love.graphics.drawLayer(TEXTURES[TYPE_GLASS],1,xpos*TEXTURE_BASE_SIZE,ypos*TEXTURE_BASE_SIZE)
         love.graphics.setColor(1,1,1)
@@ -210,7 +210,7 @@ function tiles.updateObjects()
         xpos = xpos + ((rotation == 1 or rotation == 2) and 1 or 0)
         if rotation > 1 then ypos = ypos+1 end
         rotation = math.rad(90*rotation)
-        tiles.drawTexture(o.t,1,o.colour)
+        tiles.drawTexture(o.t,1,o.color)
         love.graphics.setCanvas(canvas_GD)
         love.graphics.draw(canvas_Texture,xpos*TEXTURE_BASE_SIZE,ypos*TEXTURE_BASE_SIZE,rotation)
       end

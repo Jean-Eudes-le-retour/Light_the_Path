@@ -3,14 +3,14 @@ local objects = {}
 -- 'state' defines the image used to draw the object (i.e. same image is equivalent to same state), rotation will define the rotation of said image when drawn.
 -- This is why items such as mirrors have 2 states: one for horizontal/vertical mirrors and one for diagonal mirrors. pwheel on the other hand can only take one state (but 2 rotations!)
 -- It is worth noting that color can also influence the image used to represent the object (details to be discussed)
-local Object =          {t = 0,     id = 0, xpos = nil, ypos = nil, state = 1, rotation = 0, colour = 0, canMove = false, canChangeState = false, canChangeColour = false, glassState = false}
-local DEFAULT_WALL =    {t =     TYPE_WALL, state = 13, colour =  0, canMove = false, canChangeState = false, canChangeColour = false, glassState = false, hasMask = false}
-local DEFAULT_GLASS =   {t =    TYPE_GLASS, state =  1, colour =  0, canMove = false, canChangeState = false, canChangeColour = false, glassState =     0, hasMask = false}
-local DEFAULT_SOURCE =  {t =   TYPE_SOURCE, state =  1, colour =  7, canMove = false, canChangeState =  true, canChangeColour = false, glassState = false, hasMask =  true}
-local DEFAULT_RECEIVER ={t = TYPE_RECEIVER, state =  1, colour =  8, canMove = false, canChangeState = false, canChangeColour = false, glassState = false, hasMask =  true}
-local DEFAULT_MIRROR =  {t =   TYPE_MIRROR, state =  1, colour =  7, canMove =  true, canChangeState = false, canChangeColour = false, glassState = false, hasMask =  true}
-local DEFAULT_PWHEEL =  {t =   TYPE_PWHEEL, state =  1, colour =  0, canMove =  true, canChangeState = false, canChangeColour = false, glassState = false, hasMask =  true}
-local DEFAULT_PRISM =   {t =    TYPE_PRISM, state =  1, colour =  0, canMove =  true, canChangeState = false, canChangeColour = false, glassState = false, hasMask = false}
+local Object =          {t = 0,     id = 0, xpos = nil, ypos = nil, state = 1, rotation = 0, color = 0, canMove = false, canChangeState = false, canChangeColor = false, glassState = false}
+local DEFAULT_WALL =    {t =     TYPE_WALL, state = 13, color =  0, canMove = false, canChangeState = false, canChangeColor = false, glassState = false, hasMask = false}
+local DEFAULT_GLASS =   {t =    TYPE_GLASS, state =  1, color =  0, canMove = false, canChangeState = false, canChangeColor = false, glassState =     0, hasMask = false}
+local DEFAULT_SOURCE =  {t =   TYPE_SOURCE, state =  1, color =  7, canMove = false, canChangeState =  true, canChangeColor = false, glassState = false, hasMask =  true}
+local DEFAULT_RECEIVER ={t = TYPE_RECEIVER, state =  1, color =  8, canMove = false, canChangeState = false, canChangeColor = false, glassState = false, hasMask =  true}
+local DEFAULT_MIRROR =  {t =   TYPE_MIRROR, state =  1, color =  7, canMove =  true, canChangeState = false, canChangeColor = false, glassState = false, hasMask =  true}
+local DEFAULT_PWHEEL =  {t =   TYPE_PWHEEL, state =  1, color =  0, canMove =  true, canChangeState = false, canChangeColor = false, glassState = false, hasMask =  true}
+local DEFAULT_PRISM =   {t =    TYPE_PRISM, state =  1, color =  0, canMove =  true, canChangeState = false, canChangeColor = false, glassState = false, hasMask = false}
 DEFAULT_OBJECT =  {DEFAULT_WALL,DEFAULT_GLASS,DEFAULT_SOURCE,DEFAULT_RECEIVER,DEFAULT_MIRROR,DEFAULT_PWHEEL,DEFAULT_PRISM}
 TYPES =            {"wall","glass","source","receiver","mirror","pwheel","prism" }
 NUM_STATES =       {     1,      1,       2,         2,       2,       1,      1 }
@@ -19,7 +19,7 @@ ObjectReferences = {} -- contains tables of references to each object of each ty
 local Id = {} -- contains the Id of the newest object of each type (i.e. the amount of each types unless some have been deleted); int:Id[int:type]
 
 -- SHOULD PROBABLY ADD CONSTANT TABLES OF DEFAULT VALUES DEPENDING ON OBJECT TYPE!
-function Object:new(t,xpos,ypos,state,rotation,colour,canMove,canChangeState,canChangeColour,glassState)
+function Object:new(t,xpos,ypos,state,rotation,color,canMove,canChangeState,canChangeColor,glassState)
   o = {}
   setmetatable(o, self)
   self.__index = self
@@ -31,13 +31,13 @@ function Object:new(t,xpos,ypos,state,rotation,colour,canMove,canChangeState,can
   o.ypos = ypos or 1
   o.state = state or DEFAULT_OBJECT[o.t].state
   o.rotation = rotation or 0
-  o.colour = colour or DEFAULT_OBJECT[o.t].colour
+  o.color = color or DEFAULT_OBJECT[o.t].color
   if type(canMove)         == "boolean" then o.canMove = canMove
   else o.canMove         = DEFAULT_OBJECT[o.t].canMove end
   if type(canChangeState)  == "boolean" then o.canChangeState = canChangeState
   else o.canChangeState  = DEFAULT_OBJECT[o.t].canChangeState end
-  if type(canChangeColour) == "boolean" then o.canChangeColour = canChangeColour
-  else o.canChangeColour = DEFAULT_OBJECT[o.t].canChangeColour end
+  if type(canChangeColor) == "boolean" then o.canChangeColor = canChangeColor
+  else o.canChangeColor = DEFAULT_OBJECT[o.t].canChangeColor end
   o.glassState = glassState or false
   o.glassRotation = 0
   
@@ -95,8 +95,8 @@ function objects.resetObjects()
 end
 
 -- Create a new object (does not place in grid!)
-function objects.newObject(t,xpos,ypos,state,rotation,colour,canMove,canChangeState,canChangeColour,glassState)
-  return Object:new(t,xpos,ypos,state,rotation,colour,canMove,canChangeState,canChangeColour,glassState)
+function objects.newObject(t,xpos,ypos,state,rotation,color,canMove,canChangeState,canChangeColor,glassState)
+  return Object:new(t,xpos,ypos,state,rotation,color,canMove,canChangeState,canChangeColor,glassState)
 end
 
 return objects
