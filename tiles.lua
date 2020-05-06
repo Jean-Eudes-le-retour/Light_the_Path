@@ -11,6 +11,7 @@ The canvases must be made at BASE RESOLUTION, the magnifying is done later on wh
 
 tiles = {}
 
+-- A single texture-sized canvas to easily make unrotated draw operations on before final draw to canvas.
 canvas_Texture = love.graphics.newCanvas(TEXTURE_BASE_SIZE,TEXTURE_BASE_SIZE)
 local selected_background = 1
 local mask = false
@@ -29,7 +30,7 @@ local function stencilFunction()
    love.graphics.setShader()
 end
  
-
+-- Must be called at initialisation, if called again, will reload the textures.
 function tiles.loadTextures()
   print("Loading textures...")
   TEXTURES = {}
@@ -86,12 +87,14 @@ function tiles.loadTextures()
 end
 tiles.reloadTextures = tiles.loadTextures
 
+-- Set active color to specified color (bit 1 is Red, bit 2 is Green, bit 3 is Blue). If color's 4th bit is on, AND all other bits are off, the texture will be printed ALL BLACK. Otherwise color = 0 means WHITE.
 function tiles.setColor(color)
   local Red, Green, Blue, Black = band(color,1), band(color,2), band(color,4), band(color,8)
   if (Red == 0) and (Green == 0) and (Blue == 0) and (Black == 0) then Red, Green, Blue = 1,1,1 end
   love.graphics.setColor(Red,Green,Blue)
 end
 
+-- Draw a texture to the canvas_Texture canvas, takes mask into account if it exists.
 function tiles.drawTexture(t,state,color)
   love.graphics.setCanvas{canvas_Texture,stencil = true}
   love.graphics.clear()
@@ -111,6 +114,7 @@ function tiles.drawTexture(t,state,color)
   end
 end
 
+-- Checks UpdateObjectType table and updates all canvases accordingly by calling specific tile update functions
 function tiles.update()
   if not BG_is_drawn then print("Drawing background layer...") tiles.updateBG() BG_is_drawn = true end
   if UpdateObjectType[TYPE_WALL] or UpdateObjectType[TYPE_GLASS] then
@@ -131,6 +135,7 @@ function tiles.update()
   love.graphics.setCanvas()
 end
 
+-- Update the background canvas
 function tiles.updateBG()
   love.graphics.setCanvas(canvas_BG)
   love.graphics.clear()
@@ -142,6 +147,7 @@ function tiles.updateBG()
   end
 end
 
+-- Update the wall states and canvas
 function tiles.updateWall()
   print("Updating wall states...")
   tiles.updateConnectedTextureTypeState(TYPE_WALL)
@@ -168,6 +174,7 @@ function tiles.updateWall()
   UpdateObjectType[TYPE_WALL] = false
 end
 
+-- Update the glass states and canvas
 function tiles.updateGlass()
   print("Updating glass states...")
   tiles.updateConnectedTextureTypeState(TYPE_GLASS)
@@ -196,6 +203,7 @@ function tiles.updateGlass()
   UpdateObjectType[TYPE_GLASS] = false
 end
 
+-- Update the objects' canvas
 function tiles.updateObjects()
   print("Updating object graphics...")
   love.graphics.setCanvas(canvas_GD)

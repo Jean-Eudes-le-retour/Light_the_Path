@@ -175,6 +175,7 @@ function grid.defineDrawbox(mode,x_val,y_val)
   return drawbox_pos_x, drawbox_pos_y, texture_scale
 end
 
+-- Updates the cursor's position relative to the grid (this is the first operation in game.update() so there should be no reason to use it anywhere else)
 function grid.updateCursorPosition(getFraction,cursor_pos_x,cursor_pos_y)
   if not cursor_pos_x then cursor_pos_x, cursor_pos_y = love.mouse.getPosition() end
   cursor_grid_frac_pos_x = (cursor_pos_x-drawbox_pos_x)/tile_size
@@ -185,6 +186,7 @@ function grid.updateCursorPosition(getFraction,cursor_pos_x,cursor_pos_y)
   return cursor_grid_pos_x, cursor_grid_pos_y
 end
 
+-- Returns the cursor's position relative to the grid (optionally, if getFraction is defined, the fractional position; (0.5,0.5) is the center of tile (1,1))
 function grid.getCursorPosition(getFraction)
   if getFraction then return cursor_grid_frac_pos_x, cursor_grid_frac_pos_y end
   return cursor_grid_pos_x, cursor_grid_pos_y

@@ -11,6 +11,7 @@ local o_displacement_x, o_displacement_y = 0,0
 local sel_x, sel_y =  false, false
 canvas_UI = love.graphics.newCanvas() -- WILL NEED TO MOVE INTO WHICHEVER FUNCTION CHANGES SCREEN RESOLUTION
 
+-- Initializes game (Maybe we can move the definition of callback functions into main, but this gives us more control for now)
 function game.init()
   love.mousepressed = game.onClick
   love.mousereleased = game.onRelease
@@ -19,6 +20,7 @@ function game.init()
   return grid.init()
 end
 
+-- Function called to update the game state and canvases
 function game.update(dt)
   grid.updateCursorPosition()
   game.updateUI(dt)
@@ -26,6 +28,7 @@ function game.update(dt)
   -- all other tile updates and the such.
 end
 
+-- Update the UI canvas (all menu levels and cursor related graphics)
 function game.updateUI(dt)
   love.graphics.setCanvas(canvas_UI)
   love.graphics.clear()
@@ -44,6 +47,7 @@ function game.updateUI(dt)
   love.graphics.setCanvas()
 end
 
+-- The love callback function for mouse presses (assignment is done in init). Defines behaviour.
 function game.onClick( x, y, button, istouch, presses )
   local grid_size_x, grid_size_y = grid.getDimensions()
   local f_xpos, f_ypos = grid.getCursorPosition(true)
@@ -72,6 +76,7 @@ function game.onClick( x, y, button, istouch, presses )
 
 end
 
+-- The love callback function for mouse release (assignment is done in init). Defines behaviour.
 function game.onRelease( x, y, button, istouch, presses )
   local xpos, ypos = grid.getCursorPosition()
   if button == 1 and o_hand then

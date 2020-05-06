@@ -18,7 +18,7 @@ UpdateObjectType = { false,  false,   false,     false,   false,   false,  false
 ObjectReferences = {} -- contains tables of references to each object of each type sorted by type and Id; Object:ObjectReferences[int:type][int:id]
 local Id = {} -- contains the Id of the newest object of each type (i.e. the amount of each types unless some have been deleted); int:Id[int:type]
 
--- SHOULD PROBABLY ADD CONSTANT TABLES OF DEFAULT VALUES DEPENDING ON OBJECT TYPE!
+-- Creates a new Object table, with default values as defined in the DEFAULT_OBJECT table. Please refrain from calling directly (use grid functions!)
 function Object:new(t,xpos,ypos,state,rotation,color,canMove,canChangeState,canChangeColor,glassState)
   o = {}
   setmetatable(o, self)
@@ -94,7 +94,7 @@ function objects.resetObjects()
   end
 end
 
--- Create a new object (does not place in grid!)
+-- Create a new object (does not place in grid!) Refrain from using directly (please use grid functions)
 function objects.newObject(t,xpos,ypos,state,rotation,color,canMove,canChangeState,canChangeColor,glassState)
   return Object:new(t,xpos,ypos,state,rotation,color,canMove,canChangeState,canChangeColor,glassState)
 end
