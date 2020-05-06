@@ -1,19 +1,22 @@
+local bit = require("bit")
+local bnot, band, bor, bxor, rshift, lshift = bit.bnot, bit.band, bit.bor, bit.bxor, bit.rshift, bit.lshift
+
 local objects = {}
 
 -- 'state' defines the image used to draw the object (i.e. same image is equivalent to same state), rotation will define the rotation of said image when drawn.
 -- This is why items such as mirrors have 2 states: one for horizontal/vertical mirrors and one for diagonal mirrors. pwheel on the other hand can only take one state (but 2 rotations!)
 -- It is worth noting that color can also influence the image used to represent the object (details to be discussed)
-local Object =          {t = 0,     id = 0, xpos = nil, ypos = nil, state = 1, rotation = 0, color = 0, canMove = false, canChangeState = false, canChangeColor = false, glassState = false}
-local DEFAULT_WALL =    {t =     TYPE_WALL, state = 13, color =  0, canMove = false, canChangeState = false, canChangeColor = false, glassState = false, hasMask = false}
-local DEFAULT_GLASS =   {t =    TYPE_GLASS, state =  1, color =  0, canMove = false, canChangeState = false, canChangeColor = false, glassState =     0, hasMask = false}
-local DEFAULT_SOURCE =  {t =   TYPE_SOURCE, state =  1, color =  7, canMove = false, canChangeState =  true, canChangeColor = false, glassState = false, hasMask =  true}
-local DEFAULT_RECEIVER ={t = TYPE_RECEIVER, state =  1, color =  8, canMove = false, canChangeState = false, canChangeColor = false, glassState = false, hasMask =  true}
-local DEFAULT_MIRROR =  {t =   TYPE_MIRROR, state =  1, color =  7, canMove =  true, canChangeState = false, canChangeColor = false, glassState = false, hasMask =  true}
-local DEFAULT_PWHEEL =  {t =   TYPE_PWHEEL, state =  1, color =  0, canMove =  true, canChangeState = false, canChangeColor = false, glassState = false, hasMask =  true}
-local DEFAULT_PRISM =   {t =    TYPE_PRISM, state =  1, color =  0, canMove =  true, canChangeState = false, canChangeColor = false, glassState = false, hasMask = false}
+local Object =          {t = 0,     id = 0, xpos = nil, ypos = nil, state = 1, rotation = 0, color = 0, canMove = false, canChangeState = false, canChangeColor = false, glassState = false, rotateByEights = false}
+local DEFAULT_WALL =    {t =     TYPE_WALL, state = 13, color =  0, canMove = false, canChangeState = false, canChangeColor = false, glassState = false, hasMask = false, rotateByEights = false}
+local DEFAULT_GLASS =   {t =    TYPE_GLASS, state =  1, color =  0, canMove = false, canChangeState = false, canChangeColor = false, glassState =     0, hasMask = false, rotateByEights = false}
+local DEFAULT_SOURCE =  {t =   TYPE_SOURCE, state =  1, color =  7, canMove = false, canChangeState =  true, canChangeColor = false, glassState = false, hasMask =  true, rotateByEights = false}
+local DEFAULT_RECEIVER ={t = TYPE_RECEIVER, state =  1, color =  8, canMove = false, canChangeState = false, canChangeColor = false, glassState = false, hasMask =  true, rotateByEights = false}
+local DEFAULT_MIRROR =  {t =   TYPE_MIRROR, state =  1, color =  7, canMove =  true, canChangeState = false, canChangeColor = false, glassState = false, hasMask =  true, rotateByEights =  true}
+local DEFAULT_PWHEEL =  {t =   TYPE_PWHEEL, state =  1, color =  0, canMove =  true, canChangeState = false, canChangeColor = false, glassState = false, hasMask =  true, rotateByEights =  true}
+local DEFAULT_PRISM =   {t =    TYPE_PRISM, state =  1, color =  0, canMove =  true, canChangeState = false, canChangeColor = false, glassState = false, hasMask = false, rotateByEights = false}
 DEFAULT_OBJECT =  {DEFAULT_WALL,DEFAULT_GLASS,DEFAULT_SOURCE,DEFAULT_RECEIVER,DEFAULT_MIRROR,DEFAULT_PWHEEL,DEFAULT_PRISM}
 TYPES =            {"wall","glass","source","receiver","mirror","pwheel","prism" }
-NUM_STATES =       {     1,      1,       2,         2,       2,       1,      1 }
+NUM_STATES =       {     1,      1,       2,         2,       2,       2,      1 }
 UpdateObjectType = { false,  false,   false,     false,   false,   false,  false }
 ObjectReferences = {} -- contains tables of references to each object of each type sorted by type and Id; Object:ObjectReferences[int:type][int:id]
 local Id = {} -- contains the Id of the newest object of each type (i.e. the amount of each types unless some have been deleted); int:Id[int:type]
@@ -50,14 +53,17 @@ function Object:new(t,xpos,ypos,state,rotation,color,canMove,canChangeState,canC
   return o
 end
 
--- Might rename Oject:action(mode,shiftClick) so that mode depends on the tool type, and make enum
-function Object:rightClick(shiftClick)
-  shiftClick = shiftClick or false
-  if self.glassState or not self.canChangeState then return false end
+-- Rotate an object 90 (or 45) degrees clockwise
+function Object:rotate(invert)
+  if DEFAULT_OBJECT[self.t].rotateByEights then
+    local eight_rotation = band(self.state-1,1)+lshift(band(self.rotation,3),1)
+    eight_rotation = (eight_rotation + (invert and -1 or 1))%8
+    self.state = bor(band(self.state,bnot(3)),band(eight_rotation,1)+1)
+    self.rotation = rshift(band(eight_rotation,6),1)
+  else
+    self.rotation = (self.rotation + (invert and -1 or 1))%4
+  end
   UpdateObjectType[self.t] = true
-  self.state = shiftClick and self.state-1 or self.state+1
-  self.state = (self.state > NUM_STATES[self.t] and 1 or self.state)
-  return true
 end
 
 -- Note that this only changes the position info for the object not the position in the grid; do not call directly or may cause weirdness
