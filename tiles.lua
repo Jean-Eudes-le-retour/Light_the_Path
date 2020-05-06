@@ -93,17 +93,21 @@ function tiles.setColour(colour)
 end
 
 function tiles.drawTexture(t,state,colour)
-  tiles.setColour(colour)
   love.graphics.setCanvas{canvas_Texture,stencil = true}
   love.graphics.clear()
-  love.graphics.drawLayer(TEXTURES[t],state)
-  love.graphics.setColor(1,1,1)
+  tiles.setColour(colour)
   if MASK[t] then
     mask = MASK[t]
     love.graphics.stencil(stencilFunction, "replace", 1)
+    love.graphics.setStencilTest("less", 1)
+    love.graphics.drawLayer(TEXTURES[t],state)
+    love.graphics.setColor(1,1,1)
     love.graphics.setStencilTest("greater", 0)
     love.graphics.drawLayer(TEXTURES[t],state)
     love.graphics.setStencilTest()
+  else
+    love.graphics.drawLayer(TEXTURES[t],state)
+    love.graphics.setColor(1,1,1)
   end
 end
 
