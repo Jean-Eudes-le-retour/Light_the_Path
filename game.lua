@@ -68,6 +68,9 @@ function game.onClick( x, y, button, istouch, presses )
     elseif cursor_mode == CURSOR_SELECT then
       sel_x, sel_y = xpos, ypos
     end
+  elseif button == 2 then
+    if (not DEVELOPER_MODE) and (Grid[xpos][ypos].glassState or not Grid[xpos][ypos].canChangeState) then return false end
+    Grid[xpos][ypos]:rotate()
   elseif button == 3 then
     sel_x, sel_y = xpos, ypos
   end

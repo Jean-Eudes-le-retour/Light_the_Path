@@ -53,9 +53,13 @@ function love.load()
   end
   grid.fitNewObject(3,nil,nil,1,3,3,true)
   grid.fitNewObject(3,nil,nil,2,3,3,true)
-  grid.fitNewObject(5)
   grid.fitNewObject(4,nil,nil,1,1,6)
   grid.fitNewObject(4,nil,nil,2,1,6)
+  grid.fitNewObject(TYPE_MIRROR,nil,nil,1,1,2)
+  grid.fitNewObject(TYPE_MIRROR,nil,nil,1,1,4)
+  grid.fitNewObject(TYPE_MIRROR,nil,nil,2,1,7)
+  grid.fitNewObject(TYPE_PWHEEL,nil,nil,1,1,5)
+  grid.fitNewObject(TYPE_PWHEEL,nil,nil,2,1,5)
   x=0
   totalTime=0.0
 end

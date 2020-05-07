@@ -82,6 +82,14 @@ function tiles.loadTextures()
       else
         print(path.." could not be opened! Not using mask...")
       end
+      if DEFAULT_OBJECT[i].rotateByEights then
+        path = "Textures/"..TYPES[i].."_mask_2.png"
+        if file_exists(path) then
+          MASK[-i] = love.graphics.newImage(path)
+        else
+          print(path.." could not be opened! Not using mask...")
+        end
+      end
     end
   end
 end
@@ -101,7 +109,7 @@ function tiles.drawTexture(t,state,color)
   if not state or state < 1 or state > NUM_STATES[t] then state = 1 end
   tiles.setColor(color)
   if MASK[t] then
-    mask = MASK[t]
+    mask = MASK[(DEFAULT_OBJECT[t].rotateByEights and band(state,2) ~= 0) and -t or t]
     love.graphics.stencil(stencilFunction, "replace", 1)
     love.graphics.setStencilTest("less", 1)
     love.graphics.drawLayer(TEXTURES[t],state)
