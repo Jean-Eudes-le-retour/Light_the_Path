@@ -51,9 +51,11 @@ function love.load()
     --grid.fitNewObject((i%2)+1)
     grid.fitNewObject((math.floor(math.random()*20)%2)+1)
   end
-  grid.fitNewObject(3,nil,nil,nil,1,3,true)
+  grid.fitNewObject(3,nil,nil,1,3,3,true)
+  grid.fitNewObject(3,nil,nil,2,3,3,true)
   grid.fitNewObject(5)
-  grid.fitNewObject(4)
+  grid.fitNewObject(4,nil,nil,1,1,6)
+  grid.fitNewObject(4,nil,nil,2,1,6)
   x=0
   totalTime=0.0
 end
