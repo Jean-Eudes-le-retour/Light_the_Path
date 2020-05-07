@@ -19,6 +19,13 @@ function grid.setDimensions(x_res,y_res,mode,x_val,y_val)
   if type(y_res) == "number" then grid_size_y = math.floor(y_res) end
   grid.clearGrid()
   -- maybe attempt to place objects back into the grid here (rather than resetting the objects in clearGrid())
+  local grid_x_pixel_dim, grid_y_pixel_dim = grid_size_x*TEXTURE_BASE_SIZE, grid_size_y*TEXTURE_BASE_SIZE
+  UpdateBackgroundFG = true
+  canvas_WL = love.graphics.newCanvas( grid_x_pixel_dim, grid_y_pixel_dim )
+  canvas_GL = love.graphics.newCanvas( grid_x_pixel_dim, grid_y_pixel_dim )
+  canvas_OL = love.graphics.newCanvas( grid_x_pixel_dim, grid_y_pixel_dim )
+  canvas_BG = love.graphics.newCanvas( grid_x_pixel_dim, grid_y_pixel_dim )
+  canvas_GD = love.graphics.newCanvas( grid_x_pixel_dim, grid_y_pixel_dim )
   return grid.defineDrawbox(mode,x_val,y_val)
 end
 grid.init = grid.setDimensions
@@ -165,13 +172,6 @@ function grid.defineDrawbox(mode,x_val,y_val)
   debugUtils.print(texture_scale,"texture scale factor")
   debugUtils.print({drawbox_pos_x,drawbox_pos_y},"pos","drawbox_|_pos")
 --------------
-  local grid_x_dim, grid_y_dim = x_grid*TEXTURE_BASE_SIZE, y_grid*TEXTURE_BASE_SIZE
-  BG_is_drawn = false
-  canvas_WL = love.graphics.newCanvas( grid_x_dim, grid_y_dim )
-  canvas_GL = love.graphics.newCanvas( grid_x_dim, grid_y_dim )
-  canvas_OL = love.graphics.newCanvas( grid_x_dim, grid_y_dim )
-  canvas_BG = love.graphics.newCanvas( grid_x_dim, grid_y_dim )
-  canvas_GD = love.graphics.newCanvas( grid_x_dim, grid_y_dim )
   return drawbox_pos_x, drawbox_pos_y, texture_scale
 end
 

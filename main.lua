@@ -8,7 +8,7 @@ love.graphics.setDefaultFilter("nearest", "nearest")
 love.window.setTitle("Light the Path")
 --defaults 3rd parameter:windowflags = {fullscreen = false,fullscreentype = "desktop",vsync = 1,msaa = 0,stencil = true,depth = 0,resizable = false,borderless = false,centered = true,display = 1,minwidth = 1,minheight = 1}
 --if window_width (respectively window_height) is 0, desktop width (respectively height) will be used.
-love.window.setMode(0,0)
+love.window.setMode(800,800,{["resizable"] = true})
 
 -- SETTING UP CONSTANTS --
 require("constants")
@@ -26,6 +26,7 @@ local grid_pos_x, grid_pos_y = 0, 0
 
 --Important variables in main
 local drawbox_x, drawbox_y, texture_scale = 0, 0, 0
+level = false
 
 
 function love.load()
@@ -66,6 +67,8 @@ end
 
 function love.update(dt)
   game.update(dt)
+  if level and level.update then level.update(dt) end
+  if level and level.complete then --[[open victory menu]] end
   drawbox_x, drawbox_y, texture_scale = grid.getDrawboxInfo()
   grid_pos_x, grid_pos_y = grid.getCursorPosition(true)
 
@@ -85,4 +88,23 @@ function love.draw()
   love.graphics.print("X_max : "..tostring(grid_dim_x),0,10)
   love.graphics.print("Y_max : "..tostring(grid_dim_y),100,10)
   love.graphics.print("Hello World!", x, 40)
+end
+
+--Global callback function for when the screen was resized EXTERNALLY, or resized INTERNALLY with bad parameters; width and height in DPI scaled-units (???)
+function love.resize(width,height)
+  drawbox_x, drawbox_y, texture_scale = grid.defineDrawbox()
+  canvas_UI = love.graphics.newCanvas()
+end
+
+function load_level(level_name)
+  if type(level_name) ~= "string" then level_name = tostring(level_name) end
+  local path = "Levels/level_"..level_name..".lua"
+  if not file_exists(path) then
+    print("Could not find "..path)
+    return false
+  end
+  level = dofile(path)
+  level.load()
+  grid_dim_x, grid_dim_y = grid.getDimensions()
+  drawbox_x, drawbox_y, texture_scale = grid.getDrawboxInfo()
 end

@@ -128,8 +128,8 @@ end
 
 -- Checks UpdateObjectType table and updates all canvases accordingly by calling specific tile update functions
 function tiles.update()
-  if not BG_is_drawn then print("Drawing background layer...") tiles.updateBG() BG_is_drawn = true end
-  if UpdateObjectType[TYPE_WALL] or UpdateObjectType[TYPE_GLASS] then
+  if UpdateBackgroundFG then tiles.updateBG() end
+  if UpdateObjectType[TYPE_WALL] or UpdateObjectType[TYPE_GLASS] or UpdateOverlayFG then
     if UpdateObjectType[TYPE_WALL] then tiles.updateWall() end
     if UpdateObjectType[TYPE_GLASS] then tiles.updateGlass() end
     love.graphics.setCanvas(canvas_OL)
@@ -137,6 +137,7 @@ function tiles.update()
     love.graphics.draw(canvas_WL)
     love.graphics.draw(canvas_GL)
     love.graphics.setCanvas()
+    UpdateOverlayFG = false
   end
   for i=NUM_CONNECTED_TEXTURE_TILES+1,#TYPES do
     if UpdateObjectType[i] then
@@ -149,6 +150,7 @@ end
 
 -- Update the background canvas
 function tiles.updateBG()
+  print("Drawing background layer...")
   love.graphics.setCanvas(canvas_BG)
   love.graphics.clear()
   local grid_size_x, grid_size_y = grid.getDimensions()
@@ -157,6 +159,7 @@ function tiles.updateBG()
       love.graphics.drawLayer(TEXTURES[0],selected_background,i*TEXTURE_BASE_SIZE,j*TEXTURE_BASE_SIZE)
     end
   end
+  UpdateBackgroundFG = false
 end
 
 -- Update the wall states and canvas
