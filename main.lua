@@ -33,7 +33,7 @@ function love.load()
   drawbox_x, drawbox_y, texture_scale = game.init(10,5)
   
   
---grid.fitNewObject(t,xpos,ypos,state,rotation,color,canMove,canChangeState,canChangeColor,glassState)
+--grid.fitNewObject(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glassState)
   grid_dim_x, grid_dim_y = grid.getDimensions()
   for i=1,grid_dim_x do
     grid.setNewObject(nil,i,1,nil,nil,nil,nil,nil,nil,0)
@@ -92,7 +92,11 @@ end
 
 --Global callback function for when the screen was resized EXTERNALLY, or resized INTERNALLY with bad parameters; width and height in DPI scaled-units (???)
 function love.resize(width,height)
-  drawbox_x, drawbox_y, texture_scale = grid.defineDrawbox()
+  if type(level) == "table" then
+    drawbox_x, drawbox_y, texture_scale = grid.defineDrawbox(level.drawbox_mode, level.x_val, level.y_val)
+  else
+    drawbox_x, drawbox_y, texture_scale = grid.defineDrawbox()
+  end
   canvas_UI = love.graphics.newCanvas()
 end
 
