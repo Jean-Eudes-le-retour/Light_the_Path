@@ -5,15 +5,15 @@ local objects = {}
 
 -- 'state' defines the image used to draw the object (i.e. same image is equivalent to same state), rotation will define the rotation of said image when drawn.
 -- This is why items such as mirrors have 2 states: one for horizontal/vertical mirrors and one for diagonal mirrors. pwheel on the other hand can only take one state (but 2 rotations!)
--- It is worth noting that color can also influence the image used to represent the object (details to be discussed)
-local Object =          {t = 0,     id = 0, xpos = nil, ypos = nil, state = 1, rotation = 0, color = 0, canMove = false, canRotate = false, canChangeColor = false, glassState = false}
-local DEFAULT_WALL =    {t =     TYPE_WALL, state = 13, color =  0, canMove = false, canRotate = false, canChangeColor = false, glassState = false, hasMask = false, rotateByEights = false, canChangeState = false}
-local DEFAULT_GLASS =   {t =    TYPE_GLASS, state =  1, color =  0, canMove = false, canRotate = false, canChangeColor = false, glassState =     0, hasMask = false, rotateByEights = false, canChangeState = false}
-local DEFAULT_SOURCE =  {t =   TYPE_SOURCE, state =  1, color =  7, canMove = false, canRotate = false, canChangeColor = false, glassState = false, hasMask =  true, rotateByEights = false, canChangeState =  true}
-local DEFAULT_RECEIVER ={t = TYPE_RECEIVER, state =  1, color =  8, canMove = false, canRotate = false, canChangeColor = false, glassState = false, hasMask =  true, rotateByEights = false, canChangeState = false}
-local DEFAULT_MIRROR =  {t =   TYPE_MIRROR, state =  1, color =  7, canMove =  true, canRotate =  true, canChangeColor = false, glassState = false, hasMask =  true, rotateByEights =  true, canChangeState = false}
-local DEFAULT_PWHEEL =  {t =   TYPE_PWHEEL, state =  1, color =  0, canMove =  true, canRotate = false, canChangeColor = false, glassState = false, hasMask =  true, rotateByEights =  true, canChangeState = false}
-local DEFAULT_PRISM =   {t =    TYPE_PRISM, state =  1, color =  0, canMove =  true, canRotate =  true, canChangeColor = false, glassState = false, hasMask = false, rotateByEights = false, canChangeState = false}
+-- It is worth noting that color will also influence the drawn image (though never the texture itself)
+local Object =          {t = 0,     id = 0, xpos = nil, ypos = nil, state = 1, rotation = 0, color = COLOR_WHITE, canMove = false, canRotate = false, canChangeColor = false, glassState = false}
+local DEFAULT_WALL =    {t =     TYPE_WALL, state = 13, color =  COLOR_WHITE, canMove = false, canRotate = false, canChangeColor = false, glassState = false, hasMask = false, rotateByEights = false, canChangeState = false}
+local DEFAULT_GLASS =   {t =    TYPE_GLASS, state =  1, color =  COLOR_WHITE, canMove = false, canRotate = false, canChangeColor = false, glassState =     0, hasMask = false, rotateByEights = false, canChangeState = false}
+local DEFAULT_SOURCE =  {t =   TYPE_SOURCE, state =  1, color =  COLOR_WHITE, canMove = false, canRotate = false, canChangeColor =  true, glassState = false, hasMask =  true, rotateByEights = false, canChangeState =  true}
+local DEFAULT_RECEIVER ={t = TYPE_RECEIVER, state =  1, color =  COLOR_BLACK, canMove = false, canRotate = false, canChangeColor = false, glassState = false, hasMask =  true, rotateByEights = false, canChangeState = false}
+local DEFAULT_MIRROR =  {t =   TYPE_MIRROR, state =  1, color =  COLOR_WHITE, canMove =  true, canRotate =  true, canChangeColor =  true, glassState = false, hasMask =  true, rotateByEights =  true, canChangeState = false}
+local DEFAULT_PWHEEL =  {t =   TYPE_PWHEEL, state =  1, color =  COLOR_WHITE, canMove = false, canRotate = false, canChangeColor = false, glassState = false, hasMask =  true, rotateByEights =  true, canChangeState = false}
+local DEFAULT_PRISM =   {t =    TYPE_PRISM, state =  1, color =  COLOR_WHITE, canMove =  true, canRotate =  true, canChangeColor = false, glassState = false, hasMask = false, rotateByEights = false, canChangeState = false}
 DEFAULT_OBJECT =  {DEFAULT_WALL,DEFAULT_GLASS,DEFAULT_SOURCE,DEFAULT_RECEIVER,DEFAULT_MIRROR,DEFAULT_PWHEEL,DEFAULT_PRISM}
 TYPES =            {"wall","glass","source","receiver","mirror","pwheel","prism" }
 NUM_STATES =       {     1,      1,       2,         2,       2,       2,      1 }
@@ -21,7 +21,8 @@ UpdateObjectType = { false,  false,   false,     false,   false,   false,  false
 ObjectReferences = {} -- contains tables of references to each object of each type sorted by type and Id; Object:ObjectReferences[int:type][int:id]
 local Id = {} -- contains the Id of the newest object of each type (i.e. the amount of each types unless some have been deleted); int:Id[int:type]
 
--- Creates a new Object table, with default values as defined in the DEFAULT_OBJECT table. Please refrain from calling directly (use grid functions!)
+-- DO NOT USE THIS METHOD EXTERNALLY ON OTHER OBJECTS; To create a new object use functions in the "grid" module.
+-- Creates a new Object table, with default values as defined in the DEFAULT_OBJECT table. 
 function Object:new(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glassState)
   o = {}
   setmetatable(o, self)
@@ -67,16 +68,11 @@ function Object:rotate(invert)
   UpdateObjectType[self.t] = true
 end
 
--- Note that this only changes the position info for the object not the position in the grid; do not call directly or may cause weirdness
-function Object:changePosition(xpos,ypos)
-  self.xpos = xpos
-  self.ypos = ypos
-end
-
--- Remove the reference to object within ObjectReferences. If it was externally removed from everywhere else garbage collection should handle the rest
+-- Remove the reference to object within ObjectReferences and from the grid. If it was externally removed from everywhere else garbage collection should handle the rest
 function Object:delete()
   UpdateObjectType[self.t] = true
   ObjectReferences[self.t][self.id] = nil
+  if Grid[self.xpos] and Grid[self.xpos][self.ypos] and Grid[self.xpos][self.ypos].id == self.id then Grid[self.xpos][self.ypos] = nil end
 end
 
 -- Will return the amount of the specified type (note that this cannot be substituted for Id in 'for' loop because objects could have been deleted)
@@ -101,9 +97,19 @@ function objects.resetObjects()
   end
 end
 
--- Create a new object (does not place in grid!) Refrain from using directly (please use grid functions)
+
+
+
+
+
+-- ONLY CALLED THROUGH GRID FUNCTIONS DO NOT CALL DIRECTLY: Create a new object (does not place in grid!)
 function objects.newObject(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glassState)
   return Object:new(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glassState)
+end
+-- ONLY CALLED THROUGH GRID FUNCTIONS DO NOT CALL DIRECTLY: Note that this only changes the position info for the object not the position in the grid; 
+function Object:changePosition(xpos,ypos)
+  self.xpos = xpos
+  self.ypos = ypos
 end
 
 return objects

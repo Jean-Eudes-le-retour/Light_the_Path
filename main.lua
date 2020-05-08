@@ -26,6 +26,7 @@ local grid_pos_x, grid_pos_y = 0, 0
 
 --Important variables in main
 local drawbox_x, drawbox_y, texture_scale = 0, 0, 0
+game_time = 0
 level = false
 
 
@@ -66,6 +67,7 @@ function love.load()
 end
 
 function love.update(dt)
+  game_time = game_time + dt --dt is in seconds, should be 0.0166-repeating on average (60 FPS capped)
   game.update(dt)
   if level and level.update then level.update(dt) end
   if level and level.complete then --[[open victory menu]] end
@@ -73,7 +75,6 @@ function love.update(dt)
   grid_pos_x, grid_pos_y = grid.getCursorPosition(true)
 
   x=x+10*dt
-  totalTime = totalTime + dt --dt is in seconds
 end
 
 function love.draw()
@@ -87,16 +88,18 @@ function love.draw()
   love.graphics.print("Y : "..string.sub(tostring(grid_pos_y),1,10),100,0)
   love.graphics.print("X_max : "..tostring(grid_dim_x),0,10)
   love.graphics.print("Y_max : "..tostring(grid_dim_y),100,10)
+  love.graphics.print("Current FPS: "..tostring(love.timer.getFPS( )), 0, 25)
   love.graphics.print("Hello World!", x, 40)
 end
 
 --Global callback function for when the screen was resized EXTERNALLY, or resized INTERNALLY with bad parameters; width and height in DPI scaled-units (???)
-function love.resize(width,height)
+function love.resize(width,height,dontResetUI)
   if type(level) == "table" then
     drawbox_x, drawbox_y, texture_scale = grid.defineDrawbox(level.drawbox_mode, level.x_val, level.y_val)
   else
     drawbox_x, drawbox_y, texture_scale = grid.defineDrawbox()
   end
+  if dontResetUI then return end
   canvas_UI = love.graphics.newCanvas()
 end
 

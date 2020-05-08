@@ -97,8 +97,7 @@ tiles.reloadTextures = tiles.loadTextures
 
 -- Set active color to specified color (bit 1 is Red, bit 2 is Green, bit 3 is Blue). If color's 4th bit is on, AND all other bits are off, the texture will be printed ALL BLACK. Otherwise color = 0 means WHITE.
 function tiles.setColor(color)
-  local Red, Green, Blue, Black = band(color,1), band(color,2), band(color,4), band(color,8)
-  if (Red == 0) and (Green == 0) and (Blue == 0) and (Black == 0) then Red, Green, Blue = 1,1,1 end
+  local Red, Green, Blue = band(color,1), band(color,2), band(color,4), band(color,8)
   love.graphics.setColor(Red,Green,Blue)
 end
 
