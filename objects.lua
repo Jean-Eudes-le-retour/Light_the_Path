@@ -24,7 +24,7 @@ local Id = {} -- contains the Id of the newest object of each type (i.e. the amo
 -- DO NOT USE THIS METHOD EXTERNALLY ON OTHER OBJECTS; To create a new object use functions in the "grid" module.
 -- Creates a new Object table, with default values as defined in the DEFAULT_OBJECT table. 
 function Object:new(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glassState)
-  o = {}
+  local o = {}
   setmetatable(o, self)
   self.__index = self
 

@@ -30,20 +30,37 @@ end
 
 -- Update the UI canvas (all menu levels and cursor related graphics)
 function game.updateUI(dt)
+  local cursor_x, cursor_y = love.mouse.getPosition()
+  local texture_scale = grid.getTextureScale()
+  --[[UI
+  local UI_scale = ui_elements.getUIscale()
+  local MenuId = ui_elements.getMenuId()
+  for i=MenuId,1,-1 do
+    if Menus[i] then Menus[i].update(Menus[i]) end
+  end
+  ]]
   love.graphics.setCanvas(canvas_UI)
   love.graphics.clear()
-  local cursor_x, cursor_y = love.mouse.getPosition()
+  --[[UI
+  for i=MenuId,1,-1 do
+    if Menus[i] and Menus[i].canvas then
+      love.graphics.draw(Menus[i].canvas,Menus[i].xpos,Menus[i].ypos,nil,(Menus[i].t == UI_TILE) and texture_scale or UI_scale)
+    end
+  end
+  ]]
 
   if o_hand then
-    local texture_scale = grid.getTextureScale()
     local rotation = math.rad(90*o_hand.rotation)
     local state = o_hand.state
     tiles.drawTexture(o_hand.t,o_hand.state,o_hand.color)
     love.graphics.setCanvas(canvas_UI)
     love.graphics.draw(canvas_Texture,cursor_x+o_displacement_x,cursor_y+o_displacement_y,rotation,texture_scale)
   end
-  -- DRAW CUSTOM CURSORS
   love.graphics.setCanvas()
+  
+  -- DRAW CUSTOM CURSORS
+  
+  
 end
 
 -- The love callback function for mouse presses (assignment is done in init). Defines behaviour.
@@ -52,6 +69,27 @@ function game.onClick( x, y, button, istouch, presses )
   local f_xpos, f_ypos = grid.getCursorPosition(true)
   local xpos, ypos = grid.getCursorPosition()
   -- IF GAME IS ACTIVE -- DEFINE GLOBAL FLAGS SO THAT WE CAN USE MENUS AND HAVE TEXT CONVERSATION MODES TOO!
+  --[[UI
+  local MenuId = ui_elements.getMenuId
+  for i=MenuId,1,-1 do
+    if Menus[i] then
+      if Menus[i]:isInMenu() then
+        if Menus[i].buttons then
+          for j=1,#Menus[i].buttons do
+            if Menus[i]:isInButton(j) then
+              Menus[i].buttons[j].texture_id = 2
+              return true
+            end
+          end
+        end
+        return false
+      elseif Menus[i].isBlocking then
+        return false
+      end
+    end
+  end
+  
+  ]]
   if not (Grid[xpos] and Grid[xpos][ypos]) then
     if (button == 1) and (cursor_mode == CURSOR_SELECT) then sel_x, sel_y = false, false end
     if (button == 3) then sel_x, sel_y = false, false end
@@ -86,6 +124,20 @@ function game.onRelease( x, y, button, istouch, presses )
     o_hand = false
     return bool
   end
+  --[[UI
+  local MenuId = ui_elements.getMenuId
+  for i=MenuId,1,-1 do
+    if Menus[i] and Menus[i]:isInMenu() then
+      if Menus[i].buttons then
+        for j=1,#Menus[i].buttons do
+          if Menus[i]:isInButton(j) and Menus[i].buttons[j].texture_id == 2 then
+            Menus[i].buttons[j].onClick(Menus[i],Menus[i].buttons[j])
+          end
+        end
+      end
+    end
+  end
+  ]]
 end
 
 return game

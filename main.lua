@@ -101,6 +101,7 @@ function love.resize(width,height,dontResetUI)
   end
   if dontResetUI then return end
   canvas_UI = love.graphics.newCanvas()
+  --[[UI ui_elements.redraw()]]
 end
 
 function load_level(level_name)

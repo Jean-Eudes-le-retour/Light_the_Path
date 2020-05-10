@@ -8,6 +8,7 @@ local level = {}
 level.complete = false
 level.x = 16
 level.y = 9
+level.name = "Template"
 
 -- OPTIONAL VARIABLES --
 level.drawbox_mode = nil

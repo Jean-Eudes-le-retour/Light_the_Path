@@ -192,9 +192,9 @@ function grid.getCursorPosition(getFraction)
   return cursor_grid_pos_x, cursor_grid_pos_y
 end
 
---Return top left corner outer pixel coordinates of specified tile (UNUSED AND APPARENTLY UNNECESSARY)
+--Return coordinates of specified tile (or position based on grid based position)
 function grid.getTilePosition(grid_pos_x, grid_pos_y)
-  return math.floor(drawbox_pos_x+(grid_pos_x-1)*tile_size), math.floor(drawbox_pos_y+(grid_pos_y-1)*tile_size)
+  return drawbox_pos_x+grid_pos_x*tile_size, drawbox_pos_y+grid_pos_y*tile_size
 end
 
 
