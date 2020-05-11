@@ -5,7 +5,12 @@ local ui_elements = {}
 local MenuId = 1 --DEFAULT HAS MAIN_MENU ACTIVE
 local UI_TYPES = {"menu","dialogue","tile"}
 local NUM_PRESETS = 1
-local UI_scale = 1
+local UI_scale = 1.5
+local TEXUTRE_MENU_CORNER = love.graphics.newImage("Textures/menu_corner.png")
+local TEXTURE_MENU_SIDE = love.graphics.newImage("Textures/menu_side.png")
+local DEFAULT_BUTTON_SPACING = 6
+local DEFAULT_H_DEADZONE = 32
+local DEFAULT_V_DEADZONE = 32
 
 --[[
 ________________________________________________
@@ -13,7 +18,7 @@ TO PREPARE A MENU:
 ________________________________________________
 local m = ui_elements.create(UI_MENU)
 m.texture[0] = ui_elements.getNewMenuBackground(width,height) -- (or a custom texture)
-local buttons = { {xpos = 5, ypos = 5, texture_id = 1, onClick = <a function of m and b>}, ... }
+local buttons = { {xpos = 5, ypos = 5, texture_id = BUTTON_TEXTURE_NORMAL (1), onClick = <a function of m and b>, text = "Return to Game",(font = FONT_DEFAULT),(align = "center")}, ... }
 m.buttons = buttons
 m.texture[1] = love.graphics.newImage("path_to_regular_button")
 
@@ -21,16 +26,17 @@ m.texture[1] = love.graphics.newImage("path_to_regular_button")
 m.window_position_mode = MENU_CENTER
 m.isBlocking = true
 m.texture[2] = love.graphics.newImage("path_to_pressed_button") -- for both if unspecified, will show texture[1]
-m.texture[3] = love.graphics.newImafe("path_to_hovered_button")
+m.texture[3] = love.graphics.newImage("path_to_hovered_button")
 m.update = <a function of m>
 --Note that the button onClick function should only be called via love.mouse release callbacks.
 --This function can serve to give special behaviour to buttons or update the menu itself
+--Note that the onClick function will only ever be called ON MOUSE RELEASE if TEXTURE_ID of the button is 2 (BUTTON_TEXTURE_PRESSED)!
 --For example, there are no "mouse is no longer on button" callbacks so if required to know, this must be checked here
 --It's also worth noting that no other functions but Menu:resize() updates the menu graphics by default, so it is recommended that this function be defined
 --Recommend using ui_elements.checkButtonUpdate by default for those purposes
 
 -- IMPORTANT FINALIZATION --
-m.updateButtonDimensions(m) --So that the menu is initialized to correct values for default update function (depends on your update function)
+ui_elements.updateButtonDimensions(m) --So that the menu is initialized to correct values for default update function (depends on your update function)
 m:resize()  --Includes m:draw()
 ________________________________________________
 TO PREPARE A DIALOGUE:
@@ -71,8 +77,8 @@ local DEFAULT_MENU = {
 }
 
 local DEFAULT_UI = {DEFAULT_MENU,DEFAULT_DIALOGUE,DEFAULT_TILE}
-Menus = {MAIN_MENU} -- Global Menus table
-
+--Menus = {MAIN_MENU} -- Global Menus table
+Menus = {}
 
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
@@ -141,8 +147,8 @@ function Menu:isInButton(i)
   if self.t == UI_TILE then
     cursor_x, cursor_y = grid.getCursorPosition()
     cursor_x, cursor_y = cursor_x - self.xpos + 1, cursor_y - self.ypos + 1
-    if cursor_x >= self.buttons[i].xpos and cursor_x < self.buttons[i].xpos + (self.buttons[i].width or 0) and
-       cursor_y >= self.buttons[i].ypos and cursor_y < self.buttons[i].ypos + (self.buttons[i].height or 0) then
+    if cursor_x >= self.buttons[i].xpos and cursor_x < self.buttons[i].xpos + (self.buttons[i].width or 1) and
+       cursor_y >= self.buttons[i].ypos and cursor_y < self.buttons[i].ypos + (self.buttons[i].height or 1) then
       return true
     else
       return false
@@ -153,8 +159,8 @@ function Menu:isInButton(i)
     local texture_scale = grid.getTextureScale()
     cursor_x, cursor_y = grid.getCursorPosition(true)
     cursor_x, cursor_y = (cursor_x - self.xpos)*texture_scale/UI_scale, (cursor_y - self.ypos)*texture_scale/UI_scale
-    if cursor_x > self.buttons[i].xpos and cursor_x <= self.buttons[i].xpos + (self.buttons[i].width or 0) and
-       cursor_y > self.buttons[i].ypos and cursor_y <= self.buttons[i].ypos + (self.buttons[i].height or 0) then
+    if cursor_x > self.buttons[i].xpos and cursor_x <= self.buttons[i].xpos + (self.buttons[i].width or 1) and
+       cursor_y > self.buttons[i].ypos and cursor_y <= self.buttons[i].ypos + (self.buttons[i].height or 1) then
       return true
     else
       return false
@@ -162,8 +168,8 @@ function Menu:isInButton(i)
   end
 --REGULAR SCREEN POSITION BASED
   cursor_x, cursor_y = cursor_x - self.xpos, cursor_y - self.ypos
-  if cursor_x > self.buttons[i].xpos and cursor_x <= self.buttons[i].xpos + (self.buttons[i].width or 0) and
-     cursor_y > self.buttons[i].ypos and cursor_y <= self.buttons[i].ypos + (self.buttons[i].height or 0) then
+  if cursor_x > self.buttons[i].xpos*UI_scale and cursor_x <= (self.buttons[i].xpos + (self.buttons[i].width or 1))*UI_scale and
+     cursor_y > self.buttons[i].ypos*UI_scale and cursor_y <= (self.buttons[i].ypos + (self.buttons[i].height or 1))*UI_scale then
     return true
   else 
     return false
@@ -174,18 +180,26 @@ end
 function Menu:draw()
   love.graphics.setCanvas(self.canvas)
   love.graphics.clear()
-  if texture and texture[0] then love.graphics.draw(texture[0]) end
+  if self.texture and self.texture[0] then love.graphics.draw(self.texture[0]) end
   for i=1,(self.buttons and #self.buttons or 0) do
     local b_x, b_y, b_w, b_h, b_tid = self.buttons[i].xpos, self.buttons[i].ypos, self.buttons[i].width, self.buttons[i].height, self.buttons[i].texture_id
     if self.t == UI_TILE then b_x, b_y = (b_x-1)*TEXTURE_BASE_SIZE, (b_y-1)*TEXTURE_BASE_SIZE end
-    if not self.texture[t_id] then t_id = 1 end
-    love.graphics.draw(self.texture[t_id],b_x,b_y)
+    if not self.texture[b_tid] then b_tid = BUTTON_TEXTURE_NORMAL end
+    love.graphics.draw(self.texture[b_tid],b_x,b_y)
     
     if self.buttons[i].text then
       local b_str, b_ft, b_al = self.buttons[i].text, self.buttons[i].font, self.buttons[i].align
       if not b_ft then b_ft = FONT_DEFAULT end
       if not b_al then b_al = "center" end
-      love.graphics.printf(b_str, b_ft, b_x + TEXT_MARGIN, math.ceil(b_y + (b_h - b_ts)/2), b_w - 2*TEXT_MARGIN, b_al)
+      local t_w = b_ft:getWidth(b_str)
+      local t_h = b_ft:getHeight()
+      if b_al == "center" then
+        love.graphics.print(b_str, b_ft, math.floor(b_x + (b_w-t_w)/2), math.ceil(b_y + (b_h - t_h)/2))
+      elseif b_al == "right" then
+        love.graphics.print(b_str, b_ft, b_x+b_w-TEXT_MARGIN-t_w, math.ceil(b_y + (b_h - t_h)/2))
+      else
+        love.graphics.print(b_str, b_ft, b_x+TEXT_MARGIN, math.ceil(b_y + (b_h - t_h)/2))
+      end
     end
     love.graphics.setNewFont()
   end
@@ -200,10 +214,10 @@ end
 function Menu:resize()
   if self.t == UI_MENU then
 
-    local window_x, window_y = love.getDimensions()
+    local window_x, window_y = love.graphics.getDimensions()
     local pmode = self.window_position_mode
     if self.texture and self.texture[0] then
-      self.width_factor, self.height_factor = self.texture:getDimensions()
+      self.width_factor, self.height_factor = self.texture[0]:getDimensions()
       self.width = math.ceil(self.width_factor*UI_scale)
       self.height = math.ceil(self.height_factor*UI_scale)
     else
@@ -250,8 +264,47 @@ end
 -- GENERAL FUNCTIONS --
 
 --draws and returns a standard background canvas for the specified dimensions.
-function ui_elements.getNewMenuBackground(width,height)
+function ui_elements.getNewMenuBackground(width,height,tc_path,ts_path,bg_color)
+  local t_corner, t_side = nil, nil
+  bg_color = bg_color or {0.8,0.8,0.8,1}
+  if not tc_path or not ts_path then t_corner, t_side = TEXUTRE_MENU_CORNER, TEXTURE_MENU_SIDE
+  else t_corner, t_side = love.graphics.newImage(tc_path), love.graphics.newImage(ts_path) end
+  local corner_dim, side_dim = t_corner:getPixelWidth(), t_side:getPixelWidth()
+  
+  if 2*corner_dim > width or 2*corner_dim > height then return nil end
 
+  local h_rep = math.floor((width-2*corner_dim)/side_dim+0.5)
+  if h_rep == 0 then h_rep = 1 end
+  local h_scale = (width-2*corner_dim)/(h_rep*side_dim)
+  local v_rep = math.floor((height-2*corner_dim)/side_dim+0.5)
+  if v_rep == 0 then v_rep = 1 end
+  local v_scale = (height-2*corner_dim)/(v_rep*side_dim)
+  
+  local canvas = love.graphics.newCanvas(width,height)
+  love.graphics.setCanvas(canvas)
+  for i=0,h_rep-1 do
+    love.graphics.draw(t_side,corner_dim+i*h_scale*side_dim,0,0,h_scale,1)
+  end
+  love.graphics.draw(t_corner,0,0,0)
+  for i=0,v_rep-1 do
+    love.graphics.draw(t_side,width,corner_dim+i*v_scale*side_dim,math.rad(90),v_scale,1)
+  end
+  love.graphics.draw(t_corner,width,0,math.rad(90))
+  for i=1,h_rep do
+   love.graphics.draw(t_side,corner_dim+i*h_scale*side_dim,height,math.rad(180),h_scale,1)
+  end
+  love.graphics.draw(t_corner,width,height,math.rad(180))
+  for i=1,v_rep do
+    love.graphics.draw(t_side,0,corner_dim+i*v_scale*side_dim,math.rad(270),v_scale,1)
+  end
+  love.graphics.draw(t_corner,0,height,math.rad(270))
+  
+  love.graphics.setColor(unpack(bg_color))
+  love.graphics.rectangle("fill",corner_dim,corner_dim,width-2*corner_dim,height-2*corner_dim)
+  love.graphics.setColor(1,1,1,1)
+  love.graphics.setCanvas()
+  
+  return canvas
 end
 
 function ui_elements.create(t)
@@ -269,20 +322,21 @@ end
 
 function ui_elements.updateButtonDimensions(m)
   for j=1,#m.buttons do
+    if not m.buttons[j].texture_id then m.buttons[j].texture_id = 1 end
     m.buttons[j].previous_texture_id = m.buttons[j].texture_id
     if m.t == UI_TILE then
       if m.texture[m.buttons[j].texture_id] then
         m.buttons[j].width, m.buttons[j].height = m.texture[m.buttons[j].texture_id]:getPixelDimensions()
         m.buttons[j].width, m.buttons[j].height = m.buttons[j].width/TEXTURE_BASE_SIZE, m.buttons[j].height/TEXTURE_BASE_SIZE
       else
-        m.buttons[j].width, m.buttons[j].height = m.texture[1]:getPixelDimensions()
+        m.buttons[j].width, m.buttons[j].height = m.texture[BUTTON_TEXTURE_NORMAL]:getPixelDimensions()
         m.buttons[j].width, m.buttons[j].height = m.buttons[j].width/TEXTURE_BASE_SIZE, m.buttons[j].height/TEXTURE_BASE_SIZE
       end
     else
       if m.texture[m.buttons[j].texture_id] then
         m.buttons[j].width, m.buttons[j].height = m.texture[m.buttons[j].texture_id]:getPixelDimensions()
       else
-        m.buttons[j].width, m.buttons[j].height = m.texture[1]:getPixelDimensions()
+        m.buttons[j].width, m.buttons[j].height = m.texture[BUTTON_TEXTURE_NORMAL]:getPixelDimensions()
       end
     end
   end
@@ -290,17 +344,31 @@ end
 
 function ui_elements.checkButtonUpdate(m)
   for i=1,#m.buttons do
-    if texture[3] and m:isInButton(i) and m.buttons[i].texture_id ~= 2 then m.buttons[i].texture_id = 3
-    else m.buttons[i].texture_id = 1 end
+    if not m:isInButton(i) then m.buttons[i].texture_id = BUTTON_TEXTURE_NORMAL
+    elseif m.buttons[i].texture_id ~= BUTTON_TEXTURE_PRESSED then m.buttons[i].texture_id = BUTTON_TEXTURE_HOVERED end
   end
   for i=1,#m.buttons do
-    if m:buttons[i].previous_texture_id ~= m.buttons[i].texture_id then
+    if m.buttons[i].previous_texture_id ~= m.buttons[i].texture_id then
       ui_elements.updateButtonDimensions(m)
       m:draw()
       return true
     end
   end
   return false
+end
+
+function ui_elements.fitButtons(m,spacing,h_deadzone,v_deadzone)
+  spacing = spacing or DEFAULT_BUTTON_SPACING
+  h_deadzone = h_deadzone or DEFAULT_H_DEADZONE
+  v_deadzone = v_deadzone or DEFAULT_V_DEADZONE
+  local b_w,b_h = m.texture[1]:getDimensions()
+  local width = 2*h_deadzone+b_w
+  local height = 2*v_deadzone+#m.buttons*(b_h+spacing)-spacing
+  m.texture[0] = ui_elements.getNewMenuBackground(width,height)
+  for i=1,#m.buttons do
+    m.buttons[i].xpos = v_deadzone
+    m.buttons[i].ypos = h_deadzone+(i-1)*(spacing+b_h)
+  end
 end
 
 function ui_elements.getMenuId()

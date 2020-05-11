@@ -18,6 +18,7 @@ local objects = require("objects")
 local grid = require("grid")
 local tiles = require("tiles")
 local game = require("game")
+local ui_elements = require("ui_elements")
 local debugUtils = require("debugUtils")
 
 --temporary test var
@@ -64,6 +65,22 @@ function love.load()
   grid.fitNewObject(TYPE_PWHEEL,nil,nil,2,1,7)
   x=0
   totalTime=0.0
+  
+  
+  local m = ui_elements.create(UI_MENU)
+  --m.texture[0] = ui_elements.getNewMenuBackground(200,300)
+  m.buttons = {{xpos = 20, ypos = 5, onClick = function(m,b) m:close() end, text = "Return to Game"},{xpos = 20, ypos = 5, onClick = function(m,b) m:close() end, text = "Return to Game"},{xpos = 20, ypos = 5, onClick = function(m,b) m:close() end, text = "Return to Game"}}
+  m.texture[1] = love.graphics.newImage("Textures/default_button_1.png")
+  ui_elements.fitButtons(m)
+
+  m.window_position_mode = MENU_CENTER
+  m.isBlocking = true
+  m.texture[2] = love.graphics.newImage("Textures/default_button_2.png")
+
+  ui_elements.updateButtonDimensions(m)
+  m:resize()
+  
+  
 end
 
 function love.update(dt)
@@ -103,7 +120,7 @@ function love.resize(width,height,dontResetUI)
   end
   if dontResetUI then return end
   canvas_UI = love.graphics.newCanvas()
-  --[[UI ui_elements.redraw()]]
+  ui_elements.redraw()
 end
 
 function load_level(level_name)

@@ -1,5 +1,6 @@
 local grid = require("grid")
 local tiles = require("tiles")
+local ui_elements = require("ui_elements")
 
 
 -- HIGH LEVEL GAME FUNCTIONS, ideally functions that provide user with UI and defines behaviour when player takes certain actions
@@ -32,22 +33,18 @@ end
 function game.updateUI(dt)
   local cursor_x, cursor_y = love.mouse.getPosition()
   local texture_scale = grid.getTextureScale()
-  --[[UI
   local UI_scale = ui_elements.getUIscale()
   local MenuId = ui_elements.getMenuId()
   for i=MenuId,1,-1 do
     if Menus[i] then Menus[i].update(Menus[i]) end
   end
-  ]]
   love.graphics.setCanvas(canvas_UI)
   love.graphics.clear()
-  --[[UI
   for i=MenuId,1,-1 do
     if Menus[i] and Menus[i].canvas then
       love.graphics.draw(Menus[i].canvas,Menus[i].xpos,Menus[i].ypos,nil,(Menus[i].t == UI_TILE) and texture_scale or UI_scale)
     end
   end
-  ]]
 
   if o_hand then
     local rotation = math.rad(90*o_hand.rotation)
@@ -69,15 +66,14 @@ function game.onClick( x, y, button, istouch, presses )
   local f_xpos, f_ypos = grid.getCursorPosition(true)
   local xpos, ypos = grid.getCursorPosition()
   -- IF GAME IS ACTIVE -- DEFINE GLOBAL FLAGS SO THAT WE CAN USE MENUS AND HAVE TEXT CONVERSATION MODES TOO!
-  --[[UI
-  local MenuId = ui_elements.getMenuId
+  local MenuId = ui_elements.getMenuId()
   for i=MenuId,1,-1 do
     if Menus[i] then
       if Menus[i]:isInMenu() then
         if Menus[i].buttons then
           for j=1,#Menus[i].buttons do
             if Menus[i]:isInButton(j) then
-              Menus[i].buttons[j].texture_id = 2
+              Menus[i].buttons[j].texture_id = BUTTON_TEXTURE_PRESSED
               return true
             end
           end
@@ -89,7 +85,6 @@ function game.onClick( x, y, button, istouch, presses )
     end
   end
   
-  ]]
   if not (Grid[xpos] and Grid[xpos][ypos]) then
     if (button == 1) and (cursor_mode == CURSOR_SELECT) then sel_x, sel_y = false, false end
     if (button == 3) then sel_x, sel_y = false, false end
@@ -124,21 +119,20 @@ function game.onRelease( x, y, button, istouch, presses )
     o_hand = false
     return bool
   end
-  --[[UI
-  local MenuId = ui_elements.getMenuId
+  local MenuId = ui_elements.getMenuId()
   for i=MenuId,1,-1 do
     if Menus[i] and Menus[i]:isInMenu() then
       if Menus[i].buttons then
         for j=1,#Menus[i].buttons do
-          if Menus[i]:isInButton(j) and Menus[i].buttons[j].texture_id == 2 then
+          if Menus[i]:isInButton(j) and Menus[i].buttons[j].texture_id == BUTTON_TEXTURE_PRESSED then
             if Menus[i].buttons[j].onClick then Menus[i].buttons[j].onClick(Menus[i],Menus[i].buttons[j]) end
-            Menus[i].buttons[j].texture_id = 3
+            if Menus[i] then Menus[i].buttons[j].texture_id = BUTTON_TEXTURE_HOVERED
+            else return nil end
           end
         end
       end
     end
   end
-  ]]
 end
 
 return game
