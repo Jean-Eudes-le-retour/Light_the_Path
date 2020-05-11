@@ -133,8 +133,10 @@ function tiles.update()
     if UpdateObjectType[TYPE_GLASS] then tiles.updateGlass() end
     love.graphics.setCanvas(canvas_OL)
     love.graphics.clear()
+    love.graphics.setBlendMode("alpha","premultiplied")
     love.graphics.draw(canvas_WL)
     love.graphics.draw(canvas_GL)
+    love.graphics.setBlendMode("alpha")
     love.graphics.setCanvas()
     UpdateOverlayFG = false
   end
@@ -234,7 +236,9 @@ function tiles.updateObjects()
         rotation = math.rad(90*rotation)
         tiles.drawTexture(i,state,o.color)
         love.graphics.setCanvas(canvas_GD)
+        love.graphics.setBlendMode("alpha","premultiplied")
         love.graphics.draw(canvas_Texture,xpos*TEXTURE_BASE_SIZE,ypos*TEXTURE_BASE_SIZE,rotation)
+        love.graphics.setBlendMode("alpha")
       end
     end
   end

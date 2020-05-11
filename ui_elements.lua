@@ -60,7 +60,7 @@ local DEFAULT_MENU = {
 
   isBlocking = true,
   window_position_mode = MENU_CENTER,
-  buttons = {}, -- contains button {xpos,ypos,texture_id(determines width/height, NORMAL,PRESSED,HOVERED),previous_texture_id,text,text_size,align,font,onClick(m,b)}
+  buttons = {}, -- contains button {xpos,ypos,texture_id(determines width/height, NORMAL,PRESSED,HOVERED),previous_texture_id,text,align,font,onClick(m,b)}
   texture = {}, -- contains all textures including button textures; 0 is the menu itself
   imagedata = false, -- if defined, test transparency
   
@@ -78,7 +78,7 @@ Menus = {MAIN_MENU} -- Global Menus table
 ------------------------------------------------------------------------------------------------------------------------------------------------
 -- On screen resize : menu:resize(), menu:draw() for all (use ui_elements.redraw()?)
 
-function Menu:new(t) --do not forget to index to Menus (and check if the Id needs changing)
+function Menu:new(t)
   local m = {}
   setmetatable(m, self)
   self.__index = self
@@ -94,6 +94,7 @@ function Menu:new(t) --do not forget to index to Menus (and check if the Id need
   m.canvas = DEFAULT_UI[t].canvas
   m.update = DEFAULT_UI[t].update
   
+  while MenuId > 0 and not Menus[MenuId] do MenuId = MenuId-1 end
   MenuId = MenuId+1
   m.id = MenuId
   Menus[MenuId] = m
@@ -181,13 +182,10 @@ function Menu:draw()
     love.graphics.draw(self.texture[t_id],b_x,b_y)
     
     if self.buttons[i].text then
-      local b_str, b_ft, b_ts, b_al = self.buttons[i].text, self.buttons[i].font, self.text_size, self.buttons[i].align
-      if not b_ft then b_ft = "Retro Gaming.ttf" end
-      if not b_ts then b_ts = 12 end
+      local b_str, b_ft, b_al = self.buttons[i].text, self.buttons[i].font, self.buttons[i].align
+      if not b_ft then b_ft = FONT_DEFAULT end
       if not b_al then b_al = "center" end
-      b_ft = "Textures/Fonts/"..b_ft
-      love.graphics.setNewFont(b_ft,b_ts)
-      love.graphics.printf(b_str, b_x + TEXT_MARGIN, math.ceil(b_y + (b_h - b_ts)/2), b_w - 2*TEXT_MARGIN, b_al)
+      love.graphics.printf(b_str, b_ft, b_x + TEXT_MARGIN, math.ceil(b_y + (b_h - b_ts)/2), b_w - 2*TEXT_MARGIN, b_al)
     end
     love.graphics.setNewFont()
   end
@@ -257,11 +255,13 @@ function ui_elements.getNewMenuBackground(width,height)
 end
 
 function ui_elements.create(t)
+--[[UI test for non-base types]]
   return Menu:new(t)
 end
 
 -- Called in love.resize()
 function ui_elements.redraw()
+  --[[if UI_scale is automatic then UI_scale = operation on screen size]]
   for i=MenuId,1,-1 do
    if Menus[i] then Menus[i]:resize() end
   end

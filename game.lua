@@ -131,7 +131,8 @@ function game.onRelease( x, y, button, istouch, presses )
       if Menus[i].buttons then
         for j=1,#Menus[i].buttons do
           if Menus[i]:isInButton(j) and Menus[i].buttons[j].texture_id == 2 then
-            Menus[i].buttons[j].onClick(Menus[i],Menus[i].buttons[j])
+            if Menus[i].buttons[j].onClick then Menus[i].buttons[j].onClick(Menus[i],Menus[i].buttons[j]) end
+            Menus[i].buttons[j].texture_id = 3
           end
         end
       end
