@@ -5,9 +5,10 @@ local ui_elements = {}
 local MenuId = 1 --DEFAULT HAS MAIN_MENU ACTIVE
 local UI_TYPES = {"menu","dialogue","tile"}
 local NUM_PRESETS = 1
-local UI_scale = 1.5
-local TEXUTRE_MENU_CORNER = love.graphics.newImage("Textures/menu_corner.png")
-local TEXTURE_MENU_SIDE = love.graphics.newImage("Textures/menu_side.png")
+--UI_scale_mode boolean for automatic scaling?
+local UI_scale = 2
+local DEFAULT_MENU_CORNER = love.graphics.newImage("Textures/menu_corner.png")
+local DEFAULT_MENU_SIDE = love.graphics.newImage("Textures/menu_side.png")
 local DEFAULT_BUTTON_SPACING = 6
 local DEFAULT_H_DEADZONE = 32
 local DEFAULT_V_DEADZONE = 32
@@ -23,6 +24,7 @@ m.buttons = buttons
 m.texture[1] = love.graphics.newImage("path_to_regular_button")
 
 --OPTIONAL ARGUMENTS
+ui_elements.fitButtons(m) -- very handy function to automatically dispose buttons (also assigns regular button texture if none exists)
 m.window_position_mode = MENU_CENTER
 m.isBlocking = true
 m.texture[2] = love.graphics.newImage("path_to_pressed_button") -- for both if unspecified, will show texture[1]
@@ -193,21 +195,26 @@ function Menu:draw()
       if not b_al then b_al = "center" end
       local t_w = b_ft:getWidth(b_str)
       local t_h = b_ft:getHeight()
+      
+      love.graphics.setFont(b_ft)
       if b_al == "center" then
-        love.graphics.print(b_str, b_ft, math.floor(b_x + (b_w-t_w)/2), math.ceil(b_y + (b_h - t_h)/2))
+        love.graphics.print(b_str, math.floor(b_x + (b_w-t_w)/2), math.ceil(b_y + (b_h - t_h)/2))
       elseif b_al == "right" then
-        love.graphics.print(b_str, b_ft, b_x+b_w-TEXT_MARGIN-t_w, math.ceil(b_y + (b_h - t_h)/2))
+        love.graphics.print(b_str, b_x+b_w-TEXT_MARGIN-t_w, math.ceil(b_y + (b_h - t_h)/2))
       else
-        love.graphics.print(b_str, b_ft, b_x+TEXT_MARGIN, math.ceil(b_y + (b_h - t_h)/2))
+        love.graphics.print(b_str, b_x+TEXT_MARGIN, math.ceil(b_y + (b_h - t_h)/2))
       end
     end
-    love.graphics.setNewFont()
+    love.graphics.setFont(FONT_BASE)
   end
   love.graphics.setCanvas()
 end
 
 function Menu:close()
-  if self.id == MenuId then MenuId = MenuId-1 end
+  if self.id == MenuId then
+    MenuId = MenuId-1
+    while not Menus[MenuId] and MenuId > 0 do MenuId = MenuId-1 end
+  end
   Menus[self.id] = nil
 end
 
@@ -267,7 +274,7 @@ end
 function ui_elements.getNewMenuBackground(width,height,tc_path,ts_path,bg_color)
   local t_corner, t_side = nil, nil
   bg_color = bg_color or {0.8,0.8,0.8,1}
-  if not tc_path or not ts_path then t_corner, t_side = TEXUTRE_MENU_CORNER, TEXTURE_MENU_SIDE
+  if not tc_path or not ts_path then t_corner, t_side = DEFAULT_MENU_CORNER, DEFAULT_MENU_SIDE
   else t_corner, t_side = love.graphics.newImage(tc_path), love.graphics.newImage(ts_path) end
   local corner_dim, side_dim = t_corner:getPixelWidth(), t_side:getPixelWidth()
   
@@ -361,6 +368,7 @@ function ui_elements.fitButtons(m,spacing,h_deadzone,v_deadzone)
   spacing = spacing or DEFAULT_BUTTON_SPACING
   h_deadzone = h_deadzone or DEFAULT_H_DEADZONE
   v_deadzone = v_deadzone or DEFAULT_V_DEADZONE
+  if not m.texture[1] then m.texture[1] = love.graphics.newImage("Textures/default_button_1.png") end
   local b_w,b_h = m.texture[1]:getDimensions()
   local width = 2*h_deadzone+b_w
   local height = 2*v_deadzone+#m.buttons*(b_h+spacing)-spacing

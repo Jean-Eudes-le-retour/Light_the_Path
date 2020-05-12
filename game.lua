@@ -16,6 +16,7 @@ canvas_UI = love.graphics.newCanvas() -- WILL NEED TO MOVE INTO WHICHEVER FUNCTI
 function game.init(x_res,y_res,mode,x_val,y_val)
   love.mousepressed = game.onClick
   love.mousereleased = game.onRelease
+  love.wheelmoved = game.onScroll
   tiles.loadTextures()
   -- Menus = {MAIN_MENU}
   return grid.init(x_res,y_res,mode,x_val,y_val)
@@ -41,7 +42,7 @@ function game.updateUI(dt)
   love.graphics.setCanvas(canvas_UI)
   love.graphics.clear()
   for i=MenuId,1,-1 do
-    if Menus[i] and Menus[i].canvas then
+    if Menus[i] and Menus[i].canvas then --UI MISTAKE, UI_TILE's position mode is grid-based! MENU_GRID too!
       love.graphics.draw(Menus[i].canvas,Menus[i].xpos,Menus[i].ypos,nil,(Menus[i].t == UI_TILE) and texture_scale or UI_scale)
     end
   end
@@ -109,6 +110,23 @@ function game.onClick( x, y, button, istouch, presses )
   end
   -- IF OTHERS UNDEFINED FOR NOW
 
+end
+
+function game.onScroll(x, y)
+  local xpos, ypos = grid.getCursorPosition()
+
+  local MenuId = ui_elements.getMenuId()
+  for i=MenuId,1,-1 do
+    if Menus[i] then
+      if Menus[i].isBlocking or Menus[i]:isInMenu() then
+        return false
+      end
+    end
+  end
+  
+  if Grid[xpos] and Grid[xpos][ypos] and (not Grid[xpos][ypos].glassState and Grid[xpos][ypos].canRotate or DEVELOPER_MODE) then
+    Grid[xpos][ypos]:rotate(y > 0)
+  end
 end
 
 -- The love callback function for mouse release (assignment is done in init). Defines behaviour.
