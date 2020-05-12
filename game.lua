@@ -52,7 +52,9 @@ function game.updateUI(dt)
     local state = o_hand.state
     tiles.drawTexture(o_hand.t,o_hand.state,o_hand.color)
     love.graphics.setCanvas(canvas_UI)
+    love.graphics.setBlendMode("alpha","premultiplied")
     love.graphics.draw(canvas_Texture,cursor_x+o_displacement_x,cursor_y+o_displacement_y,rotation,texture_scale)
+    love.graphics.setBlendMode("alpha")
   end
   love.graphics.setCanvas()
   

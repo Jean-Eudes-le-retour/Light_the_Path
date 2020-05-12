@@ -77,7 +77,7 @@ function love.load()
   m.isBlocking = true
   m.texture[2] = love.graphics.newImage("Textures/default_button_2.png")
 
-  ui_elements.updateButtonDimensions(m)
+  ui_elements.updateButtonDimensions(m) --unnecessary when using ui_elements.fitButtons(m)
   m:resize()
   
   

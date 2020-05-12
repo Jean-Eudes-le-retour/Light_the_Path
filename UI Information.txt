@@ -1,0 +1,47 @@
+________________________________________________
+                TO PREPARE A MENU
+________________________________________________
+              --FULLY CUSTOMIZED--
+
+local m = ui_elements.create(UI_MENU)
+m.texture[0] = ui_elements.getNewMenuBackground(<width>,<height>) -- (or a custom texture)
+m.buttons = { {xpos = 5, ypos = 5, texture_id = BUTTON_TEXTURE_NORMAL (1), onClick = function(m,b) ... end, text = "Return to Game",(font = FONT_DEFAULT),(align = "center")}, ... }
+m.texture[BUTTON_TEXTURE_NORMAL] = love.graphics.newImage("path_to_regular_button") --Technically optional... But it wouldn't be fully customized then.
+
+-- OPTIONAL ARGUMENTS --
+m.window_position_mode = MENU_CENTER --(by default)
+m.isBlocking = true --(by default)
+m.texture[BUTTON_TEXTURE_PRESSED] = love.graphics.newImage("path_to_pressed_button") -- for both if unspecified, will show texture[1]
+m.texture[BUTTON_TEXTURE_HOVERED] = love.graphics.newImage("path_to_hovered_button")
+m.update = function(m) ... end
+--This function can serve to give special behaviour to buttons or update the menu itself
+--Note that the onClick function will only ever be called ON MOUSE RELEASE if TEXTURE_ID of the button is 2 (BUTTON_TEXTURE_PRESSED)! This state is automatically assigned
+--by the game if mouse 1 was pressed on the button.
+--Be careful, there are no "mouse is no longer on button" callbacks so if required to know, this must be checked here
+--It's also worth noting that no other functions but Menu:resize() updates the menu graphics by default,
+--so it is recommended that this function check button states and previous button states (buttons[i].texture_id, buttons[i].previous_texture_id) and calls m:draw() accordingly
+--Recommend using ui_elements.checkButtonUpdate by default for those purposes
+
+-- IMPORTANT FINALIZATION --
+ui_elements.updateButtonDimensions(m) --So that the menu is initialized to correct values for default update function (IMPERATIVE for: width/height;texture_id initializations)
+m:resize()  --Creates the internal canvas, includes m:draw()
+
+________________________________________________
+              --DEFAULT MENUS--
+local m = ui_elements.create(UI_MENU)
+m.buttons = { {onClick = function(m,b) ... end, text = "Return to Game"}, ... }
+ui_elements.fitButtons(m)
+
+-- OPTIONAL ARGUMENTS --
+m.window_position_mode = ...
+m.isBlocking = ...
+m.texture[BUTTON_TEXTURE_NORMAL] = ...
+m.texture[BUTTON_TEXTURE_PRESSED] = ...
+m.texture[BUTTON_TEXTURE_HOVERED] = ...
+
+-- IMPORTANT FINALIZATION --
+m:resize()
+--AND DONE! EASY PEASY!
+________________________________________________
+             TO PREPARE A DIALOGUE
+________________________________________________

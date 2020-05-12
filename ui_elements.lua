@@ -13,41 +13,6 @@ local DEFAULT_BUTTON_SPACING = 6
 local DEFAULT_H_DEADZONE = 32
 local DEFAULT_V_DEADZONE = 32
 
---[[
-________________________________________________
-TO PREPARE A MENU:
-________________________________________________
-local m = ui_elements.create(UI_MENU)
-m.texture[0] = ui_elements.getNewMenuBackground(width,height) -- (or a custom texture)
-local buttons = { {xpos = 5, ypos = 5, texture_id = BUTTON_TEXTURE_NORMAL (1), onClick = <a function of m and b>, text = "Return to Game",(font = FONT_DEFAULT),(align = "center")}, ... }
-m.buttons = buttons
-m.texture[1] = love.graphics.newImage("path_to_regular_button")
-
---OPTIONAL ARGUMENTS
-ui_elements.fitButtons(m) -- very handy function to automatically dispose buttons (also assigns regular button texture if none exists)
-m.window_position_mode = MENU_CENTER
-m.isBlocking = true
-m.texture[2] = love.graphics.newImage("path_to_pressed_button") -- for both if unspecified, will show texture[1]
-m.texture[3] = love.graphics.newImage("path_to_hovered_button")
-m.update = <a function of m>
---Note that the button onClick function should only be called via love.mouse release callbacks.
---This function can serve to give special behaviour to buttons or update the menu itself
---Note that the onClick function will only ever be called ON MOUSE RELEASE if TEXTURE_ID of the button is 2 (BUTTON_TEXTURE_PRESSED)!
---For example, there are no "mouse is no longer on button" callbacks so if required to know, this must be checked here
---It's also worth noting that no other functions but Menu:resize() updates the menu graphics by default, so it is recommended that this function be defined
---Recommend using ui_elements.checkButtonUpdate by default for those purposes
-
--- IMPORTANT FINALIZATION --
-ui_elements.updateButtonDimensions(m) --So that the menu is initialized to correct values for default update function (depends on your update function)
-m:resize()  --Includes m:draw()
-________________________________________________
-TO PREPARE A DIALOGUE:
-________________________________________________
-
-]]
-
-
-
 local Menu = {} -- Object from which all others are derived (here to define methods)
 local DEFAULT_MENU = {
 --TYPE
@@ -64,7 +29,7 @@ local DEFAULT_MENU = {
   width_factor = 64, --if texture[0] is defined, automatically set to x size
   height_factor = 64, --if texture[0] is defined, automatically set to y size
   width_mode = false, -- width relative mode, if false, actual width will be width*UI_scale IGNORED IF TEXTURE IS PRESENT
-  height_mode = false,
+  height_mode = false, -- height relative mode, if false, actual height will be height*UI_scale IGNORED IF TEXTURE IS PRESENT
 
   isBlocking = true,
   window_position_mode = MENU_CENTER,
@@ -364,18 +329,22 @@ function ui_elements.checkButtonUpdate(m)
   return false
 end
 
+--Assumes all buttons have the same dimensions as default texture[1] (safe enough...)
 function ui_elements.fitButtons(m,spacing,h_deadzone,v_deadzone)
   spacing = spacing or DEFAULT_BUTTON_SPACING
   h_deadzone = h_deadzone or DEFAULT_H_DEADZONE
   v_deadzone = v_deadzone or DEFAULT_V_DEADZONE
-  if not m.texture[1] then m.texture[1] = love.graphics.newImage("Textures/default_button_1.png") end
-  local b_w,b_h = m.texture[1]:getDimensions()
+  if not m.texture[BUTTON_TEXTURE_NORMAL] then m.texture[BUTTON_TEXTURE_NORMAL] = love.graphics.newImage("Textures/default_button_1.png") end
+  local b_w,b_h = m.texture[BUTTON_TEXTURE_NORMAL]:getDimensions()
   local width = 2*h_deadzone+b_w
   local height = 2*v_deadzone+#m.buttons*(b_h+spacing)-spacing
   m.texture[0] = ui_elements.getNewMenuBackground(width,height)
   for i=1,#m.buttons do
     m.buttons[i].xpos = v_deadzone
     m.buttons[i].ypos = h_deadzone+(i-1)*(spacing+b_h)
+    m.buttons[i].width = b_w
+    m.buttons[i].height = b_h
+    m.buttons[i].texture_id = BUTTON_TEXTURE_NORMAL
   end
 end
 
