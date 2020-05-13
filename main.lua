@@ -120,12 +120,31 @@ function love.resize(width,height,dontResetUI)
   end
   if dontResetUI then return end
   canvas_UI = love.graphics.newCanvas()
+  local UI_autoscaling, UI_autoscale_factor_x, UI_autoscale_factor_y = ui_elements.getUIScaleMode()
+  if UI_autoscaling then
+    local window_w, window_h = love.graphics.getDimensions()
+    ui_elements.changeUIScale(math.min(window_w*UI_autoscale_factor_x, window_h*UI_autoscale_factor_y))
+  end
   ui_elements.redraw()
 end
 
-function load_level(level_name)
-  if type(level_name) ~= "string" then level_name = tostring(level_name) end
-  local path = "Levels/level_"..level_name..".lua"
+function load_level(level_no)
+  if type(level_no) ~= "string" then level_no = tostring(level_no) end
+  local path = nil
+  local name = "level_"..level_no
+  local Files = love.filesystem.getDirectoryItems("Levels/")
+  for i=1,#Files do
+    if string.find(Files[i],name) then
+      local namelength = string.len(name)
+      local nextchar = string.sub(Files[i],namelength+1,namelength+1)
+      if nextchar == "_" or nextchar == "." then
+        path = Files[i]
+        break
+      end
+    end
+  end
+  path = "Levels/"..path
+  
   if not file_exists(path) then
     print("Could not find "..path)
     return false

@@ -17,6 +17,7 @@ function game.init(x_res,y_res,mode,x_val,y_val)
   love.mousepressed = game.onClick
   love.mousereleased = game.onRelease
   love.wheelmoved = game.onScroll
+  love.keypressed = game.onPress
   tiles.loadTextures()
   -- Menus = {MAIN_MENU}
   return grid.init(x_res,y_res,mode,x_val,y_val)
@@ -34,14 +35,14 @@ end
 function game.updateUI(dt)
   local cursor_x, cursor_y = love.mouse.getPosition()
   local texture_scale = grid.getTextureScale()
-  local UI_scale = ui_elements.getUIscale()
+  local UI_scale = ui_elements.getUIScale()
   local MenuId = ui_elements.getMenuId()
   for i=MenuId,1,-1 do
     if Menus[i] then Menus[i].update(Menus[i]) end
   end
   love.graphics.setCanvas(canvas_UI)
   love.graphics.clear()
-  for i=MenuId,1,-1 do
+  for i=1,MenuId do
     if Menus[i] and Menus[i].canvas then --UI MISTAKE, UI_TILE's position mode is grid-based! MENU_GRID too!
       love.graphics.draw(Menus[i].canvas,Menus[i].xpos,Menus[i].ypos,nil,(Menus[i].t == UI_TILE) and texture_scale or UI_scale)
     end
@@ -69,21 +70,26 @@ function game.onClick( x, y, button, istouch, presses )
   local f_xpos, f_ypos = grid.getCursorPosition(true)
   local xpos, ypos = grid.getCursorPosition()
   -- IF GAME IS ACTIVE -- DEFINE GLOBAL FLAGS SO THAT WE CAN USE MENUS AND HAVE TEXT CONVERSATION MODES TOO!
-  local MenuId = ui_elements.getMenuId()
-  for i=MenuId,1,-1 do
-    if Menus[i] then
-      if Menus[i]:isInMenu() then
-        if Menus[i].buttons then
-          for j=1,#Menus[i].buttons do
-            if Menus[i]:isInButton(j) then
-              Menus[i].buttons[j].texture_id = BUTTON_TEXTURE_PRESSED
-              return true
+  if (button == 1) then
+    local MenuId = ui_elements.getMenuId()
+    for i=MenuId,1,-1 do
+      if Menus[i] then
+        if Menus[i]:isInMenu() then
+          print("Clicked in menu "..tostring(i))
+          if Menus[i].buttons then
+            for j=1,#Menus[i].buttons do
+              print("Testing button "..tostring(j).." for Menu "..tostring(i))
+              if Menus[i]:isInButton(j) then
+                print("Pressed button...")
+                Menus[i].buttons[j].texture_id = BUTTON_TEXTURE_PRESSED
+                return true
+              end
             end
           end
+          return false
+        elseif Menus[i].isBlocking then
+          return false
         end
-        return false
-      elseif Menus[i].isBlocking then
-        return false
       end
     end
   end
@@ -121,6 +127,10 @@ function game.onScroll(x, y)
   for i=MenuId,1,-1 do
     if Menus[i] then
       if Menus[i].isBlocking or Menus[i]:isInMenu() then
+        if Menus[i].onScroll then
+          Menus[i].onScroll(Menus[i],x,y)
+          return true
+        end
         return false
       end
     end
@@ -142,17 +152,34 @@ function game.onRelease( x, y, button, istouch, presses )
   local MenuId = ui_elements.getMenuId()
   for i=MenuId,1,-1 do
     if Menus[i] and Menus[i]:isInMenu() then
+      local uniqueId = Menus[i].uniqueId
       if Menus[i].buttons then
         for j=1,#Menus[i].buttons do
           if Menus[i]:isInButton(j) and Menus[i].buttons[j].texture_id == BUTTON_TEXTURE_PRESSED then
             if Menus[i].buttons[j].onClick then Menus[i].buttons[j].onClick(Menus[i],Menus[i].buttons[j]) end
-            if Menus[i] then Menus[i].buttons[j].texture_id = BUTTON_TEXTURE_HOVERED
+            if Menus[i] and Menus[i].uniqueId == uniqueId then Menus[i].buttons[j].texture_id = BUTTON_TEXTURE_HOVERED
             else return nil end
           end
         end
       end
     end
   end
+end
+
+function game.onPress( key, scancode, isrepeat)
+
+  if key == "escape" then
+    local MenuId = ui_elements.getMenuId()
+    for i=MenuId,1,-1 do
+      if Menus[i].isBlocking and Menus[i].t ~= UI_DIALOGUE then
+        Menus[i]:close()
+        return
+      end
+    end
+    ui_elements.escapeMenu()
+    return
+  end
+
 end
 
 return game

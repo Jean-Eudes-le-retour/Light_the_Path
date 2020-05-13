@@ -3,10 +3,15 @@ local grid = require("grid")
 local ui_elements = {}
 
 local MenuId = 1 --DEFAULT HAS MAIN_MENU ACTIVE
+local uniqueId = 0
 local UI_TYPES = {"menu","dialogue","tile"}
 local NUM_PRESETS = 1
 --UI_scale_mode boolean for automatic scaling?
-local UI_scale = 2
+local UI_scale = 1.5
+local UI_automatic_scaling = false
+local UI_autoscale_factor_x = 1/384 --UI_scale 3*128*UI_scale = ww
+local UI_autoscale_factor_y = 1/512 --16*32*UI_scale = wh
+local MAX_UI_SCALE = 5
 local DEFAULT_MENU_CORNER = love.graphics.newImage("Textures/menu_corner.png")
 local DEFAULT_MENU_SIDE = love.graphics.newImage("Textures/menu_side.png")
 local DEFAULT_BUTTON_SPACING = 6
@@ -33,8 +38,6 @@ local DEFAULT_MENU = {
 
   isBlocking = true,
   window_position_mode = MENU_CENTER,
-  buttons = {}, -- contains button {xpos,ypos,texture_id(determines width/height, NORMAL,PRESSED,HOVERED),previous_texture_id,text,align,font,onClick(m,b)}
-  texture = {}, -- contains all textures including button textures; 0 is the menu itself
   imagedata = false, -- if defined, test transparency
   
   update = function(m)
@@ -63,13 +66,15 @@ function Menu:new(t)
   m.height_mode = DEFAULT_UI[t].height_mode
   m.width_factor = DEFAULT_UI[t].width_factor
   m.height_factor = DEFAULT_UI[t].height_factor
-  m.texture = DEFAULT_UI[t].texture
+  m.texture = {}
   m.canvas = DEFAULT_UI[t].canvas
   m.update = DEFAULT_UI[t].update
   
   while MenuId > 0 and not Menus[MenuId] do MenuId = MenuId-1 end
   MenuId = MenuId+1
   m.id = MenuId
+  m.uniqueId = uniqueId
+  uniqueId = uniqueId+1
   Menus[MenuId] = m
   return m
 end
@@ -352,8 +357,174 @@ function ui_elements.getMenuId()
   return MenuId
 end
 
-function ui_elements.getUIscale()
+function ui_elements.getUIScale()
   return UI_scale
+end
+
+function ui_elements.changeUIScale(value)
+  UI_scale = value or (math.floor(UI_scale*2)/2-0.5)%(MAX_UI_SCALE-1)+1
+  ui_elements.redraw()
+end
+
+function ui_elements.changeUIScaleMode()
+  UI_automatic_scaling = not UI_automatic_scaling
+  if UI_automatic_scaling then
+    local window_w, window_h = love.graphics.getDimensions()
+    ui_elements.changeUIScale(math.min(window_w*UI_autoscale_factor_x, window_h*UI_autoscale_factor_y))
+  end
+end
+
+function ui_elements.getUIScaleMode()
+  return UI_automatic_scaling, UI_autoscale_factor_x, UI_autoscale_factor_y
+end
+
+
+--------------------------------------------------------------------------------------------------------------------------------
+function ui_elements.escapeMenu()
+  local m = ui_elements.create(UI_MENU)
+  m.buttons = {{onClick = function(m,b) love.event.quit("restart") end, text = "Main Menu"},{onClick = function(m,b) m:close() ui_elements.levelSelect() end, text = "Level Select"},{onClick = function(m,b) m:close() ui_elements.optionsMenu() end, text = "Options"},{onClick = function(m,b) m:close() end, text = "Return to Game"}}
+  m.texture[1] = love.graphics.newImage("Textures/default_button_1.png")
+  ui_elements.fitButtons(m)
+
+  m.window_position_mode = MENU_CENTER
+  m.isBlocking = true
+  m.texture[2] = love.graphics.newImage("Textures/default_button_2.png")
+
+  m:resize()
+end
+
+function ui_elements.levelSelect()
+  local m = ui_elements.create(UI_MENU)
+  m.texture[0] = love.graphics.newImage("Textures/levelselect.png")
+  m.texture[1] = love.graphics.newImage("Textures/default_button_1.png")
+  m.texture[2] = love.graphics.newImage("Textures/default_button_2.png")
+  m.texture[5] = love.graphics.newImage("Textures/default_button_5.png") --INVISIBLE BUTTON 'text area'
+  m.buttons = {{xpos = 100, ypos = 24, texture_id = 5,text = "Level Select"},{xpos = 100, ypos = 378, texture_id = 1, text = "Back", onClick = function(m,b) m:close() ui_elements.escapeMenu() end}}
+  m.update = function(m)
+    m.buttons[1].texture_id = 5
+    if not m:isInButton(2) then m.buttons[2].texture_id = BUTTON_TEXTURE_NORMAL
+    elseif m.buttons[2].texture_id ~= BUTTON_TEXTURE_PRESSED then m.buttons[2].texture_id = BUTTON_TEXTURE_HOVERED end
+    
+    if m.buttons[2].previous_texture_id ~= m.buttons[2].texture_id then
+      ui_elements.updateButtonDimensions(m)
+      m:draw()
+      return true
+    end
+  end
+  function m:close()
+    m.submenu:close()
+    if self.id == MenuId then
+      MenuId = MenuId-1
+      while not Menus[MenuId] and MenuId > 0 do MenuId = MenuId-1 end
+    end
+    Menus[self.id] = nil
+  end
+  
+  local Files = love.filesystem.getDirectoryItems("Levels/")
+  local Levels = {}
+  for i=1,#Files do
+    if string.find(Files[i],"level_") == 1 then
+      local ext_pos, ext_end = string.find(Files[i],".lua")
+      local name_pos = string.find(Files[i],"_",7)
+      local lvl = {}
+      
+      if name_pos then
+        name_pos = name_pos+1
+        lvl.name = string.sub(Files[i],name_pos,ext_pos-1)
+      end
+
+      if ext_end == string.len(Files[i]) then
+        local level_id = string.sub(Files[i],7,name_pos and (name_pos-2) or (ext_pos-1))
+        level_id = tonumber(level_id)
+        if level_id then
+          lvl.id = level_id
+          table.insert(Levels,lvl)
+        end
+      end
+    end
+  end
+  table.sort(Levels, function(lvl_1,lvl_2) return lvl_1.id < lvl_2.id end )
+
+  m.submenu = ui_elements.create(UI_MENU)
+  m.submenu.parentmenu = m
+  m.submenu.width_factor, m.submenu.height_factor = 268, 292
+  m.submenu.isBlocking = false
+  m.submenu.scrollOffset = 0
+  m.submenu.texture[1] = m.texture[1]
+  m.submenu.texture[2] = m.texture[2]
+  m.submenu.buttons = {}
+  
+  local b_x, b_y = 4,4
+  for i=1,#Levels do
+    m.submenu.buttons[i] = {
+                              xpos = b_x,
+                              ypos = b_y,
+                              lvlid = Levels[i].id,
+                              texture_id = 1,
+                              text = Levels[i].name or "Level "..tostring(Levels[i].id),
+                              onClick = function(m,b) load_level(b.lvlid) m:close() m.parentmenu:close() end
+                            }
+    if b_x == 4 then
+      b_x = 136
+    else
+      b_x = 4
+      b_y = b_y + 36
+    end
+  end
+  m.submenu.onScroll = function(m,x,y)
+    y = y*4
+    if (y > 0 and m.scrollOffset-y < 0) then y = m.scrollOffset end
+    if (y < 0 and m.scrollOffset-y > 36*math.ceil(#m.buttons/2)-288) then y = m.scrollOffset+288-36*math.ceil(#m.buttons/2) end
+    if y ~= 0 then
+      m.scrollOffset = m.scrollOffset - y
+      for i=1,#m.buttons do
+        m.buttons[i].ypos = m.buttons[i].ypos + y
+      end
+      m:draw()
+    end
+  end
+
+  ui_elements.updateButtonDimensions(m)
+  ui_elements.updateButtonDimensions(m.submenu)
+  m:resize()
+  m.submenu:resize()
+end
+
+function ui_elements.optionsMenu()
+  local m = ui_elements.create(UI_MENU)
+  m.buttons = {{text = "UI Scale Mode:", align = "left", texture_id = 5},{onClick = function(m,b) ui_elements.changeUIScaleMode() end, text = " "},{onClick = function(m,b) ui_elements.changeUIScale() end, text = " "},{onClick = function(m,b) m:close() ui_elements.escapeMenu() end, text = "Back"}}
+  m.texture[1] = love.graphics.newImage("Textures/default_button_1.png")
+  ui_elements.fitButtons(m)
+
+  m.window_position_mode = MENU_CENTER
+  m.isBlocking = true
+  m.texture[2] = love.graphics.newImage("Textures/default_button_2.png")
+  m.texture[4] = love.graphics.newImage("Textures/default_button_4.png")
+  m.texture[5] = love.graphics.newImage("Textures/default_button_5.png")
+  m.update = function(m)
+    m.buttons[1].texture_id = 5
+    if not m:isInButton(2) then m.buttons[2].texture_id = BUTTON_TEXTURE_NORMAL
+    elseif m.buttons[2].texture_id ~= BUTTON_TEXTURE_PRESSED then m.buttons[2].texture_id = BUTTON_TEXTURE_HOVERED end
+    if not m:isInButton(4) then m.buttons[4].texture_id = BUTTON_TEXTURE_NORMAL
+    elseif m.buttons[4].texture_id ~= BUTTON_TEXTURE_PRESSED then m.buttons[4].texture_id = BUTTON_TEXTURE_HOVERED end
+
+    if UI_automatic_scaling then m.buttons[3].texture_id = 4
+    elseif not m:isInButton(3) then m.buttons[3].texture_id = BUTTON_TEXTURE_NORMAL
+    elseif m.buttons[3].texture_id ~= BUTTON_TEXTURE_PRESSED then m.buttons[3].texture_id = BUTTON_TEXTURE_HOVERED end
+    
+    m.buttons[2].text = (UI_automatic_scaling and "Automatic" or "Manual")
+    m.buttons[3].text = "UI Scale: "..string.sub(tostring(UI_scale),1,5)
+    
+    for i=1,#m.buttons do
+      if m.buttons[i].previous_texture_id ~= m.buttons[i].texture_id or m.previous_UI_scale ~= UI_scale then
+        ui_elements.updateButtonDimensions(m)
+        m.previous_UI_scale = UI_scale
+        m:draw()
+        return true
+      end
+    end
+  end
+  m:resize()
 end
 
 return ui_elements
