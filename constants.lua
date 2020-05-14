@@ -8,13 +8,15 @@ STATE_CONFIGURATIONS = {[1]=1,[5]=2,[21]=3,[85]=4,[17]=5,[29]=6,[113]=7,[93]=8,[
 TEXT_MARGIN = 4
 FONT_DEFAULT = love.graphics.newImageFont("Textures/Fonts/mypixelfont.png"," abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-=!@#$%^&*()_+|\\[]{}:;\"'<>,./?~`",1)
 FONT_BASE = love.graphics.getFont()
+DEFAULT_SCREEN_WIDTH = 720
+DEFAULT_SCREEN_HEIGHT = 480
 
 function file_exists(name)
    if love.filesystem.getInfo(name) then return true
    else return false end
 end
 
-local function enum(n,i)
+function enum(n,i)
   i = i or 1
   if n > i then
     return i, enum(n,i+1)

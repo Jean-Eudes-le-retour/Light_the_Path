@@ -1,5 +1,8 @@
 io.stdout:setvbuf("no")
 
+-- SETTING UP CONSTANTS --
+require("constants")
+
 -- SETTING UP LOVE --
 
 --Prevents low-res textures from looking blurry (get that neat sharp look on the game)
@@ -8,10 +11,7 @@ love.graphics.setDefaultFilter("nearest", "nearest")
 love.window.setTitle("Light the Path")
 --defaults 3rd parameter:windowflags = {fullscreen = false,fullscreentype = "desktop",vsync = 1,msaa = 0,stencil = true,depth = 0,resizable = false,borderless = false,centered = true,display = 1,minwidth = 1,minheight = 1}
 --if window_width (respectively window_height) is 0, desktop width (respectively height) will be used.
-love.window.setMode(800,800,{["resizable"] = true})
-
--- SETTING UP CONSTANTS --
-require("constants")
+love.window.setMode(DEFAULT_SCREEN_WIDTH,DEFAULT_SCREEN_HEIGHT,{["resizable"] = true})
 
 -- LOADING MODULES --
 local objects = require("objects")

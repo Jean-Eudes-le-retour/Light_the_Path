@@ -15,9 +15,7 @@ m.texture[BUTTON_TEXTURE_PRESSED] = love.graphics.newImage("path_to_pressed_butt
 m.texture[BUTTON_TEXTURE_HOVERED] = love.graphics.newImage("path_to_hovered_button")
 m.update = function(m) ... end
 --This function can serve to give special behaviour to buttons or update the menu itself
---Note that the onClick function will only ever be called ON MOUSE RELEASE if TEXTURE_ID of the button is 2 (BUTTON_TEXTURE_PRESSED)! This state is automatically assigned
---by the game if mouse 1 was pressed on the button.
---Be careful, there are no "mouse is no longer on button" callbacks so if required to know, this must be checked here
+--Note that the onClick function will only ever be called ON MOUSE 1 RELEASE if button argument "pressed" evaluates to true
 --It's also worth noting that no other functions but Menu:resize() updates the menu graphics by default,
 --so it is recommended that this function check button states and previous button states (buttons[i].texture_id, buttons[i].previous_texture_id) and calls m:draw() accordingly
 --Recommend using ui_elements.checkButtonUpdate by default for those purposes

@@ -6,17 +6,41 @@ local MenuId = 1 --DEFAULT HAS MAIN_MENU ACTIVE
 local uniqueId = 0
 local UI_TYPES = {"menu","dialogue","tile"}
 local NUM_PRESETS = 1
---UI_scale_mode boolean for automatic scaling?
-local UI_scale = 1.5
-local UI_automatic_scaling = false
+local UI_automatic_scaling = true
 local UI_autoscale_factor_x = 1/384 --UI_scale 3*128*UI_scale = ww
 local UI_autoscale_factor_y = 1/512 --16*32*UI_scale = wh
-local MAX_UI_SCALE = 5
-local DEFAULT_MENU_CORNER = love.graphics.newImage("Textures/menu_corner.png")
-local DEFAULT_MENU_SIDE = love.graphics.newImage("Textures/menu_side.png")
+local MIN_UI_SCALE = 0.5 --Only applies for manual mode
+local MAX_UI_SCALE = 5 --Only applies for manual mode
+
+local UI_scale = 1.5
+if UI_automatic_scaling then
+  local ww, wh = love.graphics.getDimensions()
+  UI_scale = math.min(ww*UI_autoscale_factor_x, wh*UI_autoscale_factor_y)
+end
+
+
 local DEFAULT_BUTTON_SPACING = 6
 local DEFAULT_H_DEADZONE = 32
 local DEFAULT_V_DEADZONE = 32
+----------------------------------------------------------
+local TEXTURE_MENU_CORNER = love.graphics.newImage("Textures/menu_corner.png")
+local TEXTURE_MENU_SIDE   = love.graphics.newImage("Textures/menu_side.png")
+local TEXTURE_REG_BUTTON_NORMAL  = love.graphics.newImage("Textures/default_button_1.png")
+local TEXTURE_REG_BUTTON_PRESSED = love.graphics.newImage("Textures/default_button_2.png")
+local TEXTURE_REG_BUTTON_HOVERED = love.graphics.newImage("Textures/default_button_3.png")
+local TEXTURE_REG_BUTTON_GREYED  = love.graphics.newImage("Textures/default_button_4.png")
+local TEXTURE_REG_BUTTON_INVIS   = love.graphics.newImage("Textures/default_button_5.png")
+local TEXTURE_COMPL2SQ_BUTTON_NORMAL  = love.graphics.newImage("Textures/compl2sq_button_1.png")
+local TEXTURE_COMPL2SQ_BUTTON_PRESSED = love.graphics.newImage("Textures/compl2sq_button_2.png")
+local TEXTURE_COMPL2SQ_BUTTON_HOVERED = love.graphics.newImage("Textures/compl2sq_button_3.png")
+local TEXTURE_COMPL2SQ_BUTTON_GREYED  = love.graphics.newImage("Textures/compl2sq_button_4.png")
+local TEXTURE_COMPL2SQ_BUTTON_INVIS   = love.graphics.newImage("Textures/compl2sq_button_5.png")
+local TEXTURE_SQ_BUTTON_NORMAL   = love.graphics.newImage("Textures/sq_button_1.png")
+local TEXTURE_SQ_BUTTON_PRESSED  = love.graphics.newImage("Textures/sq_button_2.png")
+local TEXTURE_SQ_BUTTON_HOVERED  = love.graphics.newImage("Textures/sq_button_3.png")
+local TEXTURE_SQ_BUTTON_GREYED   = love.graphics.newImage("Textures/sq_button_4.png")
+local TEXTURE_SQ_BUTTON_INVIS    = love.graphics.newImage("Textures/sq_button_5.png")
+
 
 local Menu = {} -- Object from which all others are derived (here to define methods)
 local DEFAULT_MENU = {
@@ -121,8 +145,10 @@ function Menu:isInButton(i)
     cursor_x, cursor_y = cursor_x - self.xpos + 1, cursor_y - self.ypos + 1
     if cursor_x >= self.buttons[i].xpos and cursor_x < self.buttons[i].xpos + (self.buttons[i].width or 1) and
        cursor_y >= self.buttons[i].ypos and cursor_y < self.buttons[i].ypos + (self.buttons[i].height or 1) then
+      self.buttons[i].cursorPresent = true
       return true
     else
+      self.buttons[i].cursorPresent = false
       return false
     end
   end
@@ -133,8 +159,10 @@ function Menu:isInButton(i)
     cursor_x, cursor_y = (cursor_x - self.xpos)*texture_scale/UI_scale, (cursor_y - self.ypos)*texture_scale/UI_scale
     if cursor_x > self.buttons[i].xpos and cursor_x <= self.buttons[i].xpos + (self.buttons[i].width or 1) and
        cursor_y > self.buttons[i].ypos and cursor_y <= self.buttons[i].ypos + (self.buttons[i].height or 1) then
+      self.buttons[i].cursorPresent = true
       return true
     else
+      self.buttons[i].cursorPresent = false
       return false
     end
   end
@@ -142,8 +170,10 @@ function Menu:isInButton(i)
   cursor_x, cursor_y = cursor_x - self.xpos, cursor_y - self.ypos
   if cursor_x > self.buttons[i].xpos*UI_scale and cursor_x <= (self.buttons[i].xpos + (self.buttons[i].width or 1))*UI_scale and
      cursor_y > self.buttons[i].ypos*UI_scale and cursor_y <= (self.buttons[i].ypos + (self.buttons[i].height or 1))*UI_scale then
+    self.buttons[i].cursorPresent = true
     return true
-  else 
+  else
+    self.buttons[i].cursorPresent = false
     return false
   end
 end
@@ -244,7 +274,7 @@ end
 function ui_elements.getNewMenuBackground(width,height,tc_path,ts_path,bg_color)
   local t_corner, t_side = nil, nil
   bg_color = bg_color or {0.8,0.8,0.8,1}
-  if not tc_path or not ts_path then t_corner, t_side = DEFAULT_MENU_CORNER, DEFAULT_MENU_SIDE
+  if not tc_path or not ts_path then t_corner, t_side = TEXTURE_MENU_CORNER, TEXTURE_MENU_SIDE
   else t_corner, t_side = love.graphics.newImage(tc_path), love.graphics.newImage(ts_path) end
   local corner_dim, side_dim = t_corner:getPixelWidth(), t_side:getPixelWidth()
   
@@ -320,10 +350,22 @@ function ui_elements.updateButtonDimensions(m)
 end
 
 function ui_elements.checkButtonUpdate(m)
+
   for i=1,#m.buttons do
-    if not m:isInButton(i) then m.buttons[i].texture_id = BUTTON_TEXTURE_NORMAL
-    elseif m.buttons[i].texture_id ~= BUTTON_TEXTURE_PRESSED then m.buttons[i].texture_id = BUTTON_TEXTURE_HOVERED end
+    if m:isInButton(i) then m.buttons[i].cursorPresent = true
+    else m.buttons[i].cursorPresent = false end
   end
+  
+  for i=1,#m.buttons do
+    if m.buttons[i].cursorPresent then
+      if not m.buttons[i].pressed then m.buttons[i].texture_id = BUTTON_TEXTURE_HOVERED
+      else m.buttons[i].texture_id = BUTTON_TEXTURE_PRESSED end
+    else 
+      m.buttons[i].pressed = false
+      m.buttons[i].texture_id = BUTTON_TEXTURE_NORMAL
+    end
+  end
+  
   for i=1,#m.buttons do
     if m.buttons[i].previous_texture_id ~= m.buttons[i].texture_id then
       ui_elements.updateButtonDimensions(m)
@@ -331,6 +373,7 @@ function ui_elements.checkButtonUpdate(m)
       return true
     end
   end
+  
   return false
 end
 
@@ -339,7 +382,7 @@ function ui_elements.fitButtons(m,spacing,h_deadzone,v_deadzone)
   spacing = spacing or DEFAULT_BUTTON_SPACING
   h_deadzone = h_deadzone or DEFAULT_H_DEADZONE
   v_deadzone = v_deadzone or DEFAULT_V_DEADZONE
-  if not m.texture[BUTTON_TEXTURE_NORMAL] then m.texture[BUTTON_TEXTURE_NORMAL] = love.graphics.newImage("Textures/default_button_1.png") end
+  if not m.texture[BUTTON_TEXTURE_NORMAL] then m.texture[BUTTON_TEXTURE_NORMAL] = TEXTURE_REG_BUTTON_NORMAL end
   local b_w,b_h = m.texture[BUTTON_TEXTURE_NORMAL]:getDimensions()
   local width = 2*h_deadzone+b_w
   local height = 2*v_deadzone+#m.buttons*(b_h+spacing)-spacing
@@ -349,7 +392,7 @@ function ui_elements.fitButtons(m,spacing,h_deadzone,v_deadzone)
     m.buttons[i].ypos = h_deadzone+(i-1)*(spacing+b_h)
     m.buttons[i].width = b_w
     m.buttons[i].height = b_h
-    m.buttons[i].texture_id = BUTTON_TEXTURE_NORMAL
+    if not m.buttons[i].texture_id then m.buttons[i].texture_id = BUTTON_TEXTURE_NORMAL end
   end
 end
 
@@ -361,9 +404,23 @@ function ui_elements.getUIScale()
   return UI_scale
 end
 
-function ui_elements.changeUIScale(value)
-  UI_scale = value or (math.floor(UI_scale*2)/2-0.5)%(MAX_UI_SCALE-1)+1
-  ui_elements.redraw()
+function ui_elements.changeUIScale(value, invert)
+  if value then
+    UI_scale = value
+    ui_elements.redraw()
+  elseif invert then
+    if UI_scale ~= MIN_UI_SCALE then
+      UI_scale = math.floor(UI_scale*4)/4 - 0.25
+      if UI_scale < MIN_UI_SCALE then UI_scale = MIN_UI_SCALE end
+      ui_elements.redraw()
+    end
+  else
+    if UI_scale ~= MAX_UI_SCALE then
+      UI_scale = math.floor(UI_scale*4)/4 + 0.25
+      if UI_scale > MAX_UI_SCALE then UI_scale = MAX_UI_SCALE end
+      ui_elements.redraw()
+    end
+  end
 end
 
 function ui_elements.changeUIScaleMode()
@@ -383,12 +440,12 @@ end
 function ui_elements.escapeMenu()
   local m = ui_elements.create(UI_MENU)
   m.buttons = {{onClick = function(m,b) love.event.quit("restart") end, text = "Main Menu"},{onClick = function(m,b) m:close() ui_elements.levelSelect() end, text = "Level Select"},{onClick = function(m,b) m:close() ui_elements.optionsMenu() end, text = "Options"},{onClick = function(m,b) m:close() end, text = "Return to Game"}}
-  m.texture[1] = love.graphics.newImage("Textures/default_button_1.png")
+  m.texture[1] = TEXTURE_REG_BUTTON_NORMAL
   ui_elements.fitButtons(m)
 
   m.window_position_mode = MENU_CENTER
   m.isBlocking = true
-  m.texture[2] = love.graphics.newImage("Textures/default_button_2.png")
+  m.texture[2] = TEXTURE_REG_BUTTON_PRESSED
 
   m:resize()
 end
@@ -396,9 +453,9 @@ end
 function ui_elements.levelSelect()
   local m = ui_elements.create(UI_MENU)
   m.texture[0] = love.graphics.newImage("Textures/levelselect.png")
-  m.texture[1] = love.graphics.newImage("Textures/default_button_1.png")
-  m.texture[2] = love.graphics.newImage("Textures/default_button_2.png")
-  m.texture[5] = love.graphics.newImage("Textures/default_button_5.png") --INVISIBLE BUTTON 'text area'
+  m.texture[1] = TEXTURE_REG_BUTTON_NORMAL
+  m.texture[2] = TEXTURE_REG_BUTTON_PRESSED
+  m.texture[5] = TEXTURE_REG_BUTTON_INVIS --INVISIBLE BUTTON 'text area'
   m.buttons = {{xpos = 100, ypos = 24, texture_id = 5,text = "Level Select"},{xpos = 100, ypos = 378, texture_id = 1, text = "Back", onClick = function(m,b) m:close() ui_elements.escapeMenu() end}}
   m.update = function(m)
     m.buttons[1].texture_id = 5
@@ -492,29 +549,97 @@ end
 
 function ui_elements.optionsMenu()
   local m = ui_elements.create(UI_MENU)
-  m.buttons = {{text = "UI Scale Mode:", align = "left", texture_id = 5},{onClick = function(m,b) ui_elements.changeUIScaleMode() end, text = " "},{onClick = function(m,b) ui_elements.changeUIScale() end, text = " "},{onClick = function(m,b) m:close() ui_elements.escapeMenu() end, text = "Back"}}
-  m.texture[1] = love.graphics.newImage("Textures/default_button_1.png")
+  local BUTTON_OPTIONS_TEXT, BUTTON_OPTIONS_WINDOWTEXT, BUTTON_OPTIONS_SCREENMODE, BUTTON_OPTIONS_SCALETEXT, BUTTON_OPTIONS_SCALEMODE, BUTTON_OPTIONS_SCALE , BUTTONS_OPTIONS_RETURN, BUTTON_OPTIONS_SCALE_MINUS, BUTTON_OPTIONS_SCALE_PLUS= enum(9)
+  m.buttons = {
+    {text = "UI Options", texture_id = 5, noUpdate = true},
+    {text = "Window Mode", align = "left", texture_id = 5, noUpdate = true},
+    {text = "Windowed"},
+    {text = "UI Scale Options", align = "left", texture_id = 5, noUpdate = true},
+    {text = "Auto", compl2SQButton = true, onClick = function(m,b) ui_elements.changeUIScaleMode() end},
+    {text = "Scale:", texture_id = 5, noUpdate = true},
+    {text = "Back", onClick = function(m,b) m:close() ui_elements.escapeMenu() end}
+  }
+  m.texture[1] = TEXTURE_REG_BUTTON_NORMAL
+  m.texture[2] = TEXTURE_REG_BUTTON_PRESSED
+  m.texture[5] = TEXTURE_REG_BUTTON_INVIS
+  m.texture[6] = TEXTURE_SQ_BUTTON_NORMAL
+  m.texture[7] = TEXTURE_SQ_BUTTON_PRESSED
+  m.texture[9] = TEXTURE_SQ_BUTTON_GREYED
+  m.texture[11] = TEXTURE_COMPL2SQ_BUTTON_NORMAL
+  m.texture[12] = TEXTURE_COMPL2SQ_BUTTON_PRESSED
   ui_elements.fitButtons(m)
-
+  table.insert(m.buttons,{
+                            xpos = m.buttons[BUTTON_OPTIONS_SCALEMODE].xpos+62,
+                            ypos = m.buttons[BUTTON_OPTIONS_SCALEMODE].ypos,
+                            SQButton = true,
+                            text = "-",
+                            texture_id = 9,
+                            noUpdate = true,
+                            onClick = function(m,b) if not UI_automatic_scaling then ui_elements.changeUIScale(nil,true) end end
+                          })
+  table.insert(m.buttons,{
+                            xpos = m.buttons[BUTTON_OPTIONS_SCALEMODE].xpos+96,
+                            ypos = m.buttons[BUTTON_OPTIONS_SCALEMODE].ypos,
+                            SQButton = true, text = "+",
+                            texture_id = 9,
+                            noUpdate = true,
+                            onClick = function(m,b) if not UI_automatic_scaling then ui_elements.changeUIScale() end end
+                          })
+  ui_elements.updateButtonDimensions(m)
   m.window_position_mode = MENU_CENTER
   m.isBlocking = true
-  m.texture[2] = love.graphics.newImage("Textures/default_button_2.png")
-  m.texture[4] = love.graphics.newImage("Textures/default_button_4.png")
-  m.texture[5] = love.graphics.newImage("Textures/default_button_5.png")
-  m.update = function(m)
-    m.buttons[1].texture_id = 5
-    if not m:isInButton(2) then m.buttons[2].texture_id = BUTTON_TEXTURE_NORMAL
-    elseif m.buttons[2].texture_id ~= BUTTON_TEXTURE_PRESSED then m.buttons[2].texture_id = BUTTON_TEXTURE_HOVERED end
-    if not m:isInButton(4) then m.buttons[4].texture_id = BUTTON_TEXTURE_NORMAL
-    elseif m.buttons[4].texture_id ~= BUTTON_TEXTURE_PRESSED then m.buttons[4].texture_id = BUTTON_TEXTURE_HOVERED end
+  local _,_,flags = love.window.getMode()
+  if flags.fullscreen then
+    m.buttons[BUTTON_OPTIONS_SCREENMODE].mode = true
+    m.buttons[BUTTON_OPTIONS_SCREENMODE].text = "Fullscreen"
+  end
+  m.buttons[BUTTON_OPTIONS_SCREENMODE].onClick = function(m,b)
+    local menu_bg = false
+    if m.texture[0]:typeOf("Canvas") then
+      menu_bg = m.texture[0]:newImageData()
+    end
+    if b.mode then
+      b.mode = false
+      b.text = "Windowed"
+      love.window.setMode(DEFAULT_SCREEN_WIDTH,DEFAULT_SCREEN_HEIGHT,{resizable = true})
+    else
+      b.mode = true
+      b.text = "Fullscreen"
+      love.window.setMode(0,0,{fullscreen = true})
+    end
+    if menu_bg then m.texture[0] = love.graphics.newImage(menu_bg) end
+    love.resize()
+    UpdateBackgroundFG = true
+    for i=1,#UpdateObjectType do
+      UpdateObjectType[i] = true
+    end
+  end
 
-    if UI_automatic_scaling then m.buttons[3].texture_id = 4
-    elseif not m:isInButton(3) then m.buttons[3].texture_id = BUTTON_TEXTURE_NORMAL
-    elseif m.buttons[3].texture_id ~= BUTTON_TEXTURE_PRESSED then m.buttons[3].texture_id = BUTTON_TEXTURE_HOVERED end
-    
-    m.buttons[2].text = (UI_automatic_scaling and "Automatic" or "Manual")
-    m.buttons[3].text = "UI Scale: "..string.sub(tostring(UI_scale),1,5)
-    
+  m.update = function(m)
+    m.buttons[BUTTON_OPTIONS_SCALEMODE].text = (UI_automatic_scaling and "Auto" or "Manual")
+    m.buttons[BUTTON_OPTIONS_SCALE].text = "Scale: "..string.sub(tostring(UI_scale),1,5)
+    if UI_automatic_scaling then
+      m.buttons[BUTTON_OPTIONS_SCALE_MINUS].texture_id = 9
+      m.buttons[BUTTON_OPTIONS_SCALE_PLUS].texture_id = 9
+      m.buttons[BUTTON_OPTIONS_SCALE_MINUS].noUpdate = true
+      m.buttons[BUTTON_OPTIONS_SCALE_PLUS].noUpdate = true
+    else
+      m.buttons[BUTTON_OPTIONS_SCALE_MINUS].noUpdate = false
+      m.buttons[BUTTON_OPTIONS_SCALE_PLUS].noUpdate = false
+    end
+    for i=1,#m.buttons do
+      if not m.buttons[i].noUpdate then
+        local button_texture_offset = m.buttons[i].SQButton and 5 or m.buttons[i].compl2SQButton and 10 or 0
+        if not m.buttons[i].cursorPresent then
+          m.buttons[i].texture_id = BUTTON_TEXTURE_NORMAL + button_texture_offset
+          m.pressed = false
+        elseif not m.buttons[i].pressed then
+          m.buttons[i].texture_id = BUTTON_TEXTURE_NORMAL + button_texture_offset
+        else
+          m.buttons[i].texture_id = BUTTON_TEXTURE_PRESSED + button_texture_offset
+        end
+      end
+    end
     for i=1,#m.buttons do
       if m.buttons[i].previous_texture_id ~= m.buttons[i].texture_id or m.previous_UI_scale ~= UI_scale then
         ui_elements.updateButtonDimensions(m)

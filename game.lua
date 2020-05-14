@@ -81,7 +81,7 @@ function game.onClick( x, y, button, istouch, presses )
               print("Testing button "..tostring(j).." for Menu "..tostring(i))
               if Menus[i]:isInButton(j) then
                 print("Pressed button...")
-                Menus[i].buttons[j].texture_id = BUTTON_TEXTURE_PRESSED
+                Menus[i].buttons[j].pressed = true
                 return true
               end
             end
@@ -155,10 +155,10 @@ function game.onRelease( x, y, button, istouch, presses )
       local uniqueId = Menus[i].uniqueId
       if Menus[i].buttons then
         for j=1,#Menus[i].buttons do
-          if Menus[i]:isInButton(j) and Menus[i].buttons[j].texture_id == BUTTON_TEXTURE_PRESSED then
+          if Menus[i]:isInButton(j) and Menus[i].buttons[j].pressed then
+            Menus[i].buttons[j].pressed = false
             if Menus[i].buttons[j].onClick then Menus[i].buttons[j].onClick(Menus[i],Menus[i].buttons[j]) end
-            if Menus[i] and Menus[i].uniqueId == uniqueId then Menus[i].buttons[j].texture_id = BUTTON_TEXTURE_HOVERED
-            else return nil end
+            return true
           end
         end
       end
