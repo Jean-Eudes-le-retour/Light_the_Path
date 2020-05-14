@@ -105,35 +105,41 @@ end
 
 -- For some UI_MENU ui elements, contain imagedata -> some pixels are transparent and must be taken into account in isInMenu
 function Menu:isInMenu()
-  local cursor_x, cursor_y = love.mouse.getPosition()
+  local cursor_x, cursor_y = 0,0
 --IF THE POSITION AND SIZE SYSTEM IS GRID-BASED
   if self.t == UI_TILE then
     cursor_x, cursor_y = grid.getCursorPosition()
-    if cursor_x >= self.xpos and cursor_x < self.xpos + self.width and
-       cursor_y >= self.ypos and cursor_y < self.ypos + self.height then
+    cursor_x, cursor_y = cursor_x-self.xpos, cursor_y-self.ypos
+    if cursor_x >= 0 and cursor_x < self.width and
+       cursor_y >= 0 and cursor_y < self.height then
       return true
-    else
-      return false
     end
+    return false
   end
 --IF SOLELY THE POSITION SYSTEM IS GRID BASED
   if self.t == UI_MENU and self.window_position_mode == MENU_GRID then
     cursor_x, cursor_y = grid.getCursorPosition(true)
+    cursor_x, cursor_y = cursor_x-self.xpos, cursor_y-self.ypos
     local texture_scale = grid.getTextureScale()
-    if cursor_x >= self.xpos and cursor_x < self.xpos + self.width*UI_scale/texture_scale and
-       cursor_y >= self.ypos and cursor_y < self.ypos + self.height*UI_scale/texture_scale then
+    if cursor_x >= 0 and cursor_x < self.width*UI_scale/texture_scale and
+       cursor_y >= 0 and cursor_y < self.height*UI_scale/texture_scale then
       return true
-    else
-      return false
     end
-  end
---ELSE FOR WINDOW POSITIONING SYSTEM
-  if cursor_x > self.xpos and cursor_x <= self.xpos + self.width and
-     cursor_y > self.ypos and cursor_y <= self.ypos + self.height then
-    return true --ADD IMAGEDATA TESTING!!!!
-  else
     return false
   end
+--ELSE FOR WINDOW POSITIONING SYSTEM
+  cursor_x, cursor_y = love.mouse.getPosition()
+  cursor_x, cursor_y = cursor_x-self.xpos, cursor_y-self.ypos
+  if cursor_x > 0 and cursor_x <= self.width and
+     cursor_y > 0 and cursor_y <= self.height then
+    if self.imagedata then
+      local _,_,_,alpha = self.imagedata:getPixel(math.ceil(cursor_x/UI_scale),math.ceil(cursor_y/UI_scale))
+      if alpha ~= 0 then return true end
+    else
+      return true
+    end
+  end
+  return false
 end
 
 function Menu:isInButton(i)
@@ -447,6 +453,7 @@ function ui_elements.escapeMenu()
   m.isBlocking = true
   m.texture[2] = TEXTURE_REG_BUTTON_PRESSED
 
+  -- m.imagedata = m.texture[0]:newImageData() -- ImageData test
   m:resize()
 end
 
