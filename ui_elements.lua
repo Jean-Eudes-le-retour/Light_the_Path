@@ -466,8 +466,15 @@ function ui_elements.levelSelect()
   m.buttons = {{xpos = 100, ypos = 24, texture_id = 5,text = "Level Select"},{xpos = 100, ypos = 378, texture_id = 1, text = "Back", onClick = function(m,b) m:close() ui_elements.escapeMenu() end}}
   m.update = function(m)
     m.buttons[1].texture_id = 5
-    if not m:isInButton(2) then m.buttons[2].texture_id = BUTTON_TEXTURE_NORMAL
-    elseif m.buttons[2].texture_id ~= BUTTON_TEXTURE_PRESSED then m.buttons[2].texture_id = BUTTON_TEXTURE_HOVERED end
+
+    if (not m:isInButton(2)) or (not m.buttons[2].pressed) then
+      m.buttons[2].previous_texture_id = m.buttons[2].texture_id
+      m.buttons[2].texture_id = BUTTON_TEXTURE_NORMAL
+      m.buttons[2].pressed = false
+    else
+      m.buttons[2].previous_texture_id = m.buttons[2].texture_id
+      m.buttons[2].texture_id = BUTTON_TEXTURE_PRESSED
+    end
     
     if m.buttons[2].previous_texture_id ~= m.buttons[2].texture_id then
       ui_elements.updateButtonDimensions(m)
@@ -637,9 +644,9 @@ function ui_elements.optionsMenu()
     for i=1,#m.buttons do
       if not m.buttons[i].noUpdate then
         local button_texture_offset = m.buttons[i].SQButton and 5 or m.buttons[i].compl2SQButton and 10 or 0
-        if not m.buttons[i].cursorPresent then
+        if not m:isInButton(i) then
           m.buttons[i].texture_id = BUTTON_TEXTURE_NORMAL + button_texture_offset
-          m.pressed = false
+          m.buttons[i].pressed = false
         elseif not m.buttons[i].pressed then
           m.buttons[i].texture_id = BUTTON_TEXTURE_NORMAL + button_texture_offset
         else
