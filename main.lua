@@ -67,18 +67,7 @@ function love.load()
   totalTime=0.0
   
   
-  local m = ui_elements.create(UI_MENU)
-  --m.texture[0] = ui_elements.getNewMenuBackground(200,300)
-  m.buttons = {{xpos = 20, ypos = 5, onClick = function(m,b) m:close() end, text = "Return to Game"},{xpos = 20, ypos = 5, onClick = function(m,b) m:close() end, text = "Return to Game"},{xpos = 20, ypos = 5, onClick = function(m,b) m:close() end, text = "Return to Game"}}
-  m.texture[1] = love.graphics.newImage("Textures/default_button_1.png")
-  ui_elements.fitButtons(m)
-
-  m.window_position_mode = MENU_CENTER
-  m.isBlocking = true
-  m.texture[2] = love.graphics.newImage("Textures/default_button_2.png")
-
-  ui_elements.updateButtonDimensions(m) --unnecessary when using ui_elements.fitButtons(m)
-  m:resize()
+  ui_elements.dialogueTest()
   
   
 end

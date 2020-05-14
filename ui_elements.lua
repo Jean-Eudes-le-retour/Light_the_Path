@@ -18,10 +18,16 @@ if UI_automatic_scaling then
   UI_scale = math.min(ww*UI_autoscale_factor_x, wh*UI_autoscale_factor_y)
 end
 
-
+----------------------------------------------------------
 local DEFAULT_BUTTON_SPACING = 6
 local DEFAULT_H_DEADZONE = 32
 local DEFAULT_V_DEADZONE = 32
+local DEFAULT_DIALOGUE_H_DEADZONE = 8
+local DEFAULT_DIALOGUE_V_DEADZONE = 8
+local DEFAULT_DIALOGUE_V_SPAN = 256
+local DEFAULT_ANIM_FREQ = 1
+----------------------------------------------------------
+local DEFAULT_TEXT_RATE = 20
 ----------------------------------------------------------
 local TEXTURE_MENU_CORNER = love.graphics.newImage("Textures/menu_corner.png")
 local TEXTURE_MENU_SIDE   = love.graphics.newImage("Textures/menu_side.png")
@@ -40,6 +46,9 @@ local TEXTURE_SQ_BUTTON_PRESSED  = love.graphics.newImage("Textures/sq_button_2.
 local TEXTURE_SQ_BUTTON_HOVERED  = love.graphics.newImage("Textures/sq_button_3.png")
 local TEXTURE_SQ_BUTTON_GREYED   = love.graphics.newImage("Textures/sq_button_4.png")
 local TEXTURE_SQ_BUTTON_INVIS    = love.graphics.newImage("Textures/sq_button_5.png")
+
+local TEXTURE_DIALOGUE_SIDE = love.graphics.newImage("Textures/dialogue_side.png")
+local TEXTURE_DIALOGUE_NAME = love.graphics.newImage("Textures/dialogue_name.png")
 
 
 local Menu = {} -- Object from which all others are derived (here to define methods)
@@ -69,6 +78,38 @@ local DEFAULT_MENU = {
   end,
 
 }
+local DEFAULT_DIALOGUE = {
+--TYPE
+  t = UI_DIALOGUE,
+  
+--NO TOUCHING THESE
+  xpos = 0,
+  ypos = 0,
+  width_factor = 0,
+  height_factor = 0,
+  text_width = 0,
+  text_height = 0,
+  game_time_start = 0,
+  current_frame = false,
+  canvas = false,
+  textcanvas = false,
+  imagedata = false,
+  page = 1,
+  scroll = 0,
+  
+--CAN BE CHANGED THROUGH ASSIGNMENTS
+  charname = {},
+  originaltext = {}, --table of different "pages", each page can be love2d coloredtext format
+  text_rate = {},
+  animation = {}, -- contains table of images, animation[x][0] is {freq,repetitions,fade} if defined
+  sfx = {}, -- sfx[x][0] is mode
+  window_position_mode = MENU_BL,
+  isBlocking = true,
+  
+  update = function(m)
+    ui_elements.updateDialogue(m)
+  end
+}
 
 local DEFAULT_UI = {DEFAULT_MENU,DEFAULT_DIALOGUE,DEFAULT_TILE}
 --Menus = {MAIN_MENU} -- Global Menus table
@@ -93,6 +134,12 @@ function Menu:new(t)
   m.texture = {}
   m.canvas = DEFAULT_UI[t].canvas
   m.update = DEFAULT_UI[t].update
+  if m.t == UI_DIALOGUE then
+    m.game_time_start = game_time
+    m.page = DEFAULT_UI[t].page
+    m.scroll = DEFAULT_UI[t].scroll
+    m.animation = {}
+  end
   
   while MenuId > 0 and not Menus[MenuId] do MenuId = MenuId-1 end
   MenuId = MenuId+1
@@ -188,29 +235,41 @@ end
 function Menu:draw()
   love.graphics.setCanvas(self.canvas)
   love.graphics.clear()
-  if self.texture and self.texture[0] then love.graphics.draw(self.texture[0]) end
-  for i=1,(self.buttons and #self.buttons or 0) do
-    local b_x, b_y, b_w, b_h, b_tid = self.buttons[i].xpos, self.buttons[i].ypos, self.buttons[i].width, self.buttons[i].height, self.buttons[i].texture_id
-    if self.t == UI_TILE then b_x, b_y = (b_x-1)*TEXTURE_BASE_SIZE, (b_y-1)*TEXTURE_BASE_SIZE end
-    if not self.texture[b_tid] then b_tid = BUTTON_TEXTURE_NORMAL end
-    love.graphics.draw(self.texture[b_tid],b_x,b_y)
-    
-    if self.buttons[i].text then
-      local b_str, b_ft, b_al = self.buttons[i].text, self.buttons[i].font, self.buttons[i].align
-      if not b_ft then b_ft = FONT_DEFAULT end
-      if not b_al then b_al = "center" end
-      local t_w = b_ft:getWidth(b_str)
-      local t_h = b_ft:getHeight()
+  if self.t == UI_MENU then
+    if self.texture and self.texture[0] then love.graphics.draw(self.texture[0]) end
+    for i=1,(self.buttons and #self.buttons or 0) do
+      local b_x, b_y, b_w, b_h, b_tid = self.buttons[i].xpos, self.buttons[i].ypos, self.buttons[i].width, self.buttons[i].height, self.buttons[i].texture_id
+      if self.t == UI_TILE then b_x, b_y = (b_x-1)*TEXTURE_BASE_SIZE, (b_y-1)*TEXTURE_BASE_SIZE end
+      if not self.texture[b_tid] then b_tid = BUTTON_TEXTURE_NORMAL end
+      love.graphics.draw(self.texture[b_tid],b_x,b_y)
       
-      love.graphics.setFont(b_ft)
-      if b_al == "center" then
-        love.graphics.print(b_str, math.floor(b_x + (b_w-t_w)/2), math.ceil(b_y + (b_h - t_h)/2))
-      elseif b_al == "right" then
-        love.graphics.print(b_str, b_x+b_w-TEXT_MARGIN-t_w, math.ceil(b_y + (b_h - t_h)/2))
-      else
-        love.graphics.print(b_str, b_x+TEXT_MARGIN, math.ceil(b_y + (b_h - t_h)/2))
+      if self.buttons[i].text then
+        local b_str, b_ft, b_al = self.buttons[i].text, self.buttons[i].font, self.buttons[i].align
+        if not b_ft then b_ft = FONT_DEFAULT end
+        if not b_al then b_al = "center" end
+        local t_w = b_ft:getWidth(b_str)
+        local t_h = b_ft:getHeight()
+        
+        love.graphics.setFont(b_ft)
+        if b_al == "center" then
+          love.graphics.print(b_str, math.floor(b_x + (b_w-t_w)/2), math.ceil(b_y + (b_h - t_h)/2))
+        elseif b_al == "right" then
+          love.graphics.print(b_str, b_x+b_w-TEXT_MARGIN-t_w, math.ceil(b_y + (b_h - t_h)/2))
+        else
+          love.graphics.print(b_str, b_x+TEXT_MARGIN, math.ceil(b_y + (b_h - t_h)/2))
+        end
       end
+      love.graphics.setFont(FONT_BASE)
     end
+  elseif self.t == UI_DIALOGUE then
+    love.graphics.setFont(FONT_DEFAULT)
+    if self.current_frame then
+      local framewidth, frameheight = self.current_frame:getDimensions()
+      love.graphics.draw(self.current_frame, self.width_factor, math.floor(self.height_factor/2), nil, nil, nil, framewidth, frameheight)
+    end
+    if self.texture[0] then love.graphics.draw(self.texture[0]) end
+    if self.charname and self.charname[self.page] then love.graphics.print(self.charname[self.page], DEFAULT_DIALOGUE_H_DEADZONE, math.ceil(self.height_factor/2)-12) end
+    if self.textcanvas then love.graphics.draw(self.textcanvas, DEFAULT_DIALOGUE_H_DEADZONE, math.ceil(self.height_factor/2)+DEFAULT_DIALOGUE_V_DEADZONE) end
     love.graphics.setFont(FONT_BASE)
   end
   love.graphics.setCanvas()
@@ -265,7 +324,21 @@ function Menu:resize()
     end
 
   elseif self.t == UI_DIALOGUE then
-  
+    local window_x, window_y = love.graphics.getDimensions()
+    self.width_factor = math.ceil(window_x/UI_scale)
+    self.height_factor = DEFAULT_DIALOGUE_V_SPAN
+    self.width = window_x
+    self.height = math.ceil(self.height_factor*UI_scale)
+    
+    self.canvas = love.graphics.newCanvas(self.width_factor,self.height_factor)
+    self.textcanvas = love.graphics.newCanvas(self.width_factor-2*DEFAULT_DIALOGUE_H_DEADZONE,math.floor(self.width/2)-2*DEFAULT_DIALOGUE_V_DEADZONE)
+    
+    self.text_width = self.width_factor-2*DEFAULT_DIALOGUE_H_DEADZONE
+    self.text_height = self.height_factor-2*DEFAULT_DIALOGUE_V_DEADZONE
+    self.texture[0] = ui_elements.getDialogueBox(self.width_factor,self.height_factor)
+    self.imagedata = self.texture[0]:newImageData()
+    self.xpos = 0
+    self.ypos = window_y-self.height
   elseif self.t == UI_TILE then
   
   else
@@ -314,6 +387,36 @@ function ui_elements.getNewMenuBackground(width,height,tc_path,ts_path,bg_color)
   
   love.graphics.setColor(unpack(bg_color))
   love.graphics.rectangle("fill",corner_dim,corner_dim,width-2*corner_dim,height-2*corner_dim)
+  love.graphics.setColor(1,1,1,1)
+  love.graphics.setCanvas()
+  
+  return canvas
+end
+
+function ui_elements.getDialogueBox(width,height,ts_path,nb_path,bg_color)
+  local t_side, t_nb = nil, nil
+  local halfway_pos = math.ceil(height/2)
+  bg_color = bg_color or {0.8,0.8,0.8,1}
+  if not ts_path or not nb_path then t_side, t_nb = TEXTURE_DIALOGUE_SIDE, TEXTURE_DIALOGUE_NAME
+  else t_side, t_nb = love.graphics.newImage(ts_path), love.graphics.newImage(nb_path) end
+  local side_w, side_h, nb_dim = t_side:getPixelWidth(), t_side:getPixelHeight(), t_nb:getPixelHeight()
+
+  local h_rep = math.floor(width/side_w+0.5)
+  if h_rep == 0 then h_rep = 1 end
+  local h_scale = width/(h_rep*side_w)
+  
+  local canvas = love.graphics.newCanvas(width,height)
+  love.graphics.setCanvas(canvas)
+  love.graphics.draw(t_nb,0,halfway_pos-nb_dim)
+  for i=0,h_rep-1 do
+    love.graphics.draw(t_side,i*h_scale*side_w,halfway_pos,0,h_scale,1)
+  end
+  for i=1,h_rep do
+   love.graphics.draw(t_side,i*h_scale*side_w,height,math.rad(180),h_scale,1)
+  end
+  
+  love.graphics.setColor(unpack(bg_color))
+  love.graphics.rectangle("fill",0,math.ceil(height/2)+side_h,width,math.floor(height/2)-2*side_h)
   love.graphics.setColor(1,1,1,1)
   love.graphics.setCanvas()
   
@@ -399,6 +502,85 @@ function ui_elements.fitButtons(m,spacing,h_deadzone,v_deadzone)
     m.buttons[i].width = b_w
     m.buttons[i].height = b_h
     if not m.buttons[i].texture_id then m.buttons[i].texture_id = BUTTON_TEXTURE_NORMAL end
+  end
+end
+
+function ui_elements.updateDialogue(m)
+  local progress = game_time - m.game_time_start
+  local page = m.page
+  
+  local text_to_print = {}
+  if not m.finished then
+    local characters_to_print = (m.text_rate and m.text_rate[page] or DEFAULT_TEXT_RATE)*progress
+    print("there are "..characters_to_print.." characters to print")
+    local text_stop_id = 0
+    for i=1,#m.originaltext[page] do
+      text_stop_id = i
+      if type(m.originaltext[page][i]) == "string" then
+        characters_to_print = characters_to_print-string.len(m.originaltext[page][i])
+        if characters_to_print <= 0 then break end
+      end
+    end
+    if characters_to_print >= 0 then m.finished = true end
+    characters_to_print = string.len(m.originaltext[page][text_stop_id])+characters_to_print
+
+    for i=1,text_stop_id-1 do
+      text_to_print[i] = m.originaltext[page][i]
+    end
+    text_to_print[text_stop_id] = string.sub(m.originaltext[page][text_stop_id],1,characters_to_print)
+  else
+    text_to_print = m.originaltext[page]
+  end
+  
+  local tmp_text = ""
+  for i=1,#text_to_print do
+    if type(text_to_print[i]) == "string" then
+      tmp_text = tmp_text..text_to_print[i]
+    end
+  end
+  
+  love.graphics.setFont(FONT_DEFAULT)
+  local tw, textlines = FONT_DEFAULT:getWrap(tmp_text,m.text_width)
+  local th = #textlines*FONT_DEFAULT:getHeight()
+  if th > m.text_height then m.scroll = th-m.text_height end
+  
+  if #text_to_print == 1 then
+    text_to_print[2] = text_to_print[1]
+    text_to_print[1] = {1,1,1,1}
+  end
+  
+  m.current_frame = false
+  if m.animation and m.animation[page] then
+    local freq, repetitions, fade = unpack(m.animation[page][0])
+    if not freq then freq = DEFAULT_ANIM_FREQ end
+    if not repetitions then repetitions = -1 end
+    if fade then
+      --NOT IMPLEMENTED
+    else
+      if (repetitions == -1 and not m.finished) or repetitions == 0 or (progress*freq)/(#m.animation[page]-1) < repetitions then
+        local anim_id = math.floor(progress*freq)%(#m.animation[page]-1)+1
+        m.current_frame = m.animation[page][anim_id]
+      else
+        m.current_frame = m.animation[page][#m.animation[page]]
+      end
+    end
+  end
+  
+  love.graphics.setCanvas(m.textcanvas)
+  love.graphics.clear()
+  love.graphics.printf(text_to_print,-m.scroll,0,m.text_width)
+  love.graphics.setFont(FONT_BASE)
+  m:draw()
+end
+
+function ui_elements.clickDialogue(m)
+  if m.finished then
+    m.finished = false
+    m.game_time_start = game_time
+    m.page = m.page + 1
+    if m.page > #m.originaltext then m:close() end
+  else
+    m.finished = true
   end
 end
 
@@ -663,6 +845,21 @@ function ui_elements.optionsMenu()
       end
     end
   end
+  m:resize()
+end
+
+function ui_elements.dialogueTest()
+  local m = ui_elements.create(UI_DIALOGUE)
+  m.originaltext = {{{0.5,0.5,0.5},"THIS IS A TEST THIS IS A TEST THIS IS A TEST THIS IS A TEST THIS IS A TEST THIS IS A TEST THIS IS A TEST THIS IS A TEST THIS IS A TEST THIS IS A TEST ",{1,0,1,1},"COLOURS",{1,1,1,1},"heheheh"},{{1,1,0,1},"WAIIIIITT.... There's more...?"}}
+  m.charname = {"Mr. X","You"}
+  m.animation[1] = {}
+  m.animation[1][0] = {4,-1}
+  m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
+  m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
+  m.animation[1][3] = m.animation[1][1]
+  m.animation[2] = {}
+  m.animation[2][0] = {nil,-2}
+  m.animation[2][1] = love.graphics.newImage("Textures/test3.png")
   m:resize()
 end
 
