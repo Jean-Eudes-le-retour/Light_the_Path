@@ -105,35 +105,41 @@ end
 
 -- For some UI_MENU ui elements, contain imagedata -> some pixels are transparent and must be taken into account in isInMenu
 function Menu:isInMenu()
-  local cursor_x, cursor_y = love.mouse.getPosition()
+  local cursor_x, cursor_y = 0,0
 --IF THE POSITION AND SIZE SYSTEM IS GRID-BASED
   if self.t == UI_TILE then
     cursor_x, cursor_y = grid.getCursorPosition()
-    if cursor_x >= self.xpos and cursor_x < self.xpos + self.width and
-       cursor_y >= self.ypos and cursor_y < self.ypos + self.height then
+    cursor_x, cursor_y = cursor_x-self.xpos, cursor_y-self.ypos
+    if cursor_x >= 0 and cursor_x < self.width and
+       cursor_y >= 0 and cursor_y < self.height then
       return true
-    else
-      return false
     end
+    return false
   end
 --IF SOLELY THE POSITION SYSTEM IS GRID BASED
   if self.t == UI_MENU and self.window_position_mode == MENU_GRID then
     cursor_x, cursor_y = grid.getCursorPosition(true)
+    cursor_x, cursor_y = cursor_x-self.xpos, cursor_y-self.ypos
     local texture_scale = grid.getTextureScale()
-    if cursor_x >= self.xpos and cursor_x < self.xpos + self.width*UI_scale/texture_scale and
-       cursor_y >= self.ypos and cursor_y < self.ypos + self.height*UI_scale/texture_scale then
+    if cursor_x >= 0 and cursor_x < self.width*UI_scale/texture_scale and
+       cursor_y >= 0 and cursor_y < self.height*UI_scale/texture_scale then
       return true
-    else
-      return false
     end
-  end
---ELSE FOR WINDOW POSITIONING SYSTEM
-  if cursor_x > self.xpos and cursor_x <= self.xpos + self.width and
-     cursor_y > self.ypos and cursor_y <= self.ypos + self.height then
-    return true --ADD IMAGEDATA TESTING!!!!
-  else
     return false
   end
+--ELSE FOR WINDOW POSITIONING SYSTEM
+  cursor_x, cursor_y = love.mouse.getPosition()
+  cursor_x, cursor_y = cursor_x-self.xpos, cursor_y-self.ypos
+  if cursor_x > 0 and cursor_x <= self.width and
+     cursor_y > 0 and cursor_y <= self.height then
+    if self.imagedata then
+      local _,_,_,alpha = self.imagedata:getPixel(math.ceil(cursor_x/UI_scale),math.ceil(cursor_y/UI_scale))
+      if alpha ~= 0 then return true end
+    else
+      return true
+    end
+  end
+  return false
 end
 
 function Menu:isInButton(i)
@@ -447,6 +453,7 @@ function ui_elements.escapeMenu()
   m.isBlocking = true
   m.texture[2] = TEXTURE_REG_BUTTON_PRESSED
 
+  -- m.imagedata = m.texture[0]:newImageData() -- ImageData test
   m:resize()
 end
 
@@ -459,8 +466,15 @@ function ui_elements.levelSelect()
   m.buttons = {{xpos = 100, ypos = 24, texture_id = 5,text = "Level Select"},{xpos = 100, ypos = 378, texture_id = 1, text = "Back", onClick = function(m,b) m:close() ui_elements.escapeMenu() end}}
   m.update = function(m)
     m.buttons[1].texture_id = 5
-    if not m:isInButton(2) then m.buttons[2].texture_id = BUTTON_TEXTURE_NORMAL
-    elseif m.buttons[2].texture_id ~= BUTTON_TEXTURE_PRESSED then m.buttons[2].texture_id = BUTTON_TEXTURE_HOVERED end
+
+    if (not m:isInButton(2)) or (not m.buttons[2].pressed) then
+      m.buttons[2].previous_texture_id = m.buttons[2].texture_id
+      m.buttons[2].texture_id = BUTTON_TEXTURE_NORMAL
+      m.buttons[2].pressed = false
+    else
+      m.buttons[2].previous_texture_id = m.buttons[2].texture_id
+      m.buttons[2].texture_id = BUTTON_TEXTURE_PRESSED
+    end
     
     if m.buttons[2].previous_texture_id ~= m.buttons[2].texture_id then
       ui_elements.updateButtonDimensions(m)
@@ -630,9 +644,9 @@ function ui_elements.optionsMenu()
     for i=1,#m.buttons do
       if not m.buttons[i].noUpdate then
         local button_texture_offset = m.buttons[i].SQButton and 5 or m.buttons[i].compl2SQButton and 10 or 0
-        if not m.buttons[i].cursorPresent then
+        if not m:isInButton(i) then
           m.buttons[i].texture_id = BUTTON_TEXTURE_NORMAL + button_texture_offset
-          m.pressed = false
+          m.buttons[i].pressed = false
         elseif not m.buttons[i].pressed then
           m.buttons[i].texture_id = BUTTON_TEXTURE_NORMAL + button_texture_offset
         else
