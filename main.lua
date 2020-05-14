@@ -149,7 +149,7 @@ function load_level(level_no)
     print("Could not find "..path)
     return false
   end
-  level = dofile(path)
+  level = love.filesystem.load(path)()
   level.load()
   grid_dim_x, grid_dim_y = grid.getDimensions()
   drawbox_x, drawbox_y, texture_scale = grid.getDrawboxInfo()
