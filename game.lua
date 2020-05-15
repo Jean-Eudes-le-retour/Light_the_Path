@@ -76,7 +76,7 @@ function game.onClick( x, y, button, istouch, presses )
       if Menus[i] then
         if Menus[i]:isInMenu() then
           print("Clicked in menu "..tostring(i))
-          if Menus[i].t == UI_DIALOGUE then ui_elements.clickDialogue(Menus[i])
+          if Menus[i].t == UI_DIALOG then ui_elements.clickDialog(Menus[i])
           elseif Menus[i].buttons then
             for j=1,#Menus[i].buttons do
               print("Testing button "..tostring(j).." for Menu "..tostring(i))
@@ -172,7 +172,7 @@ function game.onPress( key, scancode, isrepeat)
   if key == "escape" then
     local MenuId = ui_elements.getMenuId()
     for i=MenuId,1,-1 do
-      if Menus[i].isBlocking and Menus[i].t ~= UI_DIALOGUE then
+      if Menus[i].isBlocking and Menus[i].t ~= UI_DIALOG then
         Menus[i]:close()
         return
       end

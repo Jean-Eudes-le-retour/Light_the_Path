@@ -41,5 +41,27 @@ m.texture[BUTTON_TEXTURE_HOVERED] = ...
 m:resize()
 --AND DONE! EASY PEASY!
 ________________________________________________
-             TO PREPARE A DIALOGUE
+             TO PREPARE A DIALOG
 ________________________________________________
+
+local m = ui_elements.create(UI_DIALOG)
+m.originaltext = { --2 possible formats as shown below for each page
+--[[PAGE1]]       {--[[COLOR1]]{0,0,0,1},--[[TEXT1]]"BLAH BLAH",--[[COLOR2]]{1,0,0,1},--[[TEXT2]]"BLAH BLAH BLAH" --[[ETC...]]},
+--[[PAGE2]]       {--[[TEXT]]"BLAH BLAH"}
+--[[...]]
+                 }
+m.charname = {
+--[[NAME for PAGE1]] "Mr. X",
+--[[NAME for PAGE2]] "Mr. Y"
+             }
+m.text_rate = {--[[PAGE1]]20,--[[PAGE2]]40} -- DEFAULT_TEXT_RATE = 20
+m.animation = {}
+--[[PAGE1 animation]]     m.animation[1] = {love.graphics.newImage("path_to_frame_1.png"), love.graphics.newImage("path_to_frame_2.png"), --[[...,]] love.graphics.newImage("path_to_still_end_frame.png")}
+--[[PAGE1 animation mode]]m.animation[1][0] = {4 --[[Hz frequency of frame change; defaults to 2]], 5 --[[repetitions of animation before shoing still end frame]], nil --[[fade; NOT IMPLEMENTED MUST BE NIL]]}
+-- repetitions: [-1] -> loop until end of text; [0] -> loop forever; [<any other negative number>] -> only still end frame; DEFAULTS TO -1
+m.sfx = {} --NOT IMPLEMENTED
+m.isBlocking = true --by default
+m.noSkip = false --by default (for interactive levels where text remains no matter what you do until an objective is achieved)
+
+--Unlikely to need to change m.update!
+m:resize()

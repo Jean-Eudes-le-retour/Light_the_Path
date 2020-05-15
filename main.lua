@@ -67,7 +67,7 @@ function love.load()
   totalTime=0.0
   
   
-  ui_elements.dialogueTest()
+  ui_elements.dialogTest()
   
   
 end

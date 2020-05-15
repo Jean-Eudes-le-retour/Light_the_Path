@@ -4,7 +4,7 @@ local ui_elements = {}
 
 local MenuId = 1 --DEFAULT HAS MAIN_MENU ACTIVE
 local uniqueId = 0
-local UI_TYPES = {"menu","dialogue","tile"}
+local UI_TYPES = {"menu","dialog","tile"}
 local NUM_PRESETS = 1
 local UI_automatic_scaling = true
 local UI_autoscale_factor_x = 1/384 --UI_scale 3*128*UI_scale = ww
@@ -22,10 +22,10 @@ end
 local DEFAULT_BUTTON_SPACING = 6
 local DEFAULT_H_DEADZONE = 32
 local DEFAULT_V_DEADZONE = 32
-local DEFAULT_DIALOGUE_H_DEADZONE = 8
-local DEFAULT_DIALOGUE_V_DEADZONE = 8
-local DEFAULT_DIALOGUE_V_SPAN = 256
-local DEFAULT_ANIM_FREQ = 1
+local DEFAULT_DIALOG_H_DEADZONE = 8
+local DEFAULT_DIALOG_V_DEADZONE = 8
+local DEFAULT_DIALOG_V_SPAN = 256
+local DEFAULT_ANIM_FREQ = 2
 ----------------------------------------------------------
 local DEFAULT_TEXT_RATE = 20
 ----------------------------------------------------------
@@ -47,8 +47,8 @@ local TEXTURE_SQ_BUTTON_HOVERED  = love.graphics.newImage("Textures/sq_button_3.
 local TEXTURE_SQ_BUTTON_GREYED   = love.graphics.newImage("Textures/sq_button_4.png")
 local TEXTURE_SQ_BUTTON_INVIS    = love.graphics.newImage("Textures/sq_button_5.png")
 
-local TEXTURE_DIALOGUE_SIDE = love.graphics.newImage("Textures/dialogue_side.png")
-local TEXTURE_DIALOGUE_NAME = love.graphics.newImage("Textures/dialogue_name.png")
+local TEXTURE_DIALOG_SIDE = love.graphics.newImage("Textures/dialog_side.png")
+local TEXTURE_DIALOG_NAME = love.graphics.newImage("Textures/dialog_name.png")
 
 
 local Menu = {} -- Object from which all others are derived (here to define methods)
@@ -78,9 +78,9 @@ local DEFAULT_MENU = {
   end,
 
 }
-local DEFAULT_DIALOGUE = {
+local DEFAULT_DIALOG = {
 --TYPE
-  t = UI_DIALOGUE,
+  t = UI_DIALOG,
   
 --NO TOUCHING THESE
   xpos = 0,
@@ -105,13 +105,14 @@ local DEFAULT_DIALOGUE = {
   sfx = {}, -- sfx[x][0] is mode
   window_position_mode = MENU_BL,
   isBlocking = true,
+  noSkip = false,
   
   update = function(m)
-    ui_elements.updateDialogue(m)
+    ui_elements.updateDialog(m)
   end
 }
 
-local DEFAULT_UI = {DEFAULT_MENU,DEFAULT_DIALOGUE,DEFAULT_TILE}
+local DEFAULT_UI = {DEFAULT_MENU,DEFAULT_DIALOG,DEFAULT_TILE}
 --Menus = {MAIN_MENU} -- Global Menus table
 Menus = {}
 
@@ -134,11 +135,13 @@ function Menu:new(t)
   m.texture = {}
   m.canvas = DEFAULT_UI[t].canvas
   m.update = DEFAULT_UI[t].update
-  if m.t == UI_DIALOGUE then
+  if m.t == UI_DIALOG then
     m.game_time_start = game_time
     m.page = DEFAULT_UI[t].page
     m.scroll = DEFAULT_UI[t].scroll
     m.animation = {}
+    m.text_rate = {}
+    m.noSkip = DEFAULT_UI[t].noSkip
   end
   
   while MenuId > 0 and not Menus[MenuId] do MenuId = MenuId-1 end
@@ -261,15 +264,15 @@ function Menu:draw()
       end
       love.graphics.setFont(FONT_BASE)
     end
-  elseif self.t == UI_DIALOGUE then
+  elseif self.t == UI_DIALOG then
     love.graphics.setFont(FONT_DEFAULT)
     if self.current_frame then
       local framewidth, frameheight = self.current_frame:getDimensions()
       love.graphics.draw(self.current_frame, self.width_factor, math.floor(self.height_factor/2), nil, nil, nil, framewidth, frameheight)
     end
     if self.texture[0] then love.graphics.draw(self.texture[0]) end
-    if self.charname and self.charname[self.page] then love.graphics.print(self.charname[self.page], DEFAULT_DIALOGUE_H_DEADZONE, math.ceil(self.height_factor/2)-12) end
-    if self.textcanvas then love.graphics.draw(self.textcanvas, DEFAULT_DIALOGUE_H_DEADZONE, math.ceil(self.height_factor/2)+DEFAULT_DIALOGUE_V_DEADZONE) end
+    if self.charname and self.charname[self.page] then love.graphics.print(self.charname[self.page], DEFAULT_DIALOG_H_DEADZONE, math.ceil(self.height_factor/2)-12) end
+    if self.textcanvas then love.graphics.draw(self.textcanvas, DEFAULT_DIALOG_H_DEADZONE, math.ceil(self.height_factor/2)+DEFAULT_DIALOG_V_DEADZONE) end
     love.graphics.setFont(FONT_BASE)
   end
   love.graphics.setCanvas()
@@ -323,19 +326,19 @@ function Menu:resize()
       self.xpos, self.ypos = grid.getTilePosition(self.grid_x,self.grid_y)
     end
 
-  elseif self.t == UI_DIALOGUE then
+  elseif self.t == UI_DIALOG then
     local window_x, window_y = love.graphics.getDimensions()
     self.width_factor = math.ceil(window_x/UI_scale)
-    self.height_factor = DEFAULT_DIALOGUE_V_SPAN
+    self.height_factor = DEFAULT_DIALOG_V_SPAN
     self.width = window_x
     self.height = math.ceil(self.height_factor*UI_scale)
     
     self.canvas = love.graphics.newCanvas(self.width_factor,self.height_factor)
-    self.textcanvas = love.graphics.newCanvas(self.width_factor-2*DEFAULT_DIALOGUE_H_DEADZONE,math.floor(self.width/2)-2*DEFAULT_DIALOGUE_V_DEADZONE)
+    self.textcanvas = love.graphics.newCanvas(self.width_factor-2*DEFAULT_DIALOG_H_DEADZONE,math.floor(self.width/2)-2*DEFAULT_DIALOG_V_DEADZONE)
     
-    self.text_width = self.width_factor-2*DEFAULT_DIALOGUE_H_DEADZONE
-    self.text_height = self.height_factor-2*DEFAULT_DIALOGUE_V_DEADZONE
-    self.texture[0] = ui_elements.getDialogueBox(self.width_factor,self.height_factor)
+    self.text_width = self.width_factor-2*DEFAULT_DIALOG_H_DEADZONE
+    self.text_height = self.height_factor-2*DEFAULT_DIALOG_V_DEADZONE
+    self.texture[0] = ui_elements.getDialogBox(self.width_factor,self.height_factor)
     self.imagedata = self.texture[0]:newImageData()
     self.xpos = 0
     self.ypos = window_y-self.height
@@ -393,11 +396,11 @@ function ui_elements.getNewMenuBackground(width,height,tc_path,ts_path,bg_color)
   return canvas
 end
 
-function ui_elements.getDialogueBox(width,height,ts_path,nb_path,bg_color)
+function ui_elements.getDialogBox(width,height,ts_path,nb_path,bg_color)
   local t_side, t_nb = nil, nil
   local halfway_pos = math.ceil(height/2)
   bg_color = bg_color or {0.8,0.8,0.8,1}
-  if not ts_path or not nb_path then t_side, t_nb = TEXTURE_DIALOGUE_SIDE, TEXTURE_DIALOGUE_NAME
+  if not ts_path or not nb_path then t_side, t_nb = TEXTURE_DIALOG_SIDE, TEXTURE_DIALOG_NAME
   else t_side, t_nb = love.graphics.newImage(ts_path), love.graphics.newImage(nb_path) end
   local side_w, side_h, nb_dim = t_side:getPixelWidth(), t_side:getPixelHeight(), t_nb:getPixelHeight()
 
@@ -505,7 +508,7 @@ function ui_elements.fitButtons(m,spacing,h_deadzone,v_deadzone)
   end
 end
 
-function ui_elements.updateDialogue(m)
+function ui_elements.updateDialog(m)
   local progress = game_time - m.game_time_start
   local page = m.page
   
@@ -573,8 +576,8 @@ function ui_elements.updateDialogue(m)
   m:draw()
 end
 
-function ui_elements.clickDialogue(m)
-  if m.finished then
+function ui_elements.clickDialog(m)
+  if m.finished and not m.noSkip then
     m.finished = false
     m.game_time_start = game_time
     m.page = m.page + 1
@@ -848,8 +851,8 @@ function ui_elements.optionsMenu()
   m:resize()
 end
 
-function ui_elements.dialogueTest()
-  local m = ui_elements.create(UI_DIALOGUE)
+function ui_elements.dialogTest()
+  local m = ui_elements.create(UI_DIALOG)
   m.originaltext = {{{0.5,0.5,0.5},"THIS IS A TEST THIS IS A TEST THIS IS A TEST THIS IS A TEST THIS IS A TEST THIS IS A TEST THIS IS A TEST THIS IS A TEST THIS IS A TEST THIS IS A TEST ",{1,0,1,1},"COLOURS",{1,1,1,1},"heheheh"},{{1,1,0,1},"WAIIIIITT.... There's more...?"}}
   m.charname = {"Mr. X","You"}
   m.animation[1] = {}
