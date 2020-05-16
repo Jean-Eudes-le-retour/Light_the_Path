@@ -48,7 +48,7 @@ function level.load()
 	m = ui_elements.create(UI_DIALOG)
 	m.originaltext = {
   {{0.5,0.5,0.5},"Let's give you a quick crash course on how this laboratory works!"},
-  {{0.5,0.5,0.5},"To get started off with, try position the ",{1,0,0},"RED",{0.5,0.5,0.5}," mirror such that light gets diverted into the ",{1,0,0},"RED",{0.5,0.5,0.5}," receiver up top. Then turn on the ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," laser with ",{0,0,0},"RIGHT CLICK",{0.5,0.5,0.5},". Note that you can rotate certain objects with your ",{0,0,0},"SCROLL WHEEL",{0.5,0.5,0.5}," when hovering over them."}}
+  {{0.5,0.5,0.5},"To get started off with, try to position the ",{1,0,0},"RED",{0.5,0.5,0.5}," mirror such that light gets diverted into the ",{1,0,0},"RED",{0.5,0.5,0.5}," receiver up top. Then turn on the ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," laser with ",{0,0,0},"RIGHT CLICK",{0.5,0.5,0.5},". Note that you can rotate certain objects with your ",{0,0,0},"SCROLL WHEEL",{0.5,0.5,0.5}," when hovering over them."}}
 	m.charname = {"Mr. X", "Mr. X"}
 	m.animation[1] = {}
 	m.animation[1][0] = {4,-1}

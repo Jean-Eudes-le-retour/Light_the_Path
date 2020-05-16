@@ -18,8 +18,6 @@ if UI_automatic_scaling then
   UI_scale = math.min(ww*UI_autoscale_factor_x, wh*UI_autoscale_factor_y)
 end
 
-dialog_num = 0		--il faut que je trouve un autre moyen que d'utiliser une variable globale
-
 ----------------------------------------------------------
 local DEFAULT_BUTTON_SPACING = 6
 local DEFAULT_H_DEADZONE = 32
@@ -286,10 +284,6 @@ function Menu:close()
     MenuId = MenuId-1
     while not Menus[MenuId] and MenuId > 0 do MenuId = MenuId-1 end
   end
-  if self.t == UI_DIALOG then		--c'est très très moche d'utiliser une variable globale, je sais
-	dialog_num = dialog_num + 1
-  end
-  
   Menus[self.id] = nil
 end
 
@@ -522,7 +516,6 @@ function ui_elements.updateDialog(m)
   local text_to_print = {}
   if not m.finished then
     local characters_to_print = (m.text_rate and m.text_rate[page] or DEFAULT_TEXT_RATE)*progress
-    print("there are "..characters_to_print.." characters to print")
     local text_stop_id = 0
     for i=1,#m.originaltext[page] do
       text_stop_id = i

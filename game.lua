@@ -77,14 +77,11 @@ function game.onClick( x, y, button, istouch, presses )
   for i=MenuId,1,-1 do
     if Menus[i] then
       if Menus[i]:isInMenu() then
-        print("Clicked in menu "..tostring(i))
         if (button == 1) then
           if Menus[i].t == UI_DIALOG then ui_elements.clickDialog(Menus[i])
           elseif Menus[i].buttons then
             for j=1,#Menus[i].buttons do
-              print("Testing button "..tostring(j).." for Menu "..tostring(i))
               if Menus[i]:isInButton(j) then
-                print("Pressed button...")
                 Menus[i].buttons[j].pressed = true
                 return true
               end
