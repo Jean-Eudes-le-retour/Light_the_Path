@@ -6,8 +6,8 @@ local level = {}
 
 -- IMPORTANT VARIABLES --
 level.complete = false
-level.x = 12
-level.y = 12
+level.x = 22
+level.y = 10
 level.name = "Projo"
 
 -- OPTIONAL VARIABLES --
@@ -29,14 +29,16 @@ function level.load()
 	grid.setNewObject(TYPE_WALL, 10, i)
   end
   grid.setNewObject(TYPE_RECEIVER, 5, 1, 1, 2, COLOR_WHITE)
-  grid.setNewObject(TYPE_MIRROR, 5, 3, 2, 2)
-  grid.setNewObject(TYPE_MIRROR, 8, 3, 2, 2)
-  grid.setNewObject(TYPE_MIRROR, 2, 5, 1, 1)
-  grid.setNewObject(TYPE_PWHEEL, 3, 5, 1, 1, COLOR_YELLOW)
-  grid.setNewObject(TYPE_MIRROR, 5, 5, 2, 2, COLOR_BLUE)
-  grid.setNewObject(TYPE_MIRROR, 8, 5, 2, 1, COLOR_YELLOW)
   grid.setNewObject(TYPE_SOURCE, 5, 7, 1, 0, COLOR_BLUE)
   grid.setNewObject(TYPE_SOURCE, 8, 7, 2, 0, COLOR_BLUE)
+  grid.setNewObject(TYPE_PWHEEL, 3, 5, 1, 1, COLOR_YELLOW)
+  
+  grid.setNewObject(TYPE_MIRROR, 12, 3, 1, 1)
+  grid.setNewObject(TYPE_MIRROR, 13, 3, 1, 1)
+  --grid.setNewObject(TYPE_MIRROR, 2, 5, 1, 1)
+  grid.setNewObject(TYPE_MIRROR, 12, 7, 1, 1, COLOR_BLUE)
+  grid.setNewObject(TYPE_MIRROR, 12, 5, 1, 1, COLOR_YELLOW)
+
 -- ADD UI ELEMENTS -- use menu.create() type functions, not yet defined.
 end
 
