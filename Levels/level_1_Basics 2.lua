@@ -1,6 +1,7 @@
 local objects = require("objects")  -- Used to iterate on objects (objects.getId()...) for example check every receiver for win condition; be careful with functions in this module, some only modify the information stored on the object, not the grid!
 local grid = require("grid")        -- Used to modify or observe the grid and its content.
 local tiles = require("tiles")      -- Possibly used to interact directly with the game state (interactive level functions), or for the versatile drawTexture function.
+local ui_elements = require("ui_elements")
 
 local level = {}
 
@@ -32,13 +33,23 @@ function level.load()
   end
   grid.setNewObject(TYPE_RECEIVER, 5, 1, 1, 2, COLOR_RED)
   grid.setNewObject(TYPE_RECEIVER, 8, 3, 1, 3, COLOR_GREEN)
-  grid.setNewObject(TYPE_RECEIVER, 5, 5, 1, 0, COLOR_BLUE)
   
   grid.setNewObject(TYPE_MIRROR, 2, 2, 1, 1, COLOR_RED)
+  grid.setNewObject(TYPE_MIRROR, 2, 4, 1, 1, COLOR_BLUE)
   
   grid.setNewObject(TYPE_SOURCE, 2, 3, 1, 1, COLOR_YELLOW)
 
 -- ADD UI ELEMENTS -- use menu.create() type functions, not yet defined.
+	local m = ui_elements.create(UI_DIALOG)
+	m.originaltext = {{{0.5,0.5,0.5},"Lets give you a quick crash course on how this laboratory work !"},{{0.5,0.5,0.5},"First of all, try to place the mirror correctly and turn on the yellow laser"}}
+	m.charname = {"Mr. X", "Mr. X"}
+	m.animation[1] = {}
+	m.animation[1][0] = {4,-1}
+	m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
+	m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
+	m.animation[1][3] = m.animation[1][1]
+	m.animation[2] = m.animation[1]
+	m:resize()
 end
 
 function level.update(dt) -- dt is time since last update in seconds
@@ -47,6 +58,21 @@ function level.update(dt) -- dt is time since last update in seconds
 
 -- OPTIONAL INTERACTIVE LEVEL FUNCTIONS -- direct modifications of object states do not trigger and UpdateObjectType flag! (Needs to be done manually)
    --when the laser splits and hits red and green, pause and then change the color of the source to cyan and the color of the mirror to blue but do not rotate the mirror
+  if grid.getState(5, 1)==2 then
+    grid.setNewObject(TYPE_WALL, 5, 1, 1)
+	grid.setNewObject(TYPE_RECEIVER, 5, 5, 1, 0, COLOR_BLUE)
+    local m = ui_elements.create(UI_DIALOG)
+	grid.setNewObject(TYPE_SOURCE, 2, 3, 2, 1, COLOR_CYAN)
+	m.originaltext = {{{0.5,0.5,0.5},"Good! You can see that a dichroic mirror reflects some part of the laser comming in. Here we have a yellow laser that is a combination of red and green, so the red part gets diverted and the green part stays straight. Lets see now what happens with a cyan source!"}, {{0.5,0.5,0.5},"Can you see how the cyan laser can do through the red dichroic mirror?"}}
+	m.charname = {"Mr. X","Mr. X","Mr. X"}
+	m.animation[1] = {}
+	m.animation[1][0] = {4,-1}
+	m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
+	m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
+	m.animation[1][3] = m.animation[1][1]
+	m.animation[2] = m.animation[1]
+	m:resize()
+  end
    
 end
 

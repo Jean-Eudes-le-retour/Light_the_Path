@@ -130,6 +130,11 @@ function grid.checkGrid(xpos,ypos,t)
   return nil
 end
 
+function grid.getState(xpos,ypos)
+  if Grid[xpos] and Grid[xpos][ypos] then return Grid[xpos][ypos].state end
+  return nil
+end
+
 function grid.getTileSize()
   return tile_size
 end
