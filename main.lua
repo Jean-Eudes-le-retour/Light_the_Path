@@ -138,6 +138,11 @@ function load_level(level_no)
     print("Could not find "..path)
     return false
   end
+  
+  for i=1,ui_elements.getMenuId() do
+    if Menus[i] and Menus[i].t == UI_DIALOG then Menus[i]:close() end
+  end
+  
   level = love.filesystem.load(path)()
   level.load()
   grid_dim_x, grid_dim_y = grid.getDimensions()

@@ -279,6 +279,7 @@ function Menu:draw()
 end
 
 function Menu:close()
+  -- print("Attempt to close a menu: "..UI_TYPES[self.t])
   if self.id == MenuId then
     MenuId = MenuId-1
     while not Menus[MenuId] and MenuId > 0 do MenuId = MenuId-1 end
