@@ -33,7 +33,7 @@ function level.load()
   grid.setNewObject(TYPE_RECEIVER, 8, 4, 1, 3, COLOR_YELLOW)
   grid.setNewObject(TYPE_PWHEEL, 4, 2, 1, 2, COLOR_YELLOW)
   
-  grid.setNewObject(TYPE_MIRROR, 4, 4, 2, 2, COLOR_YELLOW)
+  grid.setNewObject(TYPE_MIRROR, 4, 4, 2, 1, COLOR_YELLOW)
   grid.setNewObject(TYPE_MIRROR, 4, 3, 2, 1, COLOR_BLUE)
   
   grid.setNewObject(TYPE_SOURCE, 2, 3, 1, 1, COLOR_BLUE)

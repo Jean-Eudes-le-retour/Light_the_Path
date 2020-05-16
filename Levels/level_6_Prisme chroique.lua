@@ -6,8 +6,8 @@ local level = {}
 
 -- IMPORTANT VARIABLES --
 level.complete = false
-level.x = 22
-level.y = 10
+level.x = 11
+level.y = 6
 level.name = "Prisme dichroique"
 
 -- OPTIONAL VARIABLES --
@@ -22,20 +22,22 @@ function level.load()
   
 -- PREPARE LEVEL -- use grid.setNewObject(...) or grid.fitNewObject(...)
 --grid.fitNewObject(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glassState)
-  for i=1,10 do
+  for i=1,level.x do
     grid.setNewObject(TYPE_WALL, i, 1)
-	grid.setNewObject(TYPE_WALL, i, 10)
-	grid.setNewObject(TYPE_WALL, 1, i)
-	grid.setNewObject(TYPE_WALL, 10, i)
+	grid.setNewObject(TYPE_WALL, i, level.y)
   end
-  grid.setNewObject(TYPE_RECEIVER, 5, 1, 1, 2, COLOR_WHITE)
+  for i=1,level.y do
+	grid.setNewObject(TYPE_WALL, 1, i)
+	grid.setNewObject(TYPE_WALL, level.x, i)
+  end
+  grid.setNewObject(TYPE_RECEIVER, 6, 1, 1, 2, COLOR_WHITE)
   
-  grid.setNewObject(TYPE_MIRROR, 5, 5, 2, 1, COLOR_RED)
-  grid.setNewObject(TYPE_MIRROR, 5, 7, 2, 2, COLOR_BLUE)
+  grid.setNewObject(TYPE_MIRROR, 2, 4, 1, 1, COLOR_RED)
+  grid.setNewObject(TYPE_MIRROR, 4, 4, 1, 1, COLOR_BLUE)
   
-  grid.setNewObject(TYPE_SOURCE, 2, 5, 1, 1, COLOR_RED)
-  grid.setNewObject(TYPE_SOURCE, 5, 9, 2, 0, COLOR_GREEN)
-  grid.setNewObject(TYPE_SOURCE, 8, 7, 2, 3, COLOR_BLUE)
+  grid.setNewObject(TYPE_SOURCE, 2, 3, 1, 1, COLOR_RED)
+  grid.setNewObject(TYPE_SOURCE, 6, 5, 2, 0, COLOR_GREEN)
+  grid.setNewObject(TYPE_SOURCE, 10, 4, 2, 3, COLOR_BLUE)
 -- ADD UI ELEMENTS -- use menu.create() type functions, not yet defined.
 end
 
