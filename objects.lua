@@ -68,6 +68,11 @@ function Object:rotate(invert)
   UpdateObjectType[self.t] = true
 end
 
+function Object:changeState()
+  self.state = self.state%NUM_STATES[self.t]+1
+  UpdateObjectType[self.t] = true
+end
+
 -- Remove the reference to object within ObjectReferences and from the grid. If it was externally removed from everywhere else garbage collection should handle the rest
 function Object:delete()
   UpdateObjectType[self.t] = true
