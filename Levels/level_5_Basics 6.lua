@@ -6,9 +6,9 @@ local level = {}
 
 -- IMPORTANT VARIABLES --
 level.complete = false
-level.x = 12
-level.y = 12
-level.name = "Projo"
+level.x = 9
+level.y = 5
+level.name = "Basics 6"
 
 -- OPTIONAL VARIABLES --
 level.drawbox_mode = nil
@@ -22,21 +22,38 @@ function level.load()
   
 -- PREPARE LEVEL -- use grid.setNewObject(...) or grid.fitNewObject(...)
 --grid.fitNewObject(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glassState)
-  for i=1,10 do
+  for i=1,level.x do
     grid.setNewObject(TYPE_WALL, i, 1)
-	grid.setNewObject(TYPE_WALL, i, 10)
-	grid.setNewObject(TYPE_WALL, 1, i)
-	grid.setNewObject(TYPE_WALL, 10, i)
+	grid.setNewObject(TYPE_WALL, i, level.y)
   end
-  grid.setNewObject(TYPE_RECEIVER, 5, 1, 1, 2, COLOR_WHITE)
-  grid.setNewObject(TYPE_MIRROR, 5, 3, 2, 2)
-  grid.setNewObject(TYPE_MIRROR, 8, 3, 2, 2)
-  grid.setNewObject(TYPE_MIRROR, 2, 5, 1, 1)
-  grid.setNewObject(TYPE_PWHEEL, 3, 5, 1, 1, COLOR_YELLOW)
-  grid.setNewObject(TYPE_MIRROR, 5, 5, 2, 2, COLOR_BLUE)
-  grid.setNewObject(TYPE_MIRROR, 8, 5, 2, 1, COLOR_YELLOW)
-  grid.setNewObject(TYPE_SOURCE, 5, 7, 1, 0, COLOR_BLUE)
-  grid.setNewObject(TYPE_SOURCE, 8, 7, 2, 0, COLOR_BLUE)
+  for i=1,level.y do
+	grid.setNewObject(TYPE_WALL, 1, i)
+  end
+  grid.setNewObject(TYPE_SOURCE, 1, 2, 1, 1, COLOR_BLUE)
+  
+  grid.setNewObject(TYPE_MIRROR, 3, 2, 2, 2, COLOR_WHITE)
+  grid.setNewObject(TYPE_MIRROR, 3, 4, 2, 2, COLOR_WHITE)
+  grid.setNewObject(TYPE_MIRROR, 5, 2, 2, 1, COLOR_WHITE)
+  grid.setNewObject(TYPE_MIRROR, 5, 4, 2, 1, COLOR_WHITE)
+  grid.setNewObject(TYPE_MIRROR, 7, 2, 2, 2, COLOR_WHITE)
+  grid.setNewObject(TYPE_MIRROR, 7, 4, 2, 2, COLOR_WHITE)
+  grid.setNewObject(TYPE_MIRROR, 9, 4, 2, 1, COLOR_WHITE)
+  
+  grid.setNewObject(TYPE_PWHEEL, 9, 2, 1, 2, COLOR_YELLOW)
+  
+  grid.setNewObject(TYPE_MIRROR, 3, 3, 2, 2, COLOR_YELLOW)
+  grid.setNewObject(TYPE_RECEIVER, 1, 3, 1, 1, COLOR_YELLOW)
+  
+  grid.setNewObject(TYPE_WALL, 4, 2)
+  grid.setNewObject(TYPE_WALL, 4, 3)
+  grid.setNewObject(TYPE_WALL, 6, 4)
+  grid.setNewObject(TYPE_WALL, 6, 3)
+  grid.setNewObject(TYPE_WALL, 8, 2)
+  grid.setNewObject(TYPE_WALL, 8, 3)
+  
+  grid.setNewObject(TYPE_WALL, 2, 4)
+  
+  
 -- ADD UI ELEMENTS -- use menu.create() type functions, not yet defined.
 end
 
@@ -45,7 +62,8 @@ function level.update(dt) -- dt is time since last update in seconds
   if win_condition then level.complete = true end
 
 -- OPTIONAL INTERACTIVE LEVEL FUNCTIONS -- direct modifications of object states do not trigger and UpdateObjectType flag! (Needs to be done manually)
-
+   --when the laser splits and hits red and green, pause and then change the color of the source to cyan and the color of the mirror to blue but do not rotate the mirror
+   
 end
 
 return level
