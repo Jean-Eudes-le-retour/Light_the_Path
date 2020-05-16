@@ -21,9 +21,9 @@ function laser.update()
       LaserGridH[i][j][0] = 0
     end
   end
-  for i=1,grid_height+1 do
+  for i=1,grid_width do
     LaserGridV[i] = {}
-    for j=1,grid_width do
+    for j=1,grid_height+1 do
       LaserGridV[i][j] = {0}
       LaserGridV[i][j][0] = 0
     end
@@ -92,7 +92,7 @@ function laser.create(x,y,vertical,dir,color) --dir is true for positive directi
           local m_r = o.rotation
           if band(o.state,2)~=0 then
 --        MIRROR IS DIAGONAL
-            local inv_dir = (m_r%2==0)
+            local inv_dir = (m_r%2==1)
             laser.create(x,y+(dir==1 and 1 or -1),vertical,(dir==1),band(color,bnot(m_color)))
             if inv_dir then
               laser.create(grid_x+1-dir,grid_y,not vertical,not (dir==1),band(color,m_color))
@@ -117,7 +117,7 @@ function laser.create(x,y,vertical,dir,color) --dir is true for positive directi
           if band(color,COLOR_BLUE)~=0 then
             if band(o.state,2)~=0 then
 --          PWHEEL IS DIAGONAL
-              local inv_dir = (w_r%2==0)
+              local inv_dir = (w_r%2==1)
               if inv_dir then
                 laser.create(grid_x+1-dir,grid_y,not vertical,not (dir==1),w_color)
               else
@@ -169,7 +169,7 @@ function laser.create(x,y,vertical,dir,color) --dir is true for positive directi
           local m_r = o.rotation
           if band(o.state,2)~=0 then
 --        MIRROR IS DIAGONAL
-            local inv_dir = (m_r%2==0)
+            local inv_dir = (m_r%2==1)
             laser.create(x+(dir==1 and 1 or -1),y,vertical,(dir==1),band(color,bnot(m_color)))
             if inv_dir then
               laser.create(grid_x,grid_y+1-dir,not vertical,not (dir==1),band(color,m_color))
@@ -179,7 +179,7 @@ function laser.create(x,y,vertical,dir,color) --dir is true for positive directi
 
           else
 --        MIRROR IS STRAIGHT
-            if o.rotation%2==0 then
+            if o.rotation%2==1 then
               laser.create(x,y,vertical,not (dir == 1),band(color,m_color))
               laser.create(x+(dir==1 and 1 or -1),y,vertical,(dir==1),band(color,bnot(m_color)))
             end
@@ -194,7 +194,7 @@ function laser.create(x,y,vertical,dir,color) --dir is true for positive directi
           if band(color,COLOR_BLUE)~=0 then
             if band(o.state,2)~=0 then
 --          PWHEEL IS DIAGONAL
-              local inv_dir = (w_r%2==0)
+              local inv_dir = (w_r%2==1)
               if inv_dir then
                 laser.create(grid_x,grid_y+1-dir,not vertical,not (dir==1),w_color)
               else
