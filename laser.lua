@@ -77,7 +77,7 @@ function laser.create(x,y,vertical,dir,color) --dir is true for positive directi
       return nil
     else
 --    COLORING CURRENT POSITION
-      LaserGridV[x][y][dir] = color
+      LaserGridV[x][y][dir] = bor(LaserGridV[x][y][dir],color)
 
 --    CHECKING HOW LASER BEHAVES AFTER CROSSING THE TILE
       local grid_x, grid_y = x, y - 1 + dir
@@ -154,7 +154,7 @@ function laser.create(x,y,vertical,dir,color) --dir is true for positive directi
       return nil
     else
 --    COLORING CURRENT POSITION
-      LaserGridH[x][y][dir] = color
+      LaserGridH[x][y][dir] = bor(LaserGridH[x][y][dir],color)
 
 --    CHECKING HOW LASER BEHAVES AFTER CROSSING THE TILE
       local grid_x, grid_y = x - 1 + dir, y
