@@ -1,154 +1,224 @@
 local objects = require("objects")
 local grid = require("grid")
+local bit = require("bit")
+local bnot, band, bor, bxor, rshift, lshift = bit.bnot, bit.band, bit.bor, bit.bxor, bit.rshift, bit.lshift
 
+local laser = {}
 
-LaserRef = {}
-local Id_source = objects.getId(source)
-local Id_receiver = objects.getId(receiver)
-local Id = Id_source
+local LaserGridH = {}
+local LaserGridV = {}
+local grid_width = 0
+local grid_height= 0
 
-
-
--- This function is to be used only once to create the first lasers 
-function Laser.new()
-  for i=1,Id_source do 
-    source_i = ObjectReferences[source][i]
-    local l ={}
-    setmetatable(l, self)
-    self.__index = self
-    l.xpos_start = source_i.xpos
-    l.ypos_start = source_i.ypos
-    l.xpos_end = source_i.xpos
-    l.ypos_end = source_i.ypos
-    l.rotation = source_i.rotation
-    l.color = source_i.color
-    l.blocked = false
-    LaserRef[i]= l 
-  end
-end
-
-
-
--- This function returns whether there is a collision between the laser and the object , and if yes what type of object
-function Laser.collision(laser_xpos , laser_ypos  )
-  local collison = "none"
-  if grid.checkGrid(laser_xpos, laser_ypos , "wall") or grid.checkGrid(laser_xpos, laser_ypos , "source") then
-    collision = "wall"
-  end
-  if grid.checkGrid(laser_xpos, laser_ypos , "receiver" ) then
-    collision = "receiver"
-  end
-  if grid.checkGrid(laser_xpos, laser_ypos , "mirror" ) then
-    collision = "mirror"
-  end
-  if grid.checkGrid(laser_xpos, laser_ypos , "pwheel" ) then
-    collision = "pwheel"
-  end
-  return collision
-end
-
-
--- This function is used to add a new laser ( after an interaction with in an object ) to LaserRef
-function Laser.add (x_start , y_start , x_end , y_end , rotation , color , blocked ) 
-  Id = Id +1
-  local l ={}
-  setmetatable(l, self)
-  self.__index = self
-  l.xpos_start = x_start
-  l.ypos_start = y_start
-  l.xpos_end = x_end
-  l.ypos_end = y_end
-  l.rotation = rotation
-  l.color = color
-  l.blocked = false
-  LaserRef[Id]= l 
-end
-
-
--- This function returns whether all receiver have been activated or not
-function Laser.success ()
-  local c=0
-  for i=1,Id do
-    if Laser.collision(LaserRef[i].xpos_end , LaserRef[i].ypos_end ) == "receiver" then
-      c=c +1 
+function laser.update()
+  grid_width, grid_height = grid.getDimensions()
+  LaserGridH = {}
+  LaserGridV = {}
+  for i=1,grid_width+1 do
+    LaserGridH[i] = {}
+    for j=1,grid_height do
+      LaserGridH[i][j] = {}
     end
   end
-  if c == Id_receiver then
-    return true
-  else 
-    return false
+  for i=1,grid_height+1 do
+    LaserGridV[i] = {}
+    for j=1,grid_width do
+      LaserGridV[i][j] = {}
+    end
   end
+  
+  for i=1,objects.getId(TYPE_SOURCE) do
+    local source = ObjectReferences[TYPE_SOURCE][i]
+    if source then
+      if source.state == 2 then
+        local r = source.rotation
+        laser.create(source.xpos + (r==1 and 1 or 0), source.ypos + (r==2 and 1 or 0), r%2==0, (r==1 or r==2), source.color)
+      end
+    end
+  end
+  
+  for i=1,objects.getId(TYPE_RECEIVER) do
+    local receiver = ObjectReferences[TYPE_RECEIVER][i]
+    if receiver then
+      local new_state = 1
+      local l_c = 0
+      if receiver.rotation%2==0 then  -- Vertical laser test
+        local l_x, l_y = receiver.xpos, receiver.ypos + (band(receiver.rotation,2)==2 and 1 or 0)
+        l_c = bor(LaserGridV[l_x][l_y][0],LaserGridV[l_x][l_y][1])
+      else                            -- Horizontal laser test
+        local l_x, l_y = receiver.xpos + (band(receiver.rotation,3)==3 and 0 or 1), receiver.ypos
+        l_c = bor(LaserGridH[l_x][l_y][0],LaserGridH[l_x][l_y][1])
+      end
+
+      if band(receiver.color,4)~=0 then
+        if l_c~=0 then new_state = 2 end
+      elseif band(bnot(l_c),receiver.color) == 0 then
+        new_state = 2
+      end
+      if receiver.state ~= new_state then
+        receiver.state = new_state
+        UpdateObjectType[TYPE_RECEIVER] = true
+      end
+    end
+  end
+
 end
 
+function laser.create(x,y,vertical,dir,color) --dir is true for positive direction
+  dir = dir and 1 or 0
+  if vertical then
+--  LASER TRAVELING VERTICALLY --
+    if not (LaserGridV[x] and LaserGrid[x][y]) then return nil end
 
-function Laser.rotate(laser_rot , mirror_rot) 
-  return 1
-end
+    local laser_present = LaserGridV[x][y][dir] or 0
+    if band(bnot(laser_present),color)==0 then
+      return nil
+    else
+--    COLORING CURRENT POSITION
+      LaserGridV[x][y][dir] = color
 
--- 
+--    CHECKING HOW LASER BEHAVES AFTER CROSSING THE TILE
+      local grid_x, grid_y = x, y + dir
+      if grid_x > grid_width or grid_x < 1 or grid_y > grid_height or grid_y < 1 then return nil end
 
-function Laser.propagation(rotation,xpos_end,ypos_end,blocked)
-  if blocked then
-    return xpos_end,ypos_end
+      local obj_tp = grid.checkGrid(grid_x,grid_y)
+      if obj_tp then
+
+        if obj_tp == TYPE_MIRROR then
+          local o = Grid[grid_x][grid_y]
+          local m_color = o.color
+          local m_r = o.rotation
+          if band(o.state,2)~=0 then
+--        MIRROR IS DIAGONAL
+            local inv_dir = (m_r%2==0)
+            laser.create(x,y+(dir==1 and 1 or -1),vertical,(dir==1),band(color,bnot(m_color)))
+            if inv_dir then
+              laser.create(grid_x+1-dir,grid_y,not vertical,not (dir==1),band(color,m_color))
+            else
+              laser.create(grid_x+dir,grid_y,not vertical,(dir==1),band(color,m_color))
+            end
+
+          else
+--        MIRROR IS STRAIGHT
+            if o.rotation%2==0 then
+              laser.create(x,y,vertical,not (dir == 1),band(color,m_color))
+              laser.create(x,y+(dir==1 and 1 or -1),vertical,(dir==1),band(color,bnot(m_color)))
+            end
+          end
+          return nil
+
+        elseif obj_tp == TYPE_PWHEEL then
+          local o = Grid[grid_x][grid_y]
+          local o = Grid[grid_x][grid_y]
+          local w_color = o.color
+          local w_r = o.rotation
+          if band(color,COLOR_BLUE)~=0 then
+            if band(o.state,2)~=0 then
+--          PWHEEL IS DIAGONAL
+              local inv_dir = (w_r%2==0)
+              if inv_dir then
+                laser.create(grid_x+1-dir,grid_y,not vertical,not (dir==1),w_color)
+              else
+                laser.create(grid_x+dir,grid_y,not vertical,(dir==1),w_color)
+              end
+
+            else
+--          PWHEEL IS STRAIGHT
+              if o.rotation%2==0 then laser.create(x,y,vertical,not (dir == 1),w_color) end
+            end
+          end
+          return nil
+
+        elseif obj_tp == TYPE_GLASS then
+          laser.create(x,y+(dir==1 and 1 or -1),vertical,(dir == 1),color)
+          return nil
+        elseif obj_tp == TYPE_PRISM then
+--      UNDEFINED -> laser stops
+          return nil
+        end
+
+      else
+--      NOTHING AT GIVEN TILE
+        laser.create(x,y+(dir==1 and 1 or -1),vertical,(dir == 1),color)
+        return nil
+      end
+    end
   else
-    if rotation == 0 then
-      ypos_end = ypos_end -1
+--  LASER TRAVELING HORIZONTALLY --
+    if not (LaserGridH[x] and LaserGridH[x][y]) then return nil end
+
+    local laser_present = LaserGridH[x][y][dir] or 0
+    if band(bnot(laser_present),color)==0 then
+      return nil
+    else
+--    COLORING CURRENT POSITION
+      LaserGridH[x][y][dir] = color
+
+--    CHECKING HOW LASER BEHAVES AFTER CROSSING THE TILE
+      local grid_x, grid_y = x + dir, y
+      if grid_x > grid_width or grid_x < 1 or grid_y > grid_height or grid_y < 1 then return nil end
+
+      local obj_tp = grid.checkGrid(grid_x,grid_y)
+      if obj_tp then
+
+        if obj_tp == TYPE_MIRROR then
+          local o = Grid[grid_x][grid_y]
+          local m_color = o.color
+          local m_r = o.rotation
+          if band(o.state,2)~=0 then
+--        MIRROR IS DIAGONAL
+            local inv_dir = (m_r%2==0)
+            laser.create(x+(dir==1 and 1 or -1),y,vertical,(dir==1),band(color,bnot(m_color)))
+            if inv_dir then
+              laser.create(grid_x,grid_y+1-dir,not vertical,not (dir==1),band(color,m_color))
+            else
+              laser.create(grid_x,grid_y+dir,not vertical,(dir==1),band(color,m_color))
+            end
+
+          else
+--        MIRROR IS STRAIGHT
+            if o.rotation%2==0 then
+              laser.create(x,y,vertical,not (dir == 1),band(color,m_color))
+              laser.create(x+(dir==1 and 1 or -1),y,vertical,(dir==1),band(color,bnot(m_color)))
+            end
+          end
+          return nil
+
+        elseif obj_tp == TYPE_PWHEEL then
+          local o = Grid[grid_x][grid_y]
+          local o = Grid[grid_x][grid_y]
+          local w_color = o.color
+          local w_r = o.rotation
+          if band(color,COLOR_BLUE)~=0 then
+            if band(o.state,2)~=0 then
+--          PWHEEL IS DIAGONAL
+              local inv_dir = (w_r%2==0)
+              if inv_dir then
+                laser.create(grid_x,grid_y+1-dir,not vertical,not (dir==1),w_color)
+              else
+                laser.create(grid_x,grid_y+dir,not vertical,(dir==1),w_color)
+              end
+
+            else
+--          PWHEEL IS STRAIGHT
+              if o.rotation%2==0 then laser.create(x,y,vertical,not (dir == 1),w_color) end
+            end
+          end
+          return nil
+
+        elseif obj_tp == TYPE_GLASS then
+          laser.create(x+(dir==1 and 1 or -1),y,vertical,(dir == 1),color)
+          return nil
+        elseif obj_tp == TYPE_PRISM then
+--      UNDEFINED -> laser stops
+          return nil
+        end
+
+      else
+--      NOTHING AT GIVEN TILE
+        laser.create(x+(dir==1 and 1 or -1),y,vertical,(dir == 1),color)
+        return nil
+      end
     end
-    if rotation == 1 then
-      ypos_end = xpos_end +1
-    end
-    if rotation == 2 then
-      ypos_end = ypos_end +1
-    end
-    if rotation == 3 then
-      xpos_end = xpos_end -1
-    end
-    return xpos_end , ypos_end
   end
 end
-
--- This function manages color merges and separations
-function laser.colors ()
-  
-end
-
--- This function updates the lasers state and controls the laser reaction to objects
-function Laser.update()
-  for i=1,Id do
-    local collision = laser.collision(LaserRef[i].xpos_end , LaserRef[i].ypos_end)
-    if collision == "wall" then
-      LaserRef[i].blocked = true
-    end
-    if collision == "receiver" then
-      LaserRef[i].blocked = true
-      --if Laser.success () then
-      --return true
-    end
-    if collision == "mirror" then
-      if (LaserRef[i].color == COLOR_WHITE) and (Grid[LaserRef[i].xpos_end][LaserRef[i].ypos_end].color ~= COLOR_WHITE ) and (LaserRef[i].blocked==false) then
-        Laser.add (LaserRef[i].xpos_end , LaserRef[i].ypos_end , LaserRef[i].xpos_end ,LaserRef[i].ypos_end ,Laser.rotation(LaserRef[i].rotation) , Grid[LaserRef[i].xpos_end][LaserRef[i].ypos_end].rotation, Grid[LaserRef[i].xpos_end][LaserRef[i].ypos_end].color , false )
-        Laser.add (LaserRef[i].xpos_end , LaserRef[i].ypos_end , LaserRef[i].xpos_end ,LaserRef[i].ypos_end ,Laser.rotation(LaserRef[i].rotation) , Grid[LaserRef[i].xpos_end][LaserRef[i].ypos_end].rotation, laser.colors (COLOR_WHITE , Grid[LaserRef[i].xpos_end][LaserRef[i].ypos_end].color) , false )
-      end
-      if (LaserRef[i].color == Grid[LaserRef[i].xpos_end][LaserRef[i].ypos_end].color and (LaserRef[i].blocked==false) ) or (Grid[LaserRef[i].xpos_end][LaserRef[i].ypos_end].color ==COLOR_WHITE and (LaserRef[i].blocked==false)) then
-        Laser.add (LaserRef[i].xpos_end , LaserRef[i].ypos_end , LaserRef[i].xpos_end ,LaserRef[i].ypos_end ,Laser.rotation(LaserRef[i].rotation) , Grid[LaserRef[i].xpos_end][LaserRef[i].ypos_end].rotation, LaserRef[i].color , false )
-      end
-      LaserRef[i].blocked = true
-    end
-    
-    if collision == "pwheel" and (LaserRef[i].blocked==false) then
-      if LaserRef[i].color == COLOR_GREEN or LaserRef[i].color==COLOR_BLUE then
-        LaserRef[i].blocked = true
-        Laser.add (LaserRef[i].xpos_end , LaserRef[i].ypos_end , LaserRef[i].xpos_end ,LaserRef[i].ypos_end , LaserRef[i].rotation ,Grid[LaserRef[i].xpos_end][LaserRef[i].ypos_end].color , false )
-      end
-    end
-    Laser.propagation(LaserRef[i].rotation,LaserRef[i].xpos_end,LaserRef[i].ypos_end,LaserRef[i].blocked)
-  end
-end
-
-function Laser.draw()
-  for i=1,Id do
-      love.graphics.setColor(1,1,1)
-    love.graphics.rectangle("fill",LaserRef[i].xpos_start,LaserRef[i].xpos_start,rlight.w,rlight.l)
-  end
-end
-  
