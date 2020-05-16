@@ -203,7 +203,7 @@ function laser.create(x,y,vertical,dir,color) --dir is true for positive directi
 
             else
 --          PWHEEL IS STRAIGHT
-              if o.rotation%2==0 then laser.create(x,y,vertical,not (dir == 1),w_color) end
+              if o.rotation%2==1 then laser.create(x,y,vertical,not (dir == 1),w_color) end
             end
           end
           return nil
