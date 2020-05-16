@@ -17,13 +17,15 @@ function laser.update()
   for i=1,grid_width+1 do
     LaserGridH[i] = {}
     for j=1,grid_height do
-      LaserGridH[i][j] = {}
+      LaserGridH[i][j] = {0}
+      LaserGridH[i][j][0] = 0
     end
   end
   for i=1,grid_height+1 do
     LaserGridV[i] = {}
     for j=1,grid_width do
-      LaserGridV[i][j] = {}
+      LaserGridV[i][j] = {0}
+      LaserGridV[i][j][0] = 0
     end
   end
   
@@ -50,7 +52,7 @@ function laser.update()
         l_c = bor(LaserGridH[l_x][l_y][0],LaserGridH[l_x][l_y][1])
       end
 
-      if band(receiver.color,4)~=0 then
+      if band(receiver.color,8)~=0 then
         if l_c~=0 then new_state = 2 end
       elseif band(bnot(l_c),receiver.color) == 0 then
         new_state = 2
@@ -78,7 +80,7 @@ function laser.create(x,y,vertical,dir,color) --dir is true for positive directi
       LaserGridV[x][y][dir] = color
 
 --    CHECKING HOW LASER BEHAVES AFTER CROSSING THE TILE
-      local grid_x, grid_y = x, y + dir
+      local grid_x, grid_y = x, y - 1 + dir
       if grid_x > grid_width or grid_x < 1 or grid_y > grid_height or grid_y < 1 then return nil end
 
       local obj_tp = grid.checkGrid(grid_x,grid_y)
@@ -155,7 +157,7 @@ function laser.create(x,y,vertical,dir,color) --dir is true for positive directi
       LaserGridH[x][y][dir] = color
 
 --    CHECKING HOW LASER BEHAVES AFTER CROSSING THE TILE
-      local grid_x, grid_y = x + dir, y
+      local grid_x, grid_y = x - 1 + dir, y
       if grid_x > grid_width or grid_x < 1 or grid_y > grid_height or grid_y < 1 then return nil end
 
       local obj_tp = grid.checkGrid(grid_x,grid_y)
@@ -222,3 +224,5 @@ function laser.create(x,y,vertical,dir,color) --dir is true for positive directi
     end
   end
 end
+
+return laser

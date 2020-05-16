@@ -1,6 +1,7 @@
 local grid = require("grid")
 local tiles = require("tiles")
 local ui_elements = require("ui_elements")
+local laser = require("laser")
 
 
 -- HIGH LEVEL GAME FUNCTIONS, ideally functions that provide user with UI and defines behaviour when player takes certain actions
@@ -27,6 +28,7 @@ end
 function game.update(dt)
   grid.updateCursorPosition()
   game.updateUI(dt)
+  laser.update()
   tiles.update()
   -- all other tile updates and the such.
 end
