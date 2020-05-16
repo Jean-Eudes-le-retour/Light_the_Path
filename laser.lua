@@ -70,7 +70,7 @@ function laser.create(x,y,vertical,dir,color) --dir is true for positive directi
   dir = dir and 1 or 0
   if vertical then
 --  LASER TRAVELING VERTICALLY --
-    if not (LaserGridV[x] and LaserGrid[x][y]) then return nil end
+    if not (LaserGridV[x] and LaserGridV[x][y]) then return nil end
 
     local laser_present = LaserGridV[x][y][dir] or 0
     if band(bnot(laser_present),color)==0 then
