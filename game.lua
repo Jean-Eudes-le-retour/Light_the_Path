@@ -72,12 +72,13 @@ function game.onClick( x, y, button, istouch, presses )
   local f_xpos, f_ypos = grid.getCursorPosition(true)
   local xpos, ypos = grid.getCursorPosition()
   -- IF GAME IS ACTIVE -- DEFINE GLOBAL FLAGS SO THAT WE CAN USE MENUS AND HAVE TEXT CONVERSATION MODES TOO!
-  if (button == 1) then
-    local MenuId = ui_elements.getMenuId()
-    for i=MenuId,1,-1 do
-      if Menus[i] then
-        if Menus[i]:isInMenu() then
-          print("Clicked in menu "..tostring(i))
+
+  local MenuId = ui_elements.getMenuId()
+  for i=MenuId,1,-1 do
+    if Menus[i] then
+      if Menus[i]:isInMenu() then
+        print("Clicked in menu "..tostring(i))
+        if (button == 1) then
           if Menus[i].t == UI_DIALOG then ui_elements.clickDialog(Menus[i])
           elseif Menus[i].buttons then
             for j=1,#Menus[i].buttons do
@@ -89,10 +90,10 @@ function game.onClick( x, y, button, istouch, presses )
               end
             end
           end
-          return false
-        elseif Menus[i].isBlocking then
-          return false
         end
+        return false
+      elseif Menus[i].isBlocking then
+        return false
       end
     end
   end
@@ -174,7 +175,7 @@ function game.onPress( key, scancode, isrepeat)
   if key == "escape" then
     local MenuId = ui_elements.getMenuId()
     for i=MenuId,1,-1 do
-      if Menus[i].isBlocking and Menus[i].t ~= UI_DIALOG then
+      if Menus[i] and Menus[i].isBlocking and Menus[i].t ~= UI_DIALOG then
         Menus[i]:close()
         return
       end
