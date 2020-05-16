@@ -23,7 +23,7 @@ local Id = {} -- contains the Id of the newest object of each type (i.e. the amo
 
 -- DO NOT USE THIS METHOD EXTERNALLY ON OTHER OBJECTS; To create a new object use functions in the "grid" module.
 -- Creates a new Object table, with default values as defined in the DEFAULT_OBJECT table. 
-function Object:new(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glassState)
+function Object:new(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glassState,canChangeState)
   local o = {}
   setmetatable(o, self)
   self.__index = self
@@ -42,6 +42,8 @@ function Object:new(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChange
   else o.canRotate  = DEFAULT_OBJECT[o.t].canRotate end
   if type(canChangeColor) == "boolean" then o.canChangeColor = canChangeColor
   else o.canChangeColor = DEFAULT_OBJECT[o.t].canChangeColor end
+  if type(canChangeState) == "boolean" then o.canChangeState = canChangeState
+  else o.canChangeState = DEFAULT_OBJECT[o.t].canChangeState end
   o.glassState = glassState or false
   o.glassRotation = 0
   
