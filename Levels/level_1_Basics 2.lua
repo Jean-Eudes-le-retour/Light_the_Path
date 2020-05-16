@@ -18,6 +18,7 @@ level.y_val = nil
 
 -- IMPORTANT FUNCTIONS --
 function level.load()
+	dialog_num = 0
 -- CREATE GRID -- grid is made to the specified dimensions, and drawbox is defined (by default, x fits to screen and y is centered)
   grid.setDimensions(level.x,level.y,level.drawbox_mode,level.x_val,level.y_val)
   
@@ -37,7 +38,7 @@ function level.load()
   grid.setNewObject(TYPE_MIRROR, 2, 2, 1, 1, COLOR_RED)
   grid.setNewObject(TYPE_MIRROR, 2, 4, 1, 1, COLOR_BLUE)
   
-  grid.setNewObject(TYPE_SOURCE, 2, 3, 1, 1, COLOR_YELLOW)
+  grid.setNewObject(TYPE_SOURCE, 2, 3, 2, 1, COLOR_YELLOW)
 
 -- ADD UI ELEMENTS -- use menu.create() type functions, not yet defined.
 	local m = ui_elements.create(UI_DIALOG)
@@ -54,23 +55,47 @@ end
 
 function level.update(dt) -- dt is time since last update in seconds
 -- CHECK WIN CONDITION -- use grid functions to check object states, update level.complete accordingly
-  if win_condition then level.complete = true end
-
--- OPTIONAL INTERACTIVE LEVEL FUNCTIONS -- direct modifications of object states do not trigger and UpdateObjectType flag! (Needs to be done manually)
-   --when the laser splits and hits red and green, pause and then change the color of the source to cyan and the color of the mirror to blue but do not rotate the mirror
-  if grid.getState(5, 1)==2 then
-    grid.setNewObject(TYPE_WALL, 5, 1, 1)
-	grid.setNewObject(TYPE_RECEIVER, 5, 5, 1, 0, COLOR_BLUE)
+  if grid.getState(5, 5)==2 and level.complete==false then
+	level.complete = true
     local m = ui_elements.create(UI_DIALOG)
-	grid.setNewObject(TYPE_SOURCE, 2, 3, 2, 1, COLOR_CYAN)
-	m.originaltext = {{{0.5,0.5,0.5},"Good! You can see that a dichroic mirror reflects some part of the laser comming in. Here we have a yellow laser that is a combination of red and green, so the red part gets diverted and the green part stays straight. Lets see now what happens with a cyan source!"}, {{0.5,0.5,0.5},"Can you see how the cyan laser can do through the red dichroic mirror?"}}
-	m.charname = {"Mr. X","Mr. X","Mr. X"}
+	m.originaltext = {{{1,1,0},"Congratulation! You finished this level! PLZ give 5 stR on app stor"}}
+	m.charname = {"YAAY"}
 	m.animation[1] = {}
 	m.animation[1][0] = {4,-1}
 	m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
 	m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
 	m.animation[1][3] = m.animation[1][1]
-	m.animation[2] = m.animation[1]
+	m:resize()
+  end
+
+-- OPTIONAL INTERACTIVE LEVEL FUNCTIONS -- direct modifications of object states do not trigger and UpdateObjectType flag! (Needs to be done manually)
+   --when the laser splits and hits red and green, pause and then change the color of the source to cyan and the color of the mirror to blue but do not rotate the mirror
+  if grid.getState(5, 1)==2 and dialog_num==1 then
+	dialog_num = dialog_num + 1
+    local m = ui_elements.create(UI_DIALOG)
+	m.originaltext = {{{0.5,0.5,0.5},"Good! You can see that a dichroic mirror reflects some part of the laser comming in. Here we have a yellow laser that is a combination of red and green, so the red part gets diverted and the green part stays straight. Lets see now what happens with a cyan source!"}}
+	m.charname = {"Mr. X","Mr. X"}
+	m.animation[1] = {}
+	m.animation[1][0] = {4,-1}
+	m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
+	m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
+	m.animation[1][3] = m.animation[1][1]
+	m:resize()
+  end
+  
+  if dialog_num==3 then
+	dialog_num = dialog_num + 1
+    grid.setNewObject(TYPE_WALL, 5, 1, 1)
+	grid.setNewObject(TYPE_RECEIVER, 5, 5, 1, 0, COLOR_BLUE)
+    local m = ui_elements.create(UI_DIALOG)
+	grid.setNewObject(TYPE_SOURCE, 2, 3, 2, 1, COLOR_CYAN)
+	m.originaltext = {{{0.5,0.5,0.5},"Can you see how the cyan laser can go through the red dichroic mirror? It is because cyan is a superposition of blue and green, so it has no red part that could be reflected"}}
+	m.charname = {"Mr. X"}
+	m.animation[1] = {}
+	m.animation[1][0] = {4,-1}
+	m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
+	m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
+	m.animation[1][3] = m.animation[1][1]
 	m:resize()
   end
    
