@@ -10,59 +10,90 @@ local LaserGridV = {}
 local grid_width = 0
 local grid_height= 0
 
+local mask1 = false
+local mask1_r = 0
+local mask2 = false
+local mask2_r = 0
+local laser_r = 0
+local frame = 1
+local TEXTURE_OFFSET = TEXTURE_BASE_SIZE/2
+local function stencilFunction()
+   love.graphics.setShader(MASK_EFFECT2)
+   if mask1 then love.graphics.draw(mask1, TEXTURE_OFFSET, TEXTURE_OFFSET, mask1_r, nil, nil, TEXTURE_OFFSET, TEXTURE_OFFSET) end
+   if mask2 then love.graphics.draw(mask2, TEXTURE_OFFSET, TEXTURE_OFFSET, mask2_r, nil, nil, TEXTURE_OFFSET, TEXTURE_OFFSET) end
+   love.graphics.draw(MASK_LASER[frame], TEXTURE_OFFSET, TEXTURE_OFFSET, laser_r, nil, nil, TEXTURE_OFFSET, TEXTURE_OFFSET)
+   love.graphics.setShader()
+end
+local MASK_STRAIGHT_HALF = love.graphics.newImage("Textures/mask_straight_half.png")
+local MASK_DIAGONAL_HALF = love.graphics.newImage("Textures/mask_diagonal_half.png")
+
+UpdateLaserFG = false
+LaserFrame = {}
+local LaserFrameUpdate = {}
+
 function laser.update()
   grid_width, grid_height = grid.getDimensions()
-  LaserGridH = {}
-  LaserGridV = {}
-  for i=1,grid_width+1 do
-    LaserGridH[i] = {}
-    for j=1,grid_height do
-      LaserGridH[i][j] = {0}
-      LaserGridH[i][j][0] = 0
+  if UpdateLaserFG then
+    for i=1,#TEXTURE_LASER do
+      LaserFrameUpdate[i] = true
     end
-  end
-  for i=1,grid_width do
-    LaserGridV[i] = {}
-    for j=1,grid_height+1 do
-      LaserGridV[i][j] = {0}
-      LaserGridV[i][j][0] = 0
-    end
-  end
-  
-  for i=1,objects.getId(TYPE_SOURCE) do
-    local source = ObjectReferences[TYPE_SOURCE][i]
-    if source then
-      if source.state == 2 then
-        local r = source.rotation
-        laser.create(source.xpos + (r==1 and 1 or 0), source.ypos + (r==2 and 1 or 0), r%2==0, (r==1 or r==2), source.color)
+    UpdateLaserFG = false
+    LaserGridH = {}
+    LaserGridV = {}
+    for i=1,grid_width+1 do
+      LaserGridH[i] = {}
+      for j=1,grid_height do
+        LaserGridH[i][j] = {0}
+        LaserGridH[i][j][0] = 0
       end
     end
-  end
-  
-  for i=1,objects.getId(TYPE_RECEIVER) do
-    local receiver = ObjectReferences[TYPE_RECEIVER][i]
-    if receiver then
-      local new_state = 1
-      local l_c = 0
-      if receiver.rotation%2==0 then  -- Vertical laser test
-        local l_x, l_y = receiver.xpos, receiver.ypos + (band(receiver.rotation,2)==2 and 1 or 0)
-        l_c = bor(LaserGridV[l_x][l_y][0],LaserGridV[l_x][l_y][1])
-      else                            -- Horizontal laser test
-        local l_x, l_y = receiver.xpos + (band(receiver.rotation,3)==3 and 0 or 1), receiver.ypos
-        l_c = bor(LaserGridH[l_x][l_y][0],LaserGridH[l_x][l_y][1])
+    for i=1,grid_width do
+      LaserGridV[i] = {}
+      for j=1,grid_height+1 do
+        LaserGridV[i][j] = {0}
+        LaserGridV[i][j][0] = 0
       end
+    end
+    
+    for i=1,objects.getId(TYPE_SOURCE) do
+      local source = ObjectReferences[TYPE_SOURCE][i]
+      if source then
+        if source.state == 2 then
+          local r = source.rotation
+          laser.create(source.xpos + (r==1 and 1 or 0), source.ypos + (r==2 and 1 or 0), r%2==0, (r==1 or r==2), source.color)
+        end
+      end
+    end
+    
+    for i=1,objects.getId(TYPE_RECEIVER) do
+      local receiver = ObjectReferences[TYPE_RECEIVER][i]
+      if receiver then
+        local new_state = 1
+        local l_c = 0
+        if receiver.rotation%2==0 then  -- Vertical laser test
+          local l_x, l_y = receiver.xpos, receiver.ypos + (band(receiver.rotation,2)==2 and 1 or 0)
+          l_c = bor(LaserGridV[l_x][l_y][0],LaserGridV[l_x][l_y][1])
+        else                            -- Horizontal laser test
+          local l_x, l_y = receiver.xpos + (band(receiver.rotation,3)==3 and 0 or 1), receiver.ypos
+          l_c = bor(LaserGridH[l_x][l_y][0],LaserGridH[l_x][l_y][1])
+        end
 
-      if band(receiver.color,8)~=0 then
-        if l_c~=0 then new_state = 2 end
-      elseif band(bnot(l_c),receiver.color) == 0 then
-        new_state = 2
-      end
-      if receiver.state ~= new_state then
-        receiver.state = new_state
-        UpdateObjectType[TYPE_RECEIVER] = true
+        if band(receiver.color,8)~=0 then
+          if l_c~=0 then new_state = 2 end
+        elseif band(bnot(l_c),receiver.color) == 0 then
+          new_state = 2
+        end
+        if receiver.state ~= new_state then
+          receiver.state = new_state
+          UpdateObjectType[TYPE_RECEIVER] = true
+        end
       end
     end
   end
+  
+  frame = math.floor(game_time*LASER_FREQUENCY)%#TEXTURE_LASER+1
+  if LaserFrameUpdate[frame] then laser.drawFrame(frame) end
+  canvas_LL = LaserFrame[frame]
 
 end
 
@@ -223,6 +254,119 @@ function laser.create(x,y,vertical,dir,color) --dir is true for positive directi
       end
     end
   end
+end
+
+function laser.drawFrame(frame)
+  LaserFrameUpdate[frame] = false
+  love.graphics.setCanvas(LaserFrame[frame])
+  love.graphics.clear()
+  love.graphics.setBlendMode("lighten","premultiplied")
+  
+  for i=1,grid_width do
+    for j=1,grid_height do
+      local LaserSides = {}
+      LaserSides[0] = bor(LaserGridV[i][j][0],LaserGridV[i][j][1])
+      LaserSides[1] = bor(LaserGridH[i+1][j][0],LaserGridH[i+1][j][1])
+      LaserSides[2] = bor(LaserGridV[i][j+1][0],LaserGridV[i][j+1][1])
+      LaserSides[3] = bor(LaserGridH[i][j][0],LaserGridH[i][j][1])
+      local tmp = 0
+      for k=0,3 do tmp = tmp+LaserSides[k] end
+      if tmp ~= 0 then
+        love.graphics.setCanvas{canvas_Texture,stencil = true}
+        love.graphics.clear()
+
+        local obj = grid.checkGrid(i,j)
+        if obj == TYPE_MIRROR or obj == TYPE_PWHEEL then
+  --    MIRROR OR PWHEEL, COMPLICATED DRAWING
+          if band(Grid[i][j].state,1) == 1 then
+  --      IF STRAIGHT
+            for k=0,3 do
+              local color = LaserSides[k]
+              if color ~= 0 and k%2 == Grid[i][j].rotation%2 then
+                love.graphics.setColor(band(color,1), band(color,2), band(color,4))
+                mask1 = MASK_STRAIGHT_HALF
+                mask1_r = math.rad(90*k)
+                mask2 = MASK[obj]
+                mask2_r = math.rad(90*Grid[i][j].rotation)
+                laser_r = math.rad(90*(k%2))
+                love.graphics.stencil(stencilFunction, "replace", 1)
+                love.graphics.setStencilTest("less", 1)
+                love.graphics.draw(TEXTURE_LASER[frame],TEXTURE_OFFSET,TEXTURE_OFFSET,laser_r,nil,nil,TEXTURE_OFFSET,TEXTURE_OFFSET)
+                love.graphics.setCanvas(LaserFrame[frame])
+                love.graphics.draw(canvas_Texture,TEXTURE_BASE_SIZE*(i-1),TEXTURE_BASE_SIZE*(j-1))
+                love.graphics.setCanvas{canvas_Texture,stencil = true}
+                love.graphics.clear()
+              end
+            end
+          else
+  --      IF DIAGONAL
+            for k=0,3 do
+              local color = LaserSides[k]
+              if color ~=0 then
+                love.graphics.setColor(band(color,1), band(color,2), band(color,4))
+                mask1 = MASK_DIAGONAL_HALF
+                mask1_r = math.rad(90*(Grid[i][j].rotation+ ((k==Grid[i][j].rotation or k==(Grid[i][j].rotation+1)%4) and 0 or 2)))
+                mask2 = MASK[-obj]
+                mask2_r = math.rad(90*Grid[i][j].rotation)
+                laser_r = math.rad(90*(k%2))
+                love.graphics.stencil(stencilFunction, "replace", 1)
+                love.graphics.setStencilTest("less", 1)
+                love.graphics.draw(TEXTURE_LASER[frame],TEXTURE_OFFSET,TEXTURE_OFFSET,laser_r,nil,nil,TEXTURE_OFFSET,TEXTURE_OFFSET)
+                love.graphics.setStencilTest()
+                love.graphics.setCanvas(LaserFrame[frame])
+                love.graphics.draw(canvas_Texture,TEXTURE_BASE_SIZE*(i-1),TEXTURE_BASE_SIZE*(j-1))
+                love.graphics.setCanvas{canvas_Texture,stencil = true}
+                love.graphics.clear()
+              end
+            end
+          end
+
+        elseif obj and obj ~= TYPE_GLASS then
+  --    FULL BLOCK, DRAW HALVES
+          for k=0,3 do
+            local color = LaserSides[k]
+            if color ~= 0 then
+              love.graphics.setColor(band(color,1), band(color,2), band(color,4))
+              mask1 = MASK_STRAIGHT_HALF
+              mask1_r = math.rad(90*k)
+              mask2 = false
+              laser_r = math.rad(90*(k%2))
+              love.graphics.stencil(stencilFunction, "replace", 1)
+              love.graphics.setStencilTest("less", 1)
+              love.graphics.draw(TEXTURE_LASER[frame],TEXTURE_OFFSET,TEXTURE_OFFSET,laser_r,nil,nil,TEXTURE_OFFSET,TEXTURE_OFFSET)
+              love.graphics.setCanvas(LaserFrame[frame])
+              love.graphics.draw(canvas_Texture,TEXTURE_BASE_SIZE*(i-1),TEXTURE_BASE_SIZE*(j-1))
+              love.graphics.setCanvas{canvas_Texture,stencil = true}
+              love.graphics.clear()
+            end
+          end
+        else
+  --    EMPTY SPACE, DRAW ALL
+          for k=0,1 do
+            local color = LaserSides[k]
+            if color ~= 0 then
+              love.graphics.setColor(band(color,1), band(color,2), band(color,4))
+              mask1 = false
+              mask2 = false
+              laser_r = math.rad(k*90)
+              love.graphics.setStencilTest("less", 1)
+              love.graphics.stencil(stencilFunction, "replace", 1)
+              love.graphics.draw(TEXTURE_LASER[frame],TEXTURE_OFFSET,TEXTURE_OFFSET,laser_r,nil,nil,TEXTURE_OFFSET,TEXTURE_OFFSET)
+              love.graphics.setCanvas(LaserFrame[frame])
+              love.graphics.draw(canvas_Texture,TEXTURE_BASE_SIZE*(i-1),TEXTURE_BASE_SIZE*(j-1))
+              love.graphics.setCanvas{canvas_Texture,stencil = true}
+              love.graphics.clear()
+            end
+          end
+        end
+      end
+    end
+  end
+  
+  love.graphics.setColor(1,1,1,1)
+  love.graphics.setCanvas()
+  love.graphics.setStencilTest()
+  love.graphics.setBlendMode("alpha","alphamultiply")
 end
 
 return laser

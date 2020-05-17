@@ -26,6 +26,9 @@ function grid.setDimensions(x_res,y_res,mode,x_val,y_val)
   canvas_OL = love.graphics.newCanvas( grid_x_pixel_dim, grid_y_pixel_dim )
   canvas_BG = love.graphics.newCanvas( grid_x_pixel_dim, grid_y_pixel_dim )
   canvas_GD = love.graphics.newCanvas( grid_x_pixel_dim, grid_y_pixel_dim )
+  for i=1,#TEXTURE_LASER do
+    LaserFrame[i] = love.graphics.newCanvas( grid_x_pixel_dim, grid_y_pixel_dim )
+  end
   return grid.defineDrawbox(mode,x_val,y_val)
 end
 grid.init = grid.setDimensions

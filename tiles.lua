@@ -15,17 +15,8 @@ tiles = {}
 canvas_Texture = love.graphics.newCanvas(TEXTURE_BASE_SIZE,TEXTURE_BASE_SIZE)
 local selected_background = 1
 local mask = false
-local mask_effect = love.graphics.newShader[[
-   vec4 effect (vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords) {
-      if (Texel(texture, texture_coords).rgb == vec3(0.0)) {
-         // a discarded pixel wont be applied as the stencil.
-         discard;
-      }
-      return vec4(1.0);
-   }
-]]
 local function stencilFunction()
-   love.graphics.setShader(mask_effect)
+   love.graphics.setShader(MASK_EFFECT)
    love.graphics.draw(mask, 0, 0)
    love.graphics.setShader()
 end

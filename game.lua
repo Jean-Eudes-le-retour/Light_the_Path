@@ -28,6 +28,9 @@ end
 function game.update(dt)
   grid.updateCursorPosition()
   game.updateUI(dt)
+  for i=1,#UpdateObjectType do
+    if UpdateObjectType[i] then UpdateLaserFG = true end
+  end
   laser.update()
   tiles.update()
   -- all other tile updates and the such.

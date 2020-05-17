@@ -10,6 +10,27 @@ FONT_DEFAULT = love.graphics.newImageFont("Textures/Fonts/mypixelfont.png"," abc
 FONT_BASE = love.graphics.getFont()
 DEFAULT_SCREEN_WIDTH = 720
 DEFAULT_SCREEN_HEIGHT = 480
+LASER_FREQUENCY = 8
+TEXTURE_LASER = {love.graphics.newImage("Textures/laser_1.png"),love.graphics.newImage("Textures/laser_2.png"),love.graphics.newImage("Textures/laser_3.png"),love.graphics.newImage("Textures/laser_4.png"),love.graphics.newImage("Textures/laser_5.png"),love.graphics.newImage("Textures/laser_6.png"),love.graphics.newImage("Textures/laser_7.png"),love.graphics.newImage("Textures/laser_8.png")}
+MASK_LASER = {love.graphics.newImage("Textures/laser_mask.png"),love.graphics.newImage("Textures/laser_mask.png"),love.graphics.newImage("Textures/laser_mask.png"),love.graphics.newImage("Textures/laser_mask.png"),love.graphics.newImage("Textures/laser_mask.png"),love.graphics.newImage("Textures/laser_mask.png"),love.graphics.newImage("Textures/laser_mask.png"),love.graphics.newImage("Textures/laser_mask.png")}
+MASK_EFFECT = love.graphics.newShader[[
+   vec4 effect (vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords) {
+      if (Texel(texture, texture_coords).rgb == vec3(0.0)) {
+         // a discarded pixel wont be applied as the stencil.
+         discard;
+      }
+      return vec4(1.0);
+   }
+]]
+MASK_EFFECT2 = love.graphics.newShader[[
+   vec4 effect (vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords) {
+      if (Texel(texture, texture_coords).rgb != vec3(0.0)) {
+         // a discarded pixel wont be applied as the stencil.
+         discard;
+      }
+      return vec4(1.0);
+   }
+]]
 
 function file_exists(name)
    if love.filesystem.getInfo(name) then return true

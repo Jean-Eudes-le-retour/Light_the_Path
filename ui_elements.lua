@@ -5,7 +5,6 @@ local ui_elements = {}
 local MenuId = 1 --DEFAULT HAS MAIN_MENU ACTIVE
 local uniqueId = 0
 local UI_TYPES = {"menu","dialog","tile"}
-local NUM_PRESETS = 1
 local UI_automatic_scaling = true
 local UI_autoscale_factor_x = 1/384 --UI_scale 3*128*UI_scale = ww
 local UI_autoscale_factor_y = 1/512 --16*32*UI_scale = wh
