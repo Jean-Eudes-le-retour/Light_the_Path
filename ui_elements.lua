@@ -853,7 +853,7 @@ end
 
 function ui_elements.dialogTest()
   local m = ui_elements.create(UI_DIALOG)
-  m.originaltext = {{{0.5,0.5,0.5},"Bonjour et bienvenue au projet gamification du groupe 9, ne vous preoccupez pas trop de ce qui se passe sur cette grille. Nous l'utilisons pour rapidement conoduire des tests sur les fonctionalites du jeu. Histoire de nous simplifier la tache, l'ecran s'ouvre en 480p. Nous vous recommandons d'appuyer sur echap et rentrer dans les options pour afficher en plein ecran. Pour vous faire une meilleure idee du jeu, veuillez ouvrir le menu 'Level Select' et choisir 'Basics 2' (le seul niveau entierement interactif). Notez qu'il n'y a pas d'ecran de fin de niveau de programme. Notez egalement que le bouton 'Main Menu' ne permet actuellement que de relancer le jeu a son etat initial."}}
+  m.originaltext = {{{0.5,0.5,0.5},"Bonjour et bienvenue au projet gamification du groupe 9, ne vous preoccupez pas trop de ce qui se passe sur cette grille. Nous l'utilisons pour rapidement conduire des tests sur les fonctionalites du jeu. Histoire de nous simplifier la tache, l'ecran s'ouvre en 480p. Nous vous recommandons d'appuyer sur echap et rentrer dans les options pour afficher en plein ecran. Pour vous faire une meilleure idee du jeu, veuillez ouvrir le menu 'Level Select' et choisir 'Basics 2' (le seul niveau entierement interactif). Notez qu'il n'y a pas d'ecran de fin de niveau de programme. Notez egalement que le bouton 'Main Menu' ne permet actuellement que de relancer le jeu a son etat initial."}}
   m.charname = {"Groupe 9"}
   m.animation[1] = {}
   m.animation[1][0] = {4,-1}
