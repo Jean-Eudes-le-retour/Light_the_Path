@@ -58,7 +58,7 @@ function laser.update()
     for i=1,objects.getId(TYPE_SOURCE) do
       local source = ObjectReferences[TYPE_SOURCE][i]
       if source then
-        if source.state == 2 then
+        if Grid[source.xpos] and Grid[source.xpos][source.ypos] and source.state == 2 then
           local r = source.rotation
           laser.create(source.xpos + (r==1 and 1 or 0), source.ypos + (r==2 and 1 or 0), r%2==0, (r==1 or r==2), source.color)
         end
