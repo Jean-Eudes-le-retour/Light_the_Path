@@ -337,7 +337,7 @@ function Menu:resize()
     self.textcanvas = love.graphics.newCanvas(self.width_factor-2*DEFAULT_DIALOG_H_DEADZONE,math.floor(self.width/2)-2*DEFAULT_DIALOG_V_DEADZONE)
     
     self.text_width = self.width_factor-2*DEFAULT_DIALOG_H_DEADZONE
-    self.text_height = self.height_factor-2*DEFAULT_DIALOG_V_DEADZONE
+    self.text_height = math.floor(self.height_factor/2)-2*DEFAULT_DIALOG_V_DEADZONE
     self.texture[0] = ui_elements.getDialogBox(self.width_factor,self.height_factor)
     self.imagedata = self.texture[0]:newImageData()
     self.xpos = 0
@@ -544,7 +544,8 @@ function ui_elements.updateDialog(m)
   love.graphics.setFont(FONT_DEFAULT)
   local tw, textlines = FONT_DEFAULT:getWrap(tmp_text,m.text_width)
   local th = #textlines*FONT_DEFAULT:getHeight()
-  if th > m.text_height then m.scroll = th-m.text_height end
+  if th > m.text_height then m.scroll = th-m.text_height
+  else m.scroll = 0 end
   
   if #text_to_print == 1 then
     text_to_print[2] = text_to_print[1]
@@ -570,7 +571,7 @@ function ui_elements.updateDialog(m)
   
   love.graphics.setCanvas(m.textcanvas)
   love.graphics.clear()
-  love.graphics.printf(text_to_print,-m.scroll,0,m.text_width)
+  love.graphics.printf(text_to_print,0,-m.scroll,m.text_width)
   love.graphics.setFont(FONT_BASE)
   m:draw()
 end
@@ -852,16 +853,13 @@ end
 
 function ui_elements.dialogTest()
   local m = ui_elements.create(UI_DIALOG)
-  m.originaltext = {{{0.5,0.5,0.5},"THIS IS A TEST THIS IS A TEST THIS IS A TEST THIS IS A TEST THIS IS A TEST THIS IS A TEST THIS IS A TEST THIS IS A TEST THIS IS A TEST THIS IS A TEST ",{1,0,1,1},"COLOURS",{1,1,1,1},"heheheh"},{{1,1,0,1},"WAIIIIITT.... There's more...?"}}
-  m.charname = {"Mr. X","You"}
+  m.originaltext = {{{0.5,0.5,0.5},"Bonjour et bienvenue au projet gamification du groupe 9, ne vous preoccupez pas trop de ce qui se passe sur cette grille. Nous l'utilisons pour rapidement conoduire des tests sur les fonctionalites du jeu. Histoire de nous simplifier la tache, l'ecran s'ouvre en 480p. Nous vous recommandons d'appuyer sur echap et rentrer dans les options pour afficher en plein ecran. Pour vous faire une meilleure idee du jeu, veuillez ouvrir le menu 'Level Select' et choisir 'Basics 2' (le seul niveau entierement interactif). Notez qu'il n'y a pas d'ecran de fin de niveau de programme. Notez egalement que le bouton 'Main Menu' ne permet actuellement que de relancer le jeu a son etat initial."}}
+  m.charname = {"Groupe 9"}
   m.animation[1] = {}
   m.animation[1][0] = {4,-1}
   m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
   m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
   m.animation[1][3] = m.animation[1][1]
-  m.animation[2] = {}
-  m.animation[2][0] = {nil,-2}
-  m.animation[2][1] = love.graphics.newImage("Textures/test3.png")
   m:resize()
 end
 

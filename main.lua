@@ -79,8 +79,6 @@ function love.update(dt)
   if level and level.complete then --[[open victory menu]] end
   drawbox_x, drawbox_y, texture_scale = grid.getDrawboxInfo()
   grid_pos_x, grid_pos_y = grid.getCursorPosition(true)
-
-  x=x+10*dt
 end
 
 function love.draw()
@@ -98,7 +96,6 @@ function love.draw()
   love.graphics.print("X_max : "..tostring(grid_dim_x),0,10)
   love.graphics.print("Y_max : "..tostring(grid_dim_y),100,10)
   love.graphics.print("Current FPS: "..tostring(love.timer.getFPS( )), 0, 25)
-  love.graphics.print("Hello World!", x, 40)
 end
 
 --Global callback function for when the screen was resized EXTERNALLY, or resized INTERNALLY with bad parameters; width and height in DPI scaled-units (???)
