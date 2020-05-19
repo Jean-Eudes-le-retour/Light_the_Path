@@ -182,7 +182,7 @@ function Menu:isInMenu()
   if cursor_x > 0 and cursor_x <= self.width and
      cursor_y > 0 and cursor_y <= self.height then
     if self.imagedata then
-      local _,_,_,alpha = self.imagedata:getPixel(math.ceil(cursor_x/UI_scale),math.ceil(cursor_y/UI_scale))
+      local _,_,_,alpha = self.imagedata:getPixel(math.floor(cursor_x/UI_scale),math.floor(cursor_y/UI_scale))
       if alpha ~= 0 then return true end
     else
       return true
