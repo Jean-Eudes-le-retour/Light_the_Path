@@ -21,9 +21,9 @@ function level.load()
   grid.setDimensions(level.x,level.y,level.drawbox_mode,level.x_val,level.y_val)
   
 -- PREPARE LEVEL -- use grid.setNewObject(...) or grid.fitNewObject(...)
---grid.fitNewObject(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glassState)
+--grid.fitNewObject(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glassState,canChangeState)
 
--- ADD UI ELEMENTS -- use menu.create() type functions, not yet defined.
+-- ADD UI ELEMENTS -- use ui_elements.create(<MENU TYPE ID>) and modify values at will
 end
 
 function level.update(dt) -- dt is time since last update in seconds
@@ -67,8 +67,9 @@ _________________________________________________________________
 
 FUN IDEAS
 _________________________________________________________________
+
 You can change level.x_val, level.y_val, level.drawbox_mode and call love.resize() (with 3rd argument dontResetUI true for efficiency) to emulate a screenshake!
 Custom backgrounds with draw operations to background canvas!
-Custom drawing on walls ith draw operations to overlay canvas!
+Custom drawing on walls with draw operations to overlay canvas!
 
 ]]
