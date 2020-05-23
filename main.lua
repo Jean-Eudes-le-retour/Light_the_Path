@@ -35,7 +35,7 @@ function love.load()
   drawbox_x, drawbox_y, texture_scale = game.init(20,10)
   
   
---grid.fitNewObject(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glassState)
+--grid.fitNewObject(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glassState,canChangeState)
   grid_dim_x, grid_dim_y = grid.getDimensions()
   for i=1,grid_dim_x do
     grid.setNewObject(nil,i,1,nil,nil,nil,nil,nil,nil,0)
@@ -73,6 +73,12 @@ function love.load()
   grid.fitNewObject(TYPE_LOGIC,nil,nil,LOGIC_AND,nil,nil,true,true):setSides("in",nil,"in","out")
   grid.fitNewObject(TYPE_LOGIC,nil,nil,LOGIC_NOT,nil,nil,true,true):setSides(nil,"in","in","out")
   grid.fitNewObject(TYPE_RECEIVER,nil,nil,nil,nil,COLOR_BLACK,true,true):setSides(nil,nil,"activate",nil)
+  grid.setNewObject(TYPE_RECEIVER,17,7,nil,2,COLOR_WHITE,false,false,false,true):setSides(nil,nil,nil,"activate")
+  grid.setNewObject(TYPE_SOURCE,18,7,nil,2,COLOR_WHITE,false,false,false,true,false)
+  grid.setNewObject(TYPE_MIRROR,17,9,2,1,COLOR_CYAN,false,false,false,true,false)
+  grid.setNewObject(TYPE_LOGIC,17,8,LOGIC_NOT,nil,COLOR_WHITE,false,false,false,true,false):setSides("out",nil,"in")
+  grid.setNewObject(TYPE_LOGIC,18,9,LOGIC_AND,nil,COLOR_BLACK,false,false,false,true,false):setSides("in","out",nil,"in")
+  grid.setNewObject(TYPE_RECEIVER,19,9,nil,3,COLOR_RED,false,false,false,true,false)
   
   ui_elements.dialogTest()
 end

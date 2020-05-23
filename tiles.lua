@@ -290,13 +290,14 @@ function tiles.updateConnectedTextureTypeState(t,xpos,ypos,updateNeighbors)
     local old_bit2 = 0
     for i=0,3 do
       if STATE_CONFIGURATIONS[state] then
-      if t == TYPE_GLASS then
-        Grid[xpos][ypos].glassState = STATE_CONFIGURATIONS[state]
-        Grid[xpos][ypos].glassRotation = i%4
-      else
-        Grid[xpos][ypos].state = STATE_CONFIGURATIONS[state] end
-        Grid[xpos][ypos].rotation = i%4
-        return true
+        if t == TYPE_GLASS then
+          Grid[xpos][ypos].glassState = STATE_CONFIGURATIONS[state]
+          Grid[xpos][ypos].glassRotation = i%4
+        else
+          Grid[xpos][ypos].state = STATE_CONFIGURATIONS[state]
+          Grid[xpos][ypos].rotation = i%4
+          return true
+        end
       end
       old_bit1 = band(state,1) ~= 0 and 64 or 0
       old_bit2 = band(state,2) ~= 0 and 128 or 0
