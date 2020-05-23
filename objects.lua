@@ -65,11 +65,13 @@ function Object:rotate(invert)
     self.state = bor(band(self.state,bnot(3)),band(eight_rotation,1)+1)
     self.rotation = rshift(band(eight_rotation,6),1)
   elseif self.side then
+    local side = self.side
     if invert then
       side[0],side[1],side[2],side[3] = side[1],side[2],side[3],side[0]
     else
       side[0],side[1],side[2],side[3] = side[3],side[0],side[1],side[2] 
     end
+    if self.t == TYPE_LOGIC then self.color = COLOR_BLACK end
   else
     self.rotation = (self.rotation + (invert and -1 or 1))%4
   end

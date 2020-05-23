@@ -68,11 +68,11 @@ function love.load()
   grid.fitNewObject(TYPE_MIRROR,nil,nil,2,1,COLOR_BLACK)
   grid.fitNewObject(TYPE_PWHEEL,nil,nil,1,1,5)
   grid.fitNewObject(TYPE_PWHEEL,nil,nil,2,1,7)
-  local o = grid.fitNewObject(TYPE_LOGIC,nil,nil,LOGIC_OR,nil,nil,true)
+  local o = grid.fitNewObject(TYPE_LOGIC,nil,nil,LOGIC_OR,nil,nil,true,true)
   o.side = {"in","in","out"}
-  o = grid.fitNewObject(TYPE_LOGIC,nil,nil,LOGIC_AND,nil,nil,true)
+  o = grid.fitNewObject(TYPE_LOGIC,nil,nil,LOGIC_AND,nil,nil,true,true)
   o.side = {"in","in","out"}
-  o = grid.fitNewObject(TYPE_LOGIC,nil,nil,LOGIC_NOT,nil,nil,true)
+  o = grid.fitNewObject(TYPE_LOGIC,nil,nil,LOGIC_NOT,nil,nil,true,true)
   o.side = {"in","in","out"}
   
   x=0
