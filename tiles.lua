@@ -93,7 +93,7 @@ function tiles.setColor(color)
 end
 
 -- Draw a texture to the canvas_Texture canvas, takes mask into account if it exists.
-function tiles.drawTexture(t,state,color)
+function tiles.drawTexture(t,state,color,side)
   love.graphics.setCanvas{canvas_Texture,stencil = true}
   love.graphics.clear()
   if not state or state < 1 or state > NUM_STATES[t] then state = 1 end
@@ -113,6 +113,17 @@ function tiles.drawTexture(t,state,color)
   end
   if t <= NUM_CONNECTED_TEXTURE_TILES then
     love.graphics.drawLayer(OVERLAY_TEXTURES[t],13)
+  end
+  if t == TYPE_LOGIC then
+    if side then
+      for i=0,3 do
+        if side[i] == "in" then
+          love.graphics.draw(TEXTURE_SIDEINPUT,TEXTURE_OFFSET,TEXTURE_OFFSET,math.rad(90*i),nil,nil,TEXTURE_OFFSET,TEXTURE_OFFSET)
+        elseif side[i] == "out" then
+          love.graphics.draw(TEXTURE_SIDEOUTPUT,TEXTURE_OFFSET,TEXTURE_OFFSET,math.rad(90*i),nil,nil,TEXTURE_OFFSET,TEXTURE_OFFSET)
+        end
+      end
+    end
   end
 end
 
@@ -225,7 +236,7 @@ function tiles.updateObjects()
         xpos = xpos + ((rotation == 1 or rotation == 2) and 1 or 0)
         if rotation > 1 then ypos = ypos+1 end
         rotation = math.rad(90*rotation)
-        tiles.drawTexture(i,state,o.color)
+        tiles.drawTexture(i,state,o.color,o.side)
         love.graphics.setCanvas(canvas_GD)
         love.graphics.setBlendMode("alpha","premultiplied")
         love.graphics.draw(canvas_Texture,xpos*TEXTURE_BASE_SIZE,ypos*TEXTURE_BASE_SIZE,rotation)

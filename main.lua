@@ -32,7 +32,7 @@ level = false
 
 
 function love.load()
-  drawbox_x, drawbox_y, texture_scale = game.init(10,5)
+  drawbox_x, drawbox_y, texture_scale = game.init(20,10)
   
   
 --grid.fitNewObject(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glassState)
@@ -54,16 +54,27 @@ function love.load()
     --grid.fitNewObject((i%2)+1)
     grid.fitNewObject((math.floor(math.random()*20)%2)+1)
   end
-  grid.fitNewObject(3,nil,nil,1,3,COLOR_BLACK,true)
-  grid.fitNewObject(3,nil,nil,2,3,3,true)
-  grid.fitNewObject(TYPE_RECEIVER,nil,nil,1,1,COLOR_BLACK,true)
+  grid.fitNewObject(TYPE_SOURCE,nil,nil,1,3,COLOR_BLACK,true,true)
+  grid.fitNewObject(TYPE_SOURCE,nil,nil,2,3,(math.floor(math.random()*20)%7)+1,true,true)
+  grid.fitNewObject(TYPE_SOURCE,nil,nil,2,3,(math.floor(math.random()*20)%7)+1,true,true)
+  grid.fitNewObject(TYPE_RECEIVER,nil,nil,1,1,COLOR_BLACK,true,true)
   grid.fitNewObject(TYPE_RECEIVER,nil,nil,2,1,3)
   grid.fitNewObject(TYPE_MIRROR,nil,nil,1,1,2)
   grid.fitNewObject(TYPE_MIRROR,nil,nil,1,1,4)
   grid.fitNewObject(TYPE_MIRROR,nil,nil,2,1,7)
+  grid.fitNewObject(TYPE_MIRROR,nil,nil,2,1,COLOR_WHITE)
+  grid.fitNewObject(TYPE_MIRROR,nil,nil,2,1,COLOR_WHITE)
+  grid.fitNewObject(TYPE_MIRROR,nil,nil,2,1,COLOR_WHITE)
   grid.fitNewObject(TYPE_MIRROR,nil,nil,2,1,COLOR_BLACK)
   grid.fitNewObject(TYPE_PWHEEL,nil,nil,1,1,5)
   grid.fitNewObject(TYPE_PWHEEL,nil,nil,2,1,7)
+  local o = grid.fitNewObject(TYPE_LOGIC,nil,nil,LOGIC_OR,nil,nil,true)
+  o.side = {"in","in","out"}
+  o = grid.fitNewObject(TYPE_LOGIC,nil,nil,LOGIC_AND,nil,nil,true)
+  o.side = {"in","in","out"}
+  o = grid.fitNewObject(TYPE_LOGIC,nil,nil,LOGIC_NOT,nil,nil,true)
+  o.side = {"in","in","out"}
+  
   x=0
   totalTime=0.0
   

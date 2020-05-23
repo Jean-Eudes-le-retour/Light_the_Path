@@ -16,7 +16,6 @@ local mask2 = false
 local mask2_r = 0
 local laser_r = 0
 local frame = 1
-local TEXTURE_OFFSET = TEXTURE_BASE_SIZE/2
 local function stencilFunction()
    love.graphics.setShader(MASK_EFFECT2)
    if mask1 then love.graphics.draw(mask1, TEXTURE_OFFSET, TEXTURE_OFFSET, mask1_r, nil, nil, TEXTURE_OFFSET, TEXTURE_OFFSET) end
@@ -64,6 +63,52 @@ function laser.update()
         end
       end
     end
+
+--  EMIT FROM LOGIC GATE OUTPUTS
+    for i=1,objects.getId(TYPE_LOGIC) do
+      local logic = ObjectReferences[TYPE_LOGIC][i]
+      if logic and Grid[logic.xpos] and Grid[logic.xpos][logic.ypos] then
+        if logic.color ~= COLOR_BLACK then
+          for j=0,3 do
+            if logic.side and logic.side[j] == "out" then
+              laser.create(logic.xpos + (j==1 and 1 or 0), logic.ypos + (j==2 and 1 or 0), j%2==0, (j==1 or j==2), band(logic.color,bnot(COLOR_BLACK)))
+            end
+          end
+        end
+        logic.old_color = logic.color
+      end
+    end
+
+--  UPDATE LOGIC GATE COLORS (1 TICK DELAY TO EMISSION)
+    for i=1,objects.getId(TYPE_LOGIC) do
+      local logic = ObjectReferences[TYPE_LOGIC][i]
+      if logic then
+        local c
+        if logic.state == LOGIC_OR then
+          c = 0
+          for j=0,3 do
+            if logic.side and logic.side[j] == "in" then c = bor(c,colorAt(logic.xpos,logic.ypos,j,(j==0 or j==3))) end
+            print("c is equal to "..tostring(c))
+          end
+        elseif logic.state == LOGIC_AND then
+          c = COLOR_WHITE
+          for j=0,3 do
+            if logic.side and logic.side[j] == "in" then c = band(c,colorAt(logic.xpos,logic.ypos,j,(j==0 or j==3))) end
+          end
+        elseif logic.state == LOGIC_NOT then
+          c = COLOR_WHITE
+          for j=0,3 do
+            if logic.side and logic.side[j] == "in" then c = band(c,bnot(colorAt(logic.xpos,logic.ypos,j,(j==0 or j==3)))) end
+          end
+        end
+        logic.color = bor(c,COLOR_BLACK)
+        
+        if logic.color ~= logic.old_color then
+          UpdateObjectType[TYPE_LOGIC] = true
+          UpdateLaserFG = true
+        end
+      end
+    end
     
     for i=1,objects.getId(TYPE_RECEIVER) do
       local receiver = ObjectReferences[TYPE_RECEIVER][i]
@@ -94,7 +139,7 @@ function laser.update()
   frame = math.floor(game_time*LASER_FREQUENCY)%#TEXTURE_LASER+1
   if LaserFrameUpdate[frame] then laser.drawFrame(frame) end
   canvas_LL = LaserFrame[frame]
-
+  
 end
 
 function laser.create(x,y,vertical,dir,color) --dir is true for positive direction
@@ -165,7 +210,7 @@ function laser.create(x,y,vertical,dir,color) --dir is true for positive directi
         elseif obj_tp == TYPE_GLASS then
           laser.create(x,y+(dir==1 and 1 or -1),vertical,(dir == 1),color)
           return nil
-        elseif obj_tp == TYPE_PRISM then
+        elseif obj_tp == TYPE_LOGIC then
 --      UNDEFINED -> laser stops
           return nil
         end
@@ -242,7 +287,7 @@ function laser.create(x,y,vertical,dir,color) --dir is true for positive directi
         elseif obj_tp == TYPE_GLASS then
           laser.create(x+(dir==1 and 1 or -1),y,vertical,(dir == 1),color)
           return nil
-        elseif obj_tp == TYPE_PRISM then
+        elseif obj_tp == TYPE_LOGIC then
 --      UNDEFINED -> laser stops
           return nil
         end
@@ -367,6 +412,14 @@ function laser.drawFrame(frame)
   love.graphics.setCanvas()
   love.graphics.setStencilTest()
   love.graphics.setBlendMode("alpha","alphamultiply")
+end
+
+function colorAt(x,y,r,d)
+  if r%2==0 then
+    return LaserGridV[x][y + (r==2 and 1 or 0)][d and 1 or 0]
+  else
+    return LaserGridH[x + (r==1 and 1 or 0)][y][d and 1 or 0]
+  end
 end
 
 return laser

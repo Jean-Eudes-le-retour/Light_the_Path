@@ -1,6 +1,7 @@
 -- GENERAL CONSTANTS --
 DEVELOPER_MODE = false
 TEXTURE_BASE_SIZE = 32
+TEXTURE_OFFSET = TEXTURE_BASE_SIZE/2
 BACKGROUND_VARIANTS = 1
 NUM_OVERLAY_TEXTURES = 15
 NUM_CONNECTED_TEXTURE_TILES = 2
@@ -13,6 +14,8 @@ DEFAULT_SCREEN_HEIGHT = 480
 LASER_FREQUENCY = 8
 TEXTURE_LASER = {love.graphics.newImage("Textures/laser_1.png"),love.graphics.newImage("Textures/laser_2.png"),love.graphics.newImage("Textures/laser_3.png"),love.graphics.newImage("Textures/laser_4.png"),love.graphics.newImage("Textures/laser_5.png"),love.graphics.newImage("Textures/laser_6.png"),love.graphics.newImage("Textures/laser_7.png"),love.graphics.newImage("Textures/laser_8.png")}
 MASK_LASER = {love.graphics.newImage("Textures/laser_mask.png"),love.graphics.newImage("Textures/laser_mask.png"),love.graphics.newImage("Textures/laser_mask.png"),love.graphics.newImage("Textures/laser_mask.png"),love.graphics.newImage("Textures/laser_mask.png"),love.graphics.newImage("Textures/laser_mask.png"),love.graphics.newImage("Textures/laser_mask.png"),love.graphics.newImage("Textures/laser_mask.png")}
+TEXTURE_SIDEINPUT = love.graphics.newImage("Textures/logic_input.png")
+TEXTURE_SIDEOUTPUT = love.graphics.newImage("Textures/logic_output.png")
 MASK_EFFECT = love.graphics.newShader[[
    vec4 effect (vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords) {
       if (Texel(texture, texture_coords).rgb == vec3(0.0)) {
@@ -45,9 +48,21 @@ function enum(n,i)
   return n
 end
 
+function duplicateTable(Tab)
+  local NewTab = {}
+  for i=1,#Tab do
+    if type(Tab[i]) == "table" then
+      NewTab[i] = duplicateTable(Tab[i])
+    else
+      NewTab[i] = Tab[i]
+    end
+  end
+  return NewTab
+end
+
 -- ENUM CONSTANTS --
 NUM_TYPES = 7
-TYPE_WALL, TYPE_GLASS, TYPE_SOURCE, TYPE_RECEIVER, TYPE_MIRROR, TYPE_PWHEEL, TYPE_PRISM = enum(NUM_TYPES)
+TYPE_WALL, TYPE_GLASS, TYPE_SOURCE, TYPE_RECEIVER, TYPE_MIRROR, TYPE_PWHEEL, TYPE_LOGIC = enum(NUM_TYPES)
 
 NUM_COLORS = 8
 COLOR_RED, COLOR_GREEN, COLOR_YELLOW, COLOR_BLUE, COLOR_MAGENTA, COLOR_CYAN, COLOR_WHITE, COLOR_BLACK = enum(NUM_COLORS)
@@ -64,3 +79,6 @@ UI_MENU, UI_DIALOG, UI_TILE, UI_TITLE, UI_LEVELSELECT, UI_OPTIONS = enum(NUM_UI_
 
 NUM_BUTTON_TEXTURES = 3
 BUTTON_TEXTURE_NORMAL, BUTTON_TEXTURE_PRESSED, BUTTON_TEXTURE_HOVERED = enum(NUM_BUTTON_TEXTURES)
+
+NUM_LOGIC = 3
+LOGIC_OR, LOGIC_AND, LOGIC_NOT = enum(NUM_LOGIC)

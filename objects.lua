@@ -13,10 +13,10 @@ local DEFAULT_SOURCE =  {t =   TYPE_SOURCE, state =  1, color =  COLOR_WHITE, ca
 local DEFAULT_RECEIVER ={t = TYPE_RECEIVER, state =  1, color =  COLOR_BLACK, canMove = false, canRotate = false, canChangeColor = false, glassState = false, hasMask =  true, rotateByEights = false, canChangeState = false}
 local DEFAULT_MIRROR =  {t =   TYPE_MIRROR, state =  1, color =  COLOR_WHITE, canMove =  true, canRotate =  true, canChangeColor =  true, glassState = false, hasMask =  true, rotateByEights =  true, canChangeState = false}
 local DEFAULT_PWHEEL =  {t =   TYPE_PWHEEL, state =  1, color =  COLOR_WHITE, canMove = false, canRotate = false, canChangeColor = false, glassState = false, hasMask =  true, rotateByEights =  true, canChangeState = false}
-local DEFAULT_PRISM =   {t =    TYPE_PRISM, state =  1, color =  COLOR_WHITE, canMove =  true, canRotate =  true, canChangeColor = false, glassState = false, hasMask = false, rotateByEights = false, canChangeState = false}
-DEFAULT_OBJECT =  {DEFAULT_WALL,DEFAULT_GLASS,DEFAULT_SOURCE,DEFAULT_RECEIVER,DEFAULT_MIRROR,DEFAULT_PWHEEL,DEFAULT_PRISM}
-TYPES =            {"wall","glass","source","receiver","mirror","pwheel","prism" }
-NUM_STATES =       {     1,      1,       2,         2,       2,       2,      1 }
+local DEFAULT_LOGIC =   {t =    TYPE_LOGIC, state =  1, color =  COLOR_BLACK, canMove = false, canRotate = false, canChangeColor = false, glassState = false, hasMask =  true, rotateByEights = false, canChangeState = false}
+DEFAULT_OBJECT =  {DEFAULT_WALL,DEFAULT_GLASS,DEFAULT_SOURCE,DEFAULT_RECEIVER,DEFAULT_MIRROR,DEFAULT_PWHEEL,DEFAULT_LOGIC}
+TYPES =            {"wall","glass","source","receiver","mirror","pwheel","logic" }
+NUM_STATES =       {     1,      1,       2,         2,       2,       2,      3 }
 UpdateObjectType = { false,  false,   false,     false,   false,   false,  false }
 ObjectReferences = {} -- contains tables of references to each object of each type sorted by type and Id; Object:ObjectReferences[int:type][int:id]
 local Id = {} -- contains the Id of the newest object of each type (i.e. the amount of each types unless some have been deleted); int:Id[int:type]
@@ -64,9 +64,16 @@ function Object:rotate(invert)
     eight_rotation = (eight_rotation + (invert and -1 or 1))%8
     self.state = bor(band(self.state,bnot(3)),band(eight_rotation,1)+1)
     self.rotation = rshift(band(eight_rotation,6),1)
+  elseif self.side then
+    if invert then
+      side[0],side[1],side[2],side[3] = side[1],side[2],side[3],side[0]
+    else
+      side[0],side[1],side[2],side[3] = side[3],side[0],side[1],side[2] 
+    end
   else
     self.rotation = (self.rotation + (invert and -1 or 1))%4
   end
+
   UpdateObjectType[self.t] = true
 end
 
@@ -117,6 +124,7 @@ end
 function Object:changePosition(xpos,ypos)
   self.xpos = xpos
   self.ypos = ypos
+  if self.t == TYPE_LOGIC then self.color = COLOR_BLACK end
 end
 
 return objects

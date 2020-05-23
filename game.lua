@@ -56,7 +56,7 @@ function game.updateUI(dt)
   if o_hand then
     local rotation = math.rad(90*o_hand.rotation)
     local state = o_hand.state
-    tiles.drawTexture(o_hand.t,o_hand.state,o_hand.color)
+    tiles.drawTexture(o_hand.t,o_hand.state,o_hand.color,o_hand.side)
     love.graphics.setCanvas(canvas_UI)
     love.graphics.setBlendMode("alpha","premultiplied")
     love.graphics.draw(canvas_Texture,cursor_x+o_displacement_x,cursor_y+o_displacement_y,rotation,texture_scale)
