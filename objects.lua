@@ -66,12 +66,17 @@ function Object:rotate(invert)
     self.rotation = rshift(band(eight_rotation,6),1)
   elseif self.side then
     local side = self.side
-    if invert then
-      side[0],side[1],side[2],side[3] = side[1],side[2],side[3],side[0]
+    if self.t == TYPE_LOGIC then
+      self.color = COLOR_BLACK
+      if invert then
+        side[0],side[1],side[2],side[3] = side[1],side[2],side[3],side[0]
+      else
+        side[0],side[1],side[2],side[3] = side[3],side[0],side[1],side[2] 
+      end
     else
-      side[0],side[1],side[2],side[3] = side[3],side[0],side[1],side[2] 
+      self.rotation = (self.rotation + (invert and -1 or 1))%4
+      self.state = 1
     end
-    if self.t == TYPE_LOGIC then self.color = COLOR_BLACK end
   else
     self.rotation = (self.rotation + (invert and -1 or 1))%4
   end
@@ -94,6 +99,20 @@ end
 function Object:setSides(s0,s1,s2,s3)
   self.side = {}
   self.side[0],self.side[1],self.side[2],self.side[3] = s0,s1,s2,s3
+  UpdateObjectType[self.t] = true
+  return self
+end
+
+function Object:activate(deactivate)
+  if self.t == TYPE_SOURCE then
+    self.state = deactivate and 1 or 2
+  elseif self.t == TYPE_MIRROR then
+    self.rotation = (self.rotation + 1)%4
+  else
+    return self
+  end
+  UpdateObjectType[self.t] = true
+  UpdateLaserFG = true
   return self
 end
 

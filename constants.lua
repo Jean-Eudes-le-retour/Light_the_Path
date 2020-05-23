@@ -16,6 +16,7 @@ TEXTURE_LASER = {love.graphics.newImage("Textures/laser_1.png"),love.graphics.ne
 MASK_LASER = {love.graphics.newImage("Textures/laser_mask.png"),love.graphics.newImage("Textures/laser_mask.png"),love.graphics.newImage("Textures/laser_mask.png"),love.graphics.newImage("Textures/laser_mask.png"),love.graphics.newImage("Textures/laser_mask.png"),love.graphics.newImage("Textures/laser_mask.png"),love.graphics.newImage("Textures/laser_mask.png"),love.graphics.newImage("Textures/laser_mask.png")}
 TEXTURE_SIDEINPUT = love.graphics.newImage("Textures/logic_input.png")
 TEXTURE_SIDEOUTPUT = love.graphics.newImage("Textures/logic_output.png")
+TEXTURE_SIDEACTIVATE = love.graphics.newImage("Textures/receiver_activate.png")
 MASK_EFFECT = love.graphics.newShader[[
    vec4 effect (vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords) {
       if (Texel(texture, texture_coords).rgb == vec3(0.0)) {

@@ -88,7 +88,6 @@ function laser.update()
           c = 0
           for j=0,3 do
             if logic.side and logic.side[j] == "in" then c = bor(c,colorAt(logic.xpos,logic.ypos,j,(j==0 or j==3))) end
-            print("c is equal to "..tostring(c))
           end
         elseif logic.state == LOGIC_AND then
           c = COLOR_WHITE

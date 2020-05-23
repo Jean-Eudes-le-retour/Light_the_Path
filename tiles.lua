@@ -114,13 +114,15 @@ function tiles.drawTexture(t,state,color,side)
   if t <= NUM_CONNECTED_TEXTURE_TILES then
     love.graphics.drawLayer(OVERLAY_TEXTURES[t],13)
   end
-  if t == TYPE_LOGIC then
+  if t == TYPE_LOGIC or t == TYPE_RECEIVER then
     if side then
       for i=0,3 do
         if side[i] == "in" then
           love.graphics.draw(TEXTURE_SIDEINPUT,TEXTURE_OFFSET,TEXTURE_OFFSET,math.rad(90*i),nil,nil,TEXTURE_OFFSET,TEXTURE_OFFSET)
         elseif side[i] == "out" then
           love.graphics.draw(TEXTURE_SIDEOUTPUT,TEXTURE_OFFSET,TEXTURE_OFFSET,math.rad(90*i),nil,nil,TEXTURE_OFFSET,TEXTURE_OFFSET)
+        elseif side[i] == "activate" then
+          love.graphics.draw(TEXTURE_SIDEACTIVATE,TEXTURE_OFFSET,TEXTURE_OFFSET,math.rad(90*i),nil,nil,TEXTURE_OFFSET,TEXTURE_OFFSET)
         end
       end
     end
@@ -153,7 +155,7 @@ end
 
 -- Update the background canvas
 function tiles.updateBG()
-  print("Drawing background layer...")
+  --print("Drawing background layer...")
   love.graphics.setCanvas(canvas_BG)
   love.graphics.clear()
   local grid_size_x, grid_size_y = grid.getDimensions()
@@ -167,10 +169,10 @@ end
 
 -- Update the wall states and canvas
 function tiles.updateWall()
-  print("Updating wall states...")
+  --print("Updating wall states...")
   tiles.updateConnectedTextureTypeState(TYPE_WALL)
 
-  print("Updating wall graphics...")
+  --print("Updating wall graphics...")
   love.graphics.setCanvas(canvas_WL) 
   love.graphics.clear()
   local o = false
@@ -194,10 +196,10 @@ end
 
 -- Update the glass states and canvas
 function tiles.updateGlass()
-  print("Updating glass states...")
+  --print("Updating glass states...")
   tiles.updateConnectedTextureTypeState(TYPE_GLASS)
   
-  print("Updating glass graphics...")
+  --print("Updating glass graphics...")
   love.graphics.setCanvas(canvas_GL)
   love.graphics.clear()
   local o = false
@@ -223,7 +225,7 @@ end
 
 -- Update the objects' canvas
 function tiles.updateObjects()
-  print("Updating object graphics...")
+  --print("Updating object graphics...")
   love.graphics.setCanvas(canvas_GD)
   love.graphics.clear()
   local o = false

@@ -1,3 +1,4 @@
+local objects = require("objects")
 local grid = require("grid")
 local tiles = require("tiles")
 local ui_elements = require("ui_elements")
@@ -28,6 +29,27 @@ end
 function game.update(dt)
   grid.updateCursorPosition()
   game.updateUI(dt)
+--RECEIVER ACTIVATIONS
+  for i=1,objects.getId(TYPE_RECEIVER) do
+    local receiver = ObjectReferences[TYPE_RECEIVER][i]
+    if receiver and receiver.side and receiver.old_state ~= receiver.state and Grid[receiver.xpos] and Grid[receiver.xpos][receiver.ypos] then
+      for j=0,3 do
+        receiver.old_state = receiver.state
+        if receiver.side[j] == "activate" then
+          local true_r = (j+receiver.rotation)%4
+          local x_act, y_act = receiver.xpos, receiver.ypos
+          if true_r%2 == 0 then
+            y_act = y_act + (true_r == 0 and -1 or 1)
+          else
+            x_act = x_act + (true_r == 3 and -1 or 1)
+          end
+          if Grid[x_act] and Grid[x_act][y_act] then
+            Grid[x_act][y_act]:activate(receiver.state == 1)
+          end
+        end
+      end
+    end
+  end
   for i=1,#UpdateObjectType do
     if UpdateObjectType[i] then UpdateLaserFG = true end
   end

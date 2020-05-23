@@ -70,7 +70,9 @@ function love.load()
   grid.fitNewObject(TYPE_PWHEEL,nil,nil,2,1,7)
   grid.fitNewObject(TYPE_LOGIC,nil,nil,LOGIC_OR,nil,nil,true,true):setSides(nil,"in","in","out")
   grid.fitNewObject(TYPE_LOGIC,nil,nil,LOGIC_AND,nil,nil,true,true):setSides("in","in","in","out")
+  grid.fitNewObject(TYPE_LOGIC,nil,nil,LOGIC_AND,nil,nil,true,true):setSides("in",nil,"in","out")
   grid.fitNewObject(TYPE_LOGIC,nil,nil,LOGIC_NOT,nil,nil,true,true):setSides(nil,"in","in","out")
+  grid.fitNewObject(TYPE_RECEIVER,nil,nil,nil,nil,COLOR_BLACK,true,true):setSides(nil,nil,"activate",nil)
   
   ui_elements.dialogTest()
 end
