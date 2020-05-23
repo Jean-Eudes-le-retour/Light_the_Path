@@ -91,6 +91,12 @@ function Object:delete()
   if Grid[self.xpos] and Grid[self.xpos][self.ypos] and Grid[self.xpos][self.ypos].id == self.id then Grid[self.xpos][self.ypos] = nil end
 end
 
+function Object:setSides(s0,s1,s2,s3)
+  self.side = {}
+  self.side[0],self.side[1],self.side[2],self.side[3] = s0,s1,s2,s3
+  return self
+end
+
 -- Will return the amount of the specified type (note that this cannot be substituted for Id in 'for' loop because objects could have been deleted)
 function objects.getNumType(t) 
   local amount = 0
