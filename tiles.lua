@@ -208,7 +208,7 @@ function tiles.updateGlass()
     for i=1,objects.getId(j) do
       o = ObjectReferences[j][i]
       if o and o.glassState and Grid[o.xpos] and Grid[o.xpos][o.ypos] then
-        tiles.setColor(o.color)
+        --tiles.setColor(o.color) (issue with o not necessarily being a glass type, but rather an object with glass)
         xpos,ypos,state,rotation = o.xpos-1, o.ypos-1, o.glassState, o.glassRotation
         love.graphics.drawLayer(TEXTURES[TYPE_GLASS],1,xpos*TEXTURE_BASE_SIZE,ypos*TEXTURE_BASE_SIZE)
         love.graphics.setColor(1,1,1)
