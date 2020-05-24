@@ -14,10 +14,11 @@ local DEFAULT_RECEIVER ={t = TYPE_RECEIVER, state =  1, color =  COLOR_BLACK, ca
 local DEFAULT_MIRROR =  {t =   TYPE_MIRROR, state =  1, color =  COLOR_WHITE, canMove =  true, canRotate =  true, canChangeColor =  true, glassState = false, hasMask =  true, rotateByEights =  true, canChangeState = false}
 local DEFAULT_PWHEEL =  {t =   TYPE_PWHEEL, state =  1, color =  COLOR_WHITE, canMove = false, canRotate = false, canChangeColor = false, glassState = false, hasMask =  true, rotateByEights =  true, canChangeState = false}
 local DEFAULT_LOGIC =   {t =    TYPE_LOGIC, state =  1, color =  COLOR_BLACK, canMove = false, canRotate = false, canChangeColor = false, glassState = false, hasMask =  true, rotateByEights = false, canChangeState = false}
-DEFAULT_OBJECT =  {DEFAULT_WALL,DEFAULT_GLASS,DEFAULT_SOURCE,DEFAULT_RECEIVER,DEFAULT_MIRROR,DEFAULT_PWHEEL,DEFAULT_LOGIC}
-TYPES =            {"wall","glass","source","receiver","mirror","pwheel","logic" }
-NUM_STATES =       {     1,      1,       2,         2,       2,       2,      3 }
-UpdateObjectType = { false,  false,   false,     false,   false,   false,  false }
+local DEFAULT_DELAY =   {t =    TYPE_DELAY, state =  1, color =  COLOR_WHITE, canMove = false, canRotate =  true, canChangeColor = false, glassState = false, hasMask =  true, rotateByEights = false, canChangeState = false}
+DEFAULT_OBJECT =  {DEFAULT_WALL,DEFAULT_GLASS,DEFAULT_SOURCE,DEFAULT_RECEIVER,DEFAULT_MIRROR,DEFAULT_PWHEEL,DEFAULT_LOGIC,DEFAULT_DELAY}
+TYPES =            {"wall","glass","source","receiver","mirror","pwheel","logic","delay" }
+NUM_STATES =       {     1,      1,       2,         2,       2,       2,      3,      1 }
+UpdateObjectType = { false,  false,   false,     false,   false,   false,  false,  false }
 ObjectReferences = {} -- contains tables of references to each object of each type sorted by type and Id; Object:ObjectReferences[int:type][int:id]
 local Id = {} -- contains the Id of the newest object of each type (i.e. the amount of each types unless some have been deleted); int:Id[int:type]
 
@@ -47,6 +48,20 @@ function Object:new(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChange
   o.glassState = glassState or false
   o.glassRotation = 0
   
+  -- Object specific initialization
+  if t == TYPE_DELAY then
+    o.index = 1
+    o.delay = state and (state-1)%60+1 or 1
+    o.state = 1
+    o.previous_light = {}
+    for i=1,61 do
+      o.previous_light[i] = {}
+      for j=0,3 do
+        o.previous_light[i][j] = 0
+      end
+    end
+  end
+  
   -- Signals new object was created
   UpdateObjectType[o.t] = true
   if o.glassState then UpdateObjectType[TYPE_GLASS] = true end
@@ -64,6 +79,8 @@ function Object:rotate(invert)
     eight_rotation = (eight_rotation + (invert and -1 or 1))%8
     self.state = bor(band(self.state,bnot(3)),band(eight_rotation,1)+1)
     self.rotation = rshift(band(eight_rotation,6),1)
+  elseif self.t == TYPE_DELAY then
+    self.delay = (self.delay + (invert and -2 or 0))%60+1
   elseif self.side then
     local side = self.side
     if self.t == TYPE_LOGIC then

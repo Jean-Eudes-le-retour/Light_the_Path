@@ -14,6 +14,15 @@ local o_displacement_x, o_displacement_y = 0,0
 local sel_x, sel_y =  false, false
 canvas_UI = love.graphics.newCanvas() -- WILL NEED TO MOVE INTO WHICHEVER FUNCTION CHANGES SCREEN RESOLUTION
 
+-- GAME AUDIO VARIABLES --
+local next_track, current_track
+local audio_fadein = false
+local audio_fadeout = false
+local audio_muffle = false
+local volume_permanent = DEFAULT_VOLUME
+local volume_muffle = DEFAULT_MUFFLE
+local volume_step = 0
+
 -- Initializes game (Maybe we can move the definition of callback functions into main, but this gives us more control for now)
 function game.init(x_res,y_res,mode,x_val,y_val)
   love.mousepressed = game.onClick
@@ -21,6 +30,8 @@ function game.init(x_res,y_res,mode,x_val,y_val)
   love.wheelmoved = game.onScroll
   love.keypressed = game.onPress
   tiles.loadTextures()
+  current_track = TRACK[4]
+  current_track:play()
   -- Menus = {MAIN_MENU}
   return grid.init(x_res,y_res,mode,x_val,y_val)
 end
@@ -29,6 +40,7 @@ end
 function game.update(dt)
   grid.updateCursorPosition()
   game.updateUI(dt)
+  game.updateAudio(dt)
   game.tileActivation(TYPE_RECEIVER)
   laser.update()
   tiles.update()
@@ -99,7 +111,9 @@ function game.onClick( x, y, button, istouch, presses )
   
   if not (Grid[xpos] and Grid[xpos][ypos]) then
     if (button == 1) and (cursor_mode == CURSOR_SELECT) then sel_x, sel_y = false, false end
-    if (button == 3) then sel_x, sel_y = false, false end
+    if (button == 3) then
+      sel_x, sel_y = false, false
+    end
   elseif button == 1 then 
     if cursor_mode == CURSOR_MOVE then
       if (not DEVELOPER_MODE) and (Grid[xpos][ypos].glassState or not Grid[xpos][ypos].canMove) then return false end
@@ -139,7 +153,7 @@ function game.onScroll(x, y)
     end
   end
   
-  if Grid[xpos] and Grid[xpos][ypos] and (not Grid[xpos][ypos].glassState and Grid[xpos][ypos].canRotate or DEVELOPER_MODE) then
+  if Grid[xpos] and Grid[xpos][ypos] and ((not Grid[xpos][ypos].glassState and Grid[xpos][ypos].canRotate) or DEVELOPER_MODE) then
     Grid[xpos][ypos]:rotate(y > 0)
   end
 end
@@ -180,6 +194,7 @@ function game.onPress( key, scancode, isrepeat)
       end
     end
     ui_elements.escapeMenu()
+    game.audio.muffle()
     return
   end
 
@@ -206,6 +221,90 @@ function game.tileActivation(t)
       end
     end
   end
+end
+
+
+
+function game.updateAudio(dt)
+  if audio_muffle then game.audio.muffleUpdate() end
+
+  if audio_fadeout then
+    audio_fadein = false
+    if audio_muffle then game.audio.unmuffle() end
+    local volume = current_track:getVolume()
+    volume = volume - dt*volume_step
+    if volume <= 0 then
+      volume = DEFAULT_VOLUME
+      audio_fadeout = false
+      current_track:stop()
+      if next_track then
+        audio_fadein = true
+        current_track = next_track
+        current_track:setVolume(0)
+        current_track:play()
+        next_track = nil
+      end
+    end
+    current_track:setVolume(volume)
+  end
+
+  if audio_fadein then
+    local volume = current_track:getVolume()
+    volume = volume + dt*volume_step
+    if volume >= volume_permanent then
+      volume = volume_permanent
+      audio_fadein = false
+    end
+    current_track:setVolume(volume)
+  end
+end
+
+game.audio = {}
+function game.audio.muffleUpdate()
+  for i=1,ui_elements.getMenuId() do
+    if Menus[i] and Menus[i].isBlocking then return true end
+  end
+  game.audio.unmuffle()
+  return false
+end
+
+function game.audio.muffle(volume)
+  volume_muffle = volume or DEFAULT_MUFFLE
+  current_track:setFilter({
+  type = 'lowpass',
+  volume = volume_muffle,
+  highgain = .05,
+})
+  audio_muffle = true
+  print("muffling")
+end
+
+function game.audio.unmuffle()
+  audio_muffle = false
+  current_track:setVolume(volume_permanent)
+  current_track:setFilter()
+  print("unmuffling")
+end
+
+function game.audio.fadein(track_id,volume,duration)
+  duration = duration or 3
+  volume_permanent = volume or DEFAULT_VOLUME
+  if current_track and current_track:isPlaying() then
+    game.audio.fadeout(duration/2)
+    next_track = TRACK[track_id]
+  else
+    audio_fadein = true
+    current_track = TRACK[track_id]
+    current_track:setVolume(0)
+    current_track:play()
+    volume_step = 1/duration
+  end
+end
+
+function game.audio.fadeout(duration)
+  duration = duration or 3
+  audio_fadeout = true
+  volume_step = current_track:getVolume()/duration
 end
 
 return game

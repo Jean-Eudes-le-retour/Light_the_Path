@@ -35,6 +35,7 @@ function laser.update()
   for i=1,#UpdateObjectType do
     if UpdateObjectType[i] then UpdateLaserFG = true end
   end
+  if laser.checkDelayUpdate() then UpdateLaserFG = true end
   if UpdateLaserFG then
     for i=1,#TEXTURE_LASER do
       LaserFrameUpdate[i] = true
@@ -66,6 +67,18 @@ function laser.update()
         end
       end
     end
+    
+--  EMIT FROM DELAYS
+    for i=1,objects.getId(TYPE_DELAY) do
+      local delay = ObjectReferences[TYPE_DELAY][i]
+      if delay and Grid[delay.xpos] and Grid[delay.xpos][delay.ypos] then
+        for j=0,3 do
+          if delay.previous_light[(delay.index-delay.delay-1)%61+1][j]~=0 then
+            laser.create(delay.xpos + (j==3 and 1 or 0), delay.ypos + (j==0 and 1 or 0), j%2==0, (j==0 or j==3), delay.previous_light[(delay.index-delay.delay-1)%61+1][j])
+          end
+        end
+      end
+    end
 
 --  EMIT FROM LOGIC GATE OUTPUTS
     for i=1,objects.getId(TYPE_LOGIC) do
@@ -90,17 +103,17 @@ function laser.update()
         if logic.state == LOGIC_OR then
           c = 0
           for j=0,3 do
-            if logic.side and logic.side[j] == "in" then c = bor(c,colorAt(logic.xpos,logic.ypos,j,(j==0 or j==3))) end
+            if logic.side and logic.side[j] == "in" then c = bor(c,laser.colorAt(logic.xpos,logic.ypos,j,(j==0 or j==3))) end
           end
         elseif logic.state == LOGIC_AND then
           c = COLOR_WHITE
           for j=0,3 do
-            if logic.side and logic.side[j] == "in" then c = band(c,colorAt(logic.xpos,logic.ypos,j,(j==0 or j==3))) end
+            if logic.side and logic.side[j] == "in" then c = band(c,laser.colorAt(logic.xpos,logic.ypos,j,(j==0 or j==3))) end
           end
         elseif logic.state == LOGIC_NOT then
           c = COLOR_WHITE
           for j=0,3 do
-            if logic.side and logic.side[j] == "in" then c = band(c,bnot(colorAt(logic.xpos,logic.ypos,j,(j==0 or j==3)))) end
+            if logic.side and logic.side[j] == "in" then c = band(c,bnot(laser.colorAt(logic.xpos,logic.ypos,j,(j==0 or j==3)))) end
           end
         end
         logic.color = bor(c,COLOR_BLACK)
@@ -135,6 +148,28 @@ function laser.update()
           UpdateObjectType[TYPE_RECEIVER] = true
         end
       end
+    end
+  end
+  
+  for i=1,objects.getId(TYPE_DELAY) do
+    local delay = ObjectReferences[TYPE_DELAY][i]
+    if delay then
+      if Grid[delay.xpos] and Grid[delay.xpos][delay.ypos] then
+        for j=0,3 do
+          if j%2 == 0 then
+            delay.previous_light[delay.index][j] = LaserGridV[delay.xpos][delay.ypos + (j==0 and 0 or 1)][(j==0 and 1 or 0)]
+          else
+            delay.previous_light[delay.index][j] = LaserGridH[delay.xpos + (j==3 and 0 or 1)][delay.ypos][(j==3 and 1 or 0)]
+          end
+        end
+      else
+        for i=1,61 do
+          for j=0,3 do
+            delay.previous_light[i][j] = 0
+          end
+        end
+      end
+      delay.index = delay.index%61+1
     end
   end
   
@@ -416,12 +451,24 @@ function laser.drawFrame(frame)
   love.graphics.setBlendMode("alpha","alphamultiply")
 end
 
-function colorAt(x,y,r,d)
+function laser.colorAt(x,y,r,d)
   if r%2==0 then
     return LaserGridV[x][y + (r==2 and 1 or 0)][d and 1 or 0]
   else
     return LaserGridH[x + (r==1 and 1 or 0)][y][d and 1 or 0]
   end
+end
+
+function laser.checkDelayUpdate()
+  for i=1,objects.getId(TYPE_DELAY) do
+    local delay = ObjectReferences[TYPE_DELAY][i]
+    if delay then
+      for j=0,3 do
+        if delay.previous_light[(delay.index-delay.delay-1)%61+1][j] ~= delay.previous_light[(delay.index-delay.delay-2)%61+1][j] then return true end
+      end
+    end
+  end
+  return false
 end
 
 return laser

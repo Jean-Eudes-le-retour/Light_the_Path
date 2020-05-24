@@ -239,6 +239,15 @@ function tiles.updateObjects()
         if rotation > 1 then ypos = ypos+1 end
         rotation = math.rad(90*rotation)
         tiles.drawTexture(i,state,o.color,o.side)
+        if o.t == TYPE_DELAY then
+          local str = tostring(o.delay)
+          if string.len(str) < 2 then str = "0"..str end
+          local str_w = FONT_SMALLNUM:getWidth(str)
+          local str_h = FONT_SMALLNUM:getHeight()
+          love.graphics.setFont(FONT_SMALLNUM)
+          love.graphics.print(str, math.ceil((TEXTURE_BASE_SIZE - str_w)/2+1), math.ceil((TEXTURE_BASE_SIZE - str_h)/2)-1)
+          love.graphics.setFont(FONT_BASE)
+        end
         love.graphics.setCanvas(canvas_GD)
         love.graphics.setBlendMode("alpha","premultiplied")
         love.graphics.draw(canvas_Texture,xpos*TEXTURE_BASE_SIZE,ypos*TEXTURE_BASE_SIZE,rotation)
