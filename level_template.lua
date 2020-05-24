@@ -14,6 +14,7 @@ level.name = "Template"
 level.drawbox_mode = nil
 level.x_val = nil
 level.y_val = nil
+level.track_id = nil -- random if not set
 
 -- IMPORTANT FUNCTIONS --
 function level.load()

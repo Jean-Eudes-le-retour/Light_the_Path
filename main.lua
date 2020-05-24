@@ -76,10 +76,11 @@ function love.load()
   grid.setNewObject(TYPE_RECEIVER,17,8,nil,3,COLOR_WHITE,false,false,false,true):setSides(nil,nil,"activate",nil)
   grid.setNewObject(TYPE_SOURCE,18,8,nil,2,COLOR_WHITE,false,false,false,true,false)
   grid.setNewObject(TYPE_MIRROR,16,9,2,1,COLOR_CYAN,false,false,false,true,false)
-  grid.setNewObject(TYPE_DELAY,17,9,2)
+  grid.setNewObject(TYPE_DELAY,17,9,2,nil,nil,false,false,false,true,false)
   grid.setNewObject(TYPE_LOGIC,16,8,LOGIC_NOT,nil,COLOR_WHITE,false,false,false,true,false):setSides(nil,"out","in")
   grid.setNewObject(TYPE_LOGIC,18,9,LOGIC_AND,nil,COLOR_BLACK,false,false,false,true,false):setSides("in","out",nil,"in")
   grid.setNewObject(TYPE_RECEIVER,19,9,nil,3,COLOR_RED,false,false,false,true,false)
+  grid.setNewObject(TYPE_GLASS,19,8)
   grid.fitNewObject(TYPE_DELAY,nil,nil,60)
   
   ui_elements.dialogTest()
@@ -158,6 +159,13 @@ function load_level(level_no)
   level.load()
   grid_dim_x, grid_dim_y = grid.getDimensions()
   drawbox_x, drawbox_y, texture_scale = grid.getDrawboxInfo()
-  if not level.track_id then level.track_id = math.ceil(math.random()*#TRACK) end
-  game.audio.fadein(level.track_id,level.volume,1)
+  if not level.track_id then
+    if type(level.track_id) == "nil" then
+      game.audio.fadein(math.ceil(math.random()*#TRACK),level.volume,1)
+    else
+      game.audio.fadeout(1)
+    end
+  else
+    game.audio.fadein(level.track_id,level.volume,1)
+  end
 end

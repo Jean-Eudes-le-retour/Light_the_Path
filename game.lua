@@ -262,7 +262,7 @@ end
 game.audio = {}
 function game.audio.muffleUpdate()
   for i=1,ui_elements.getMenuId() do
-    if Menus[i] and Menus[i].isBlocking then return true end
+    if Menus[i] and Menus[i].isBlocking and Menus[i].t ~= MENU_DIALOG then return true end
   end
   game.audio.unmuffle()
   return false
