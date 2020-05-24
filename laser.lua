@@ -32,6 +32,9 @@ local LaserFrameUpdate = {}
 
 function laser.update()
   grid_width, grid_height = grid.getDimensions()
+  for i=1,#UpdateObjectType do
+    if UpdateObjectType[i] then UpdateLaserFG = true end
+  end
   if UpdateLaserFG then
     for i=1,#TEXTURE_LASER do
       LaserFrameUpdate[i] = true
