@@ -20,38 +20,38 @@ function level.load()
 -- CREATE GRID -- grid is made to the specified dimensions, and drawbox is defined (by default, x fits to screen and y is centered)
   grid.setDimensions(level.x,level.y,level.drawbox_mode,level.x_val,level.y_val)
   
--- PREPARE LEVEL -- use grid.setNewObject(...) or grid.fitNewObject(...)
---grid.fitNewObject(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glassState)
+-- PREPARE LEVEL -- use grid.set(...) or grid.fit(...)
+--grid.fit(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glassState)
   for i=1,level.x do
-    grid.setNewObject(TYPE_WALL, i, 1)
-	grid.setNewObject(TYPE_WALL, i, level.y)
+    grid.set(TYPE_WALL, i, 1)
+	grid.set(TYPE_WALL, i, level.y)
   end
   for i=1,level.y do
-	grid.setNewObject(TYPE_WALL, 1, i)
+	grid.set(TYPE_WALL, 1, i)
   end
-  grid.setNewObject(TYPE_SOURCE, 1, 2, 1, 1, COLOR_BLUE)
+  grid.set(TYPE_SOURCE, 1, 2, 1, 1, COLOR_BLUE)
   
-  grid.setNewObject(TYPE_MIRROR, 3, 2, 2, 2, COLOR_WHITE)
-  grid.setNewObject(TYPE_MIRROR, 3, 4, 2, 2, COLOR_WHITE)
-  grid.setNewObject(TYPE_MIRROR, 5, 2, 2, 1, COLOR_WHITE)
-  grid.setNewObject(TYPE_MIRROR, 5, 4, 2, 1, COLOR_WHITE)
-  grid.setNewObject(TYPE_MIRROR, 7, 2, 2, 2, COLOR_WHITE)
-  grid.setNewObject(TYPE_MIRROR, 7, 4, 2, 2, COLOR_WHITE)
-  grid.setNewObject(TYPE_MIRROR, 9, 4, 2, 1, COLOR_WHITE)
+  grid.set(TYPE_MIRROR, 3, 2, 2, 2, COLOR_WHITE)
+  grid.set(TYPE_MIRROR, 3, 4, 2, 2, COLOR_WHITE)
+  grid.set(TYPE_MIRROR, 5, 2, 2, 1, COLOR_WHITE)
+  grid.set(TYPE_MIRROR, 5, 4, 2, 1, COLOR_WHITE)
+  grid.set(TYPE_MIRROR, 7, 2, 2, 2, COLOR_WHITE)
+  grid.set(TYPE_MIRROR, 7, 4, 2, 2, COLOR_WHITE)
+  grid.set(TYPE_MIRROR, 9, 4, 2, 1, COLOR_WHITE)
   
-  grid.setNewObject(TYPE_PWHEEL, 9, 2, 1, 2, COLOR_YELLOW)
+  grid.set(TYPE_PWHEEL, 9, 2, 1, 2, COLOR_YELLOW)
   
-  grid.setNewObject(TYPE_MIRROR, 3, 3, 2, 2, COLOR_YELLOW)
-  grid.setNewObject(TYPE_RECEIVER, 1, 3, 1, 1, COLOR_YELLOW)
+  grid.set(TYPE_MIRROR, 3, 3, 2, 2, COLOR_YELLOW)
+  grid.set(TYPE_RECEIVER, 1, 3, 1, 1, COLOR_YELLOW)
   
-  grid.setNewObject(TYPE_WALL, 4, 2)
-  grid.setNewObject(TYPE_WALL, 4, 3)
-  grid.setNewObject(TYPE_WALL, 6, 4)
-  grid.setNewObject(TYPE_WALL, 6, 3)
-  grid.setNewObject(TYPE_WALL, 8, 2)
-  grid.setNewObject(TYPE_WALL, 8, 3)
+  grid.set(TYPE_WALL, 4, 2)
+  grid.set(TYPE_WALL, 4, 3)
+  grid.set(TYPE_WALL, 6, 4)
+  grid.set(TYPE_WALL, 6, 3)
+  grid.set(TYPE_WALL, 8, 2)
+  grid.set(TYPE_WALL, 8, 3)
   
-  grid.setNewObject(TYPE_WALL, 2, 4)
+  grid.set(TYPE_WALL, 2, 4)
   
   
 -- ADD UI ELEMENTS -- use menu.create() type functions, not yet defined.

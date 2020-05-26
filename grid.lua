@@ -58,7 +58,6 @@ function grid.set(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeCo
   Grid[xpos][ypos] = o
   return o
 end
-grid.setNewObject = grid.set
 
 -- grid.set, but softer, may be preferred when programming a level (will never erase a block at destination)
 function grid.fit(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glassState)
@@ -82,7 +81,6 @@ function grid.fit(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeCo
   print("Could not fit the "..(t and TYPES[t] or "wall"))
   return nil
 end
-grid.fitNewObject = grid.fit
 
 -- Will attempt to move an object from one point to another within the grid (Might want to make the function ignore 'canMove' and test this externally before moving?)
 function grid.move(o,xpos,ypos,old_xpos,old_ypos,force)

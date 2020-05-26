@@ -45,7 +45,7 @@ ________________________________________________
 ________________________________________________
 
 local m = ui_elements.create(UI_DIALOG)
-m.originaltext = { --2 possible formats as shown below for each page
+m.text = { --2 possible formats as shown below for each page
 --[[PAGE1]]       {--[[COLOR1]]{0,0,0,1},--[[TEXT1]]"BLAH BLAH",--[[COLOR2]]{1,0,0,1},--[[TEXT2]]"BLAH BLAH BLAH" --[[ETC...]]},
 --[[PAGE2]]       {--[[TEXT]]"BLAH BLAH"}
 --[[...]]

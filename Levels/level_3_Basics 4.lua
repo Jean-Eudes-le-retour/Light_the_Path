@@ -20,26 +20,26 @@ function level.load()
 -- CREATE GRID -- grid is made to the specified dimensions, and drawbox is defined (by default, x fits to screen and y is centered)
   grid.setDimensions(level.x,level.y,level.drawbox_mode,level.x_val,level.y_val)
   
--- PREPARE LEVEL -- use grid.setNewObject(...) or grid.fitNewObject(...)
---grid.fitNewObject(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glassState)
+-- PREPARE LEVEL -- use grid.set(...) or grid.fit(...)
+--grid.fit(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glassState)
   for i=1,level.x do
-    grid.setNewObject(TYPE_WALL, i, 1)
-	grid.setNewObject(TYPE_WALL, i, level.y)
+    grid.set(TYPE_WALL, i, 1)
+	grid.set(TYPE_WALL, i, level.y)
   end
   for i=1,level.y do
-	grid.setNewObject(TYPE_WALL, 1, i)
-	grid.setNewObject(TYPE_WALL, level.x, i)
+	grid.set(TYPE_WALL, 1, i)
+	grid.set(TYPE_WALL, level.x, i)
   end
-  grid.setNewObject(TYPE_RECEIVER, 8, 3, 1, 3, COLOR_CYAN)
+  grid.set(TYPE_RECEIVER, 8, 3, 1, 3, COLOR_CYAN)
   
-  grid.setNewObject(TYPE_SOURCE, 2, 2, 1, 1, COLOR_BLUE)
-  grid.setNewObject(TYPE_SOURCE, 2, 3, 1, 1, COLOR_CYAN)
-  grid.setNewObject(TYPE_SOURCE, 2, 4, 1, 1, COLOR_GREEN)
+  grid.set(TYPE_SOURCE, 2, 2, 1, 1, COLOR_BLUE)
+  grid.set(TYPE_SOURCE, 2, 3, 1, 1, COLOR_CYAN)
+  grid.set(TYPE_SOURCE, 2, 4, 1, 1, COLOR_GREEN)
   
-  grid.setNewObject(TYPE_MIRROR, 4, 4, 2, 1, COLOR_GREEN)
-  grid.setNewObject(TYPE_MIRROR, 4, 3, 2, 1, COLOR_GREEN)
-  grid.setNewObject(TYPE_MIRROR, 5, 2, 2, 2, COLOR_BLUE)
-  grid.setNewObject(TYPE_MIRROR, 5, 3, 2, 2, COLOR_BLUE)
+  grid.set(TYPE_MIRROR, 4, 4, 2, 1, COLOR_GREEN)
+  grid.set(TYPE_MIRROR, 4, 3, 2, 1, COLOR_GREEN)
+  grid.set(TYPE_MIRROR, 5, 2, 2, 2, COLOR_BLUE)
+  grid.set(TYPE_MIRROR, 5, 3, 2, 2, COLOR_BLUE)
 
 -- ADD UI ELEMENTS -- use menu.create() type functions, not yet defined.
 end

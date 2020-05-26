@@ -98,7 +98,7 @@ local DEFAULT_DIALOG = {
   
 --CAN BE CHANGED THROUGH ASSIGNMENTS
   charname = {},
-  originaltext = {}, --table of different "pages", each page can be love2d coloredtext format
+  text = {}, --table of different "pages", each page can be love2d coloredtext format
   text_rate = {},
   animation = {}, -- contains table of images, animation[x][0] is {freq,repetitions,fade} if defined
   sfx = {}, -- sfx[x][0] is mode
@@ -516,22 +516,22 @@ function ui_elements.updateDialog(m)
   if not m.finished then
     local characters_to_print = (m.text_rate and m.text_rate[page] or DEFAULT_TEXT_RATE)*progress
     local text_stop_id = 0
-    for i=1,#m.originaltext[page] do
+    for i=1,#m.text[page] do
       text_stop_id = i
-      if type(m.originaltext[page][i]) == "string" then
-        characters_to_print = characters_to_print-string.len(m.originaltext[page][i])
+      if type(m.text[page][i]) == "string" then
+        characters_to_print = characters_to_print-string.len(m.text[page][i])
         if characters_to_print <= 0 then break end
       end
     end
     if characters_to_print >= 0 then m.finished = true end
-    characters_to_print = string.len(m.originaltext[page][text_stop_id])+characters_to_print
+    characters_to_print = string.len(m.text[page][text_stop_id])+characters_to_print
 
     for i=1,text_stop_id-1 do
-      text_to_print[i] = m.originaltext[page][i]
+      text_to_print[i] = m.text[page][i]
     end
-    text_to_print[text_stop_id] = string.sub(m.originaltext[page][text_stop_id],1,characters_to_print)
+    text_to_print[text_stop_id] = string.sub(m.text[page][text_stop_id],1,characters_to_print)
   else
-    text_to_print = m.originaltext[page]
+    text_to_print = m.text[page]
   end
   
   local tmp_text = ""
@@ -581,7 +581,7 @@ function ui_elements.clickDialog(m)
     m.finished = false
     m.game_time_start = game_time
     m.page = m.page + 1
-    if m.page > #m.originaltext then m:close() end
+    if m.page > #m.text then m:close() end
   else
     m.finished = true
   end
@@ -853,7 +853,7 @@ end
 
 function ui_elements.dialogTest()
   local m = ui_elements.create(UI_DIALOG)
-  m.originaltext = {{{0.5,0.5,0.5},"Bonjour et bienvenue au projet gamification du groupe 9, ne vous preoccupez pas trop de ce qui se passe sur cette grille. Nous l'utilisons pour rapidement conduire des tests sur les fonctionalites du jeu. Histoire de nous simplifier la tache, l'ecran s'ouvre en 480p. Nous vous recommandons d'appuyer sur echap et rentrer dans les options pour afficher en plein ecran. Pour vous faire une meilleure idee du jeu, veuillez ouvrir le menu 'Level Select' et choisir 'Basics 2' (le seul niveau entierement interactif). Notez qu'il n'y a pas d'ecran de fin de niveau de programme. Notez egalement que le bouton 'Main Menu' ne permet actuellement que de relancer le jeu a son etat initial."}}
+  m.text = {{{0.5,0.5,0.5},"Bonjour et bienvenue au projet gamification du groupe 9, ne vous preoccupez pas trop de ce qui se passe sur cette grille. Nous l'utilisons pour rapidement conduire des tests sur les fonctionalites du jeu. Histoire de nous simplifier la tache, l'ecran s'ouvre en 480p. Nous vous recommandons d'appuyer sur echap et rentrer dans les options pour afficher en plein ecran. Pour vous faire une meilleure idee du jeu, veuillez ouvrir le menu 'Level Select' et choisir 'Basics 2' (le seul niveau entierement interactif). Notez qu'il n'y a pas d'ecran de fin de niveau de programme. Notez egalement que le bouton 'Main Menu' ne permet actuellement que de relancer le jeu a son etat initial."}}
   m.charname = {"Groupe 9"}
   m.animation[1] = {}
   m.animation[1][0] = {4,-1}

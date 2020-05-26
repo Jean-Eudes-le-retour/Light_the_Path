@@ -26,27 +26,27 @@ function level.load()
 -- CREATE GRID -- grid is made to the specified dimensions, and drawbox is defined (by default, x fits to screen and y is centered)
   grid.setDimensions(level.x,level.y,level.drawbox_mode,level.x_val,level.y_val)
   
--- PREPARE LEVEL -- use grid.setNewObject(...) or grid.fitNewObject(...)
---grid.fitNewObject(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glassState)
+-- PREPARE LEVEL -- use grid.set(...) or grid.fit(...)
+--grid.fit(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glassState)
   for i=1,level.x do
-    grid.setNewObject(TYPE_WALL, i, 1)
-    grid.setNewObject(TYPE_WALL, i, level.y-1)
-    grid.setNewObject(TYPE_WALL, i, level.y)
+    grid.set(TYPE_WALL, i, 1)
+    grid.set(TYPE_WALL, i, level.y-1)
+    grid.set(TYPE_WALL, i, level.y)
   end
   for i=1,level.y do
-	grid.setNewObject(TYPE_WALL, 1, i)
-	grid.setNewObject(TYPE_WALL, level.x, i)
+	grid.set(TYPE_WALL, 1, i)
+	grid.set(TYPE_WALL, level.x, i)
   end
-  grid.setNewObject(TYPE_RECEIVER, 5, 1, 1, 2, COLOR_RED)
-  grid.setNewObject(TYPE_RECEIVER, 8, 3, 1, 3, COLOR_GREEN)
+  grid.set(TYPE_RECEIVER, 5, 1, 1, 2, COLOR_RED)
+  grid.set(TYPE_RECEIVER, 8, 3, 1, 3, COLOR_GREEN)
   
-  grid.setNewObject(TYPE_MIRROR, 2, 2, 1, 1, COLOR_RED)
+  grid.set(TYPE_MIRROR, 2, 2, 1, 1, COLOR_RED)
   
-  grid.setNewObject(TYPE_SOURCE, 2, 3, 1, 1, COLOR_YELLOW)
+  grid.set(TYPE_SOURCE, 2, 3, 1, 1, COLOR_YELLOW)
 
 -- ADD UI ELEMENTS -- use menu.create() type functions, not yet defined.
 	m = ui_elements.create(UI_DIALOG)
-	m.originaltext = {
+	m.text = {
   {{0.5,0.5,0.5},"Let's give you a quick crash course on how this laboratory works!"},
   {{0.5,0.5,0.5},"To get started off with, try to position the ",{1,0,0},"RED",{0.5,0.5,0.5}," mirror such that light gets diverted into the ",{1,0,0},"RED",{0.5,0.5,0.5}," receiver up top. Then turn on the ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," laser with ",{0,0,0},"RIGHT CLICK",{0.5,0.5,0.5},". Note that you can rotate certain objects with your ",{0,0,0},"SCROLL WHEEL",{0.5,0.5,0.5}," when hovering over them."}}
 	m.charname = {"Mr. X", "Mr. X"}
@@ -66,7 +66,7 @@ function level.update(dt) -- dt is time since last update in seconds
     m:close()
     level.complete = true
     m = ui_elements.create(UI_DIALOG)
-    m.originaltext = {{{1,1,0},"A WINNER IS YOU!",{0.5,0.5,0.5}," You finished this level! PLZ gIvE ",{1,1,0},"5 stR",{0.5,0.5,0.5}," on aPp sTor"}}
+    m.text = {{{1,1,0},"A WINNER IS YOU!",{0.5,0.5,0.5}," You finished this level! PLZ gIvE ",{1,1,0},"5 stR",{0.5,0.5,0.5}," on aPp sTor"}}
     m.charname = {"YAAY"}
     m.animation[1] = {}
     m.animation[1][0] = {4,-1}
@@ -86,7 +86,7 @@ function level.update(dt) -- dt is time since last update in seconds
     m:close()
     dialog_num = dialog_num + 1
     m = ui_elements.create(UI_DIALOG)
-    m.originaltext = {
+    m.text = {
 {{0.5,0.5,0.5},"Good! As you can see, a dichroic mirror reflects only part of the incoming laser. Here, the ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," laser, which is a combination of ",{1,0,0},"RED",{0.5,0.5,0.5}," and ",{0,1,0},"GREEN",{0.5,0.5,0.5},", sees its ",{1,0,0},"RED",{0.5,0.5,0.5}," part get diverted while the ",{0,1,0},"GREEN",{0.5,0.5,0.5}," part goes through. Let's now see what happens with a ",{0,1,1},"CYAN",{0.5,0.5,0.5}," source!"},
 {{0.5,0.5,0.5},"Can you see how the ",{0,1,1},"CYAN",{0.5,0.5,0.5}," laser can go through the ",{1,0,0},"RED",{0.5,0.5,0.5}," dichroic mirror? It is because ",{0,1,1},"CYAN",{0.5,0.5,0.5}," is a superposition of ",{0,0,1},"BLUE",{0.5,0.5,0.5}," and ",{0,1,0},"GREEN",{0.5,0.5,0.5},", so it has no ",{1,0,0},"RED",{0.5,0.5,0.5}," constituent to be reflected!"},
 {{0.5,0.5,0.5},"Now try to power all of the receivers again."}
@@ -113,16 +113,16 @@ function level.update(dt) -- dt is time since last update in seconds
   if dialog_num==2 and m.page==2 then
     if not flag1 then
       flag1 = true
-      grid.setNewObject(TYPE_WALL, 5, 1, 1)
-      grid.setNewObject(TYPE_SOURCE, 2, 3, 2, 1, COLOR_CYAN)
+      grid.set(TYPE_WALL, 5, 1, 1)
+      grid.set(TYPE_SOURCE, 2, 3, 2, 1, COLOR_CYAN)
     end
   end
   
   if dialog_num==2 and m.page==3 then
     if not flag2 then
       flag2 = true
-      grid.setNewObject(TYPE_MIRROR, 2, 4, 1, 1, COLOR_BLUE)
-      grid.setNewObject(TYPE_RECEIVER, 5, 4, 1, 0, COLOR_BLUE)
+      grid.set(TYPE_MIRROR, 2, 4, 1, 1, COLOR_BLUE)
+      grid.set(TYPE_RECEIVER, 5, 4, 1, 0, COLOR_BLUE)
       m.noSkip = true
       m.isBlocking = false
     end
