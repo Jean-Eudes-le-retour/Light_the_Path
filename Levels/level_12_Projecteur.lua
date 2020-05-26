@@ -6,8 +6,8 @@ local level = {}
 
 -- IMPORTANT VARIABLES --
 level.complete = false
-level.x = 12
-level.y = 12
+level.x = 22
+level.y = 10
 level.name = "Projo"
 
 -- OPTIONAL VARIABLES --
@@ -28,15 +28,17 @@ function level.load()
 	grid.set(TYPE_WALL, 1, i)
 	grid.set(TYPE_WALL, 10, i)
   end
-  grid.set(TYPE_RECEIVER, 5, 1, 1, 2, COLOR_WHITE)
-  grid.set(TYPE_MIRROR, 5, 3, 2, 2)
-  grid.set(TYPE_MIRROR, 8, 3, 2, 2)
-  grid.set(TYPE_MIRROR, 2, 5, 1, 1)
-  grid.set(TYPE_PWHEEL, 3, 5, 1, 1, COLOR_YELLOW)
-  grid.set(TYPE_MIRROR, 5, 5, 2, 2, COLOR_BLUE)
-  grid.set(TYPE_MIRROR, 8, 5, 2, 1, COLOR_YELLOW)
-  grid.set(TYPE_SOURCE, 5, 7, 1, 0, COLOR_BLUE)
-  grid.set(TYPE_SOURCE, 8, 7, 2, 0, COLOR_BLUE)
+  grid.set(TYPE_RECEIVER, 5, 1, {rotation = 2, color = COLOR_WHITE})
+  grid.set(TYPE_SOURCE, 5, 7, {color = COLOR_BLUE})
+  grid.set(TYPE_SOURCE, 8, 7, {state = 2, color = COLOR_BLUE})
+  grid.set(TYPE_PWHEEL, 3, 5, {rotation = 1, color = COLOR_YELLOW})
+  
+  grid.set(TYPE_MIRROR, 12, 3, {rotation = 1})
+  grid.set(TYPE_MIRROR, 13, 3, {rotation = 1})
+  --grid.set(TYPE_MIRROR, 2, 5, {rotation = 1})
+  grid.set(TYPE_MIRROR, 12, 7, {rotation = 1, color = COLOR_BLUE})
+  grid.set(TYPE_MIRROR, 12, 5, {rotation = 1, color = COLOR_YELLOW})
+
 -- ADD UI ELEMENTS -- use menu.create() type functions, not yet defined.
 end
 

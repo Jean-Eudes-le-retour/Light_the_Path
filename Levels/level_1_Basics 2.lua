@@ -37,12 +37,12 @@ function level.load()
 	grid.set(TYPE_WALL, 1, i)
 	grid.set(TYPE_WALL, level.x, i)
   end
-  grid.set(TYPE_RECEIVER, 5, 1, 1, 2, COLOR_RED)
-  grid.set(TYPE_RECEIVER, 8, 3, 1, 3, COLOR_GREEN)
+  grid.set(TYPE_RECEIVER, 5, 1, {rotation = 2, color = COLOR_RED})
+  grid.set(TYPE_RECEIVER, 8, 3, {rotation = 3, color = COLOR_GREEN})
   
-  grid.set(TYPE_MIRROR, 2, 2, 1, 1, COLOR_RED)
+  grid.set(TYPE_MIRROR, 2, 2, {rotation = 1, color = COLOR_RED})
   
-  grid.set(TYPE_SOURCE, 2, 3, 1, 1, COLOR_YELLOW)
+  grid.set(TYPE_SOURCE, 2, 3, {rotation = 1, color = COLOR_YELLOW})
 
 -- ADD UI ELEMENTS -- use menu.create() type functions, not yet defined.
 	m = ui_elements.create(UI_DIALOG)
@@ -113,16 +113,16 @@ function level.update(dt) -- dt is time since last update in seconds
   if dialog_num==2 and m.page==2 then
     if not flag1 then
       flag1 = true
-      grid.set(TYPE_WALL, 5, 1, 1)
-      grid.set(TYPE_SOURCE, 2, 3, 2, 1, COLOR_CYAN)
+      grid.set(TYPE_WALL, 5, 1)
+      grid.set(TYPE_SOURCE, 2, 3, {state = 2, rotation = 1, color = COLOR_CYAN})
     end
   end
   
   if dialog_num==2 and m.page==3 then
     if not flag2 then
       flag2 = true
-      grid.set(TYPE_MIRROR, 2, 4, 1, 1, COLOR_BLUE)
-      grid.set(TYPE_RECEIVER, 5, 4, 1, 0, COLOR_BLUE)
+      grid.set(TYPE_MIRROR, 2, 4, {rotation = 1, color = COLOR_BLUE})
+      grid.set(TYPE_RECEIVER, 5, 4, {color = COLOR_BLUE})
       m.noSkip = true
       m.isBlocking = false
     end

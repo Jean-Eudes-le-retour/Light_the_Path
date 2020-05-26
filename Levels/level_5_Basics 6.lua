@@ -29,20 +29,20 @@ function level.load()
   for i=1,level.y do
 	grid.set(TYPE_WALL, 1, i)
   end
-  grid.set(TYPE_SOURCE, 1, 2, 1, 1, COLOR_BLUE)
+  grid.set(TYPE_SOURCE, 1, 2, {rotation = 1, color = COLOR_BLUE})
   
-  grid.set(TYPE_MIRROR, 3, 2, 2, 2, COLOR_WHITE)
-  grid.set(TYPE_MIRROR, 3, 4, 2, 2, COLOR_WHITE)
-  grid.set(TYPE_MIRROR, 5, 2, 2, 1, COLOR_WHITE)
-  grid.set(TYPE_MIRROR, 5, 4, 2, 1, COLOR_WHITE)
-  grid.set(TYPE_MIRROR, 7, 2, 2, 2, COLOR_WHITE)
-  grid.set(TYPE_MIRROR, 7, 4, 2, 2, COLOR_WHITE)
-  grid.set(TYPE_MIRROR, 9, 4, 2, 1, COLOR_WHITE)
+  grid.set(TYPE_MIRROR, 3, 2, {state = 2, rotation = 2, color = COLOR_WHITE})
+  grid.set(TYPE_MIRROR, 3, 4, {state = 2, rotation = 2, color = COLOR_WHITE})
+  grid.set(TYPE_MIRROR, 5, 2, {state = 2, rotation = 1, color = COLOR_WHITE})
+  grid.set(TYPE_MIRROR, 5, 4, {state = 2, rotation = 1, color = COLOR_WHITE})
+  grid.set(TYPE_MIRROR, 7, 2, {state = 2, rotation = 2, color = COLOR_WHITE})
+  grid.set(TYPE_MIRROR, 7, 4, {state = 2, rotation = 2, color = COLOR_WHITE})
+  grid.set(TYPE_MIRROR, 9, 4, {state = 2, rotation = 1, color = COLOR_WHITE})
   
-  grid.set(TYPE_PWHEEL, 9, 2, 1, 2, COLOR_YELLOW)
+  grid.set(TYPE_PWHEEL, 9, 2, {rotation = 2, color = COLOR_YELLOW})
   
-  grid.set(TYPE_MIRROR, 3, 3, 2, 2, COLOR_YELLOW)
-  grid.set(TYPE_RECEIVER, 1, 3, 1, 1, COLOR_YELLOW)
+  grid.set(TYPE_MIRROR, 3, 3, {state = 2, rotation = 2, color = COLOR_YELLOW})
+  grid.set(TYPE_RECEIVER, 1, 3, {rotation = 1, color = COLOR_YELLOW})
   
   grid.set(TYPE_WALL, 4, 2)
   grid.set(TYPE_WALL, 4, 3)

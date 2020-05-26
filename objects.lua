@@ -6,15 +6,15 @@ local objects = {}
 -- 'state' defines the image used to draw the object (i.e. same image is equivalent to same state), rotation will define the rotation of said image when drawn.
 -- This is why items such as mirrors have 2 states: one for horizontal/vertical mirrors and one for diagonal mirrors. pwheel on the other hand can only take one state (but 2 rotations!)
 -- It is worth noting that color will also influence the drawn image (though never the texture itself)
-local Object =          {t = 0,     id = 0, xpos = nil, ypos = nil, state = 1, rotation = 0, color = COLOR_WHITE, canMove = false, canRotate = false, canChangeColor = false, glassState = false}
-local DEFAULT_WALL =    {t =     TYPE_WALL, state = 13, color =  COLOR_WHITE, canMove = false, canRotate = false, canChangeColor = false, glassState = false, hasMask = false, rotateByEights = false, canChangeState = false}
-local DEFAULT_GLASS =   {t =    TYPE_GLASS, state =  1, color =  COLOR_WHITE, canMove = false, canRotate = false, canChangeColor = false, glassState =     0, hasMask = false, rotateByEights = false, canChangeState = false}
-local DEFAULT_SOURCE =  {t =   TYPE_SOURCE, state =  1, color =  COLOR_WHITE, canMove = false, canRotate = false, canChangeColor =  true, glassState = false, hasMask =  true, rotateByEights = false, canChangeState =  true}
-local DEFAULT_RECEIVER ={t = TYPE_RECEIVER, state =  1, color =  COLOR_BLACK, canMove = false, canRotate = false, canChangeColor = false, glassState = false, hasMask =  true, rotateByEights = false, canChangeState = false}
-local DEFAULT_MIRROR =  {t =   TYPE_MIRROR, state =  1, color =  COLOR_WHITE, canMove =  true, canRotate =  true, canChangeColor =  true, glassState = false, hasMask =  true, rotateByEights =  true, canChangeState = false}
-local DEFAULT_PWHEEL =  {t =   TYPE_PWHEEL, state =  1, color =  COLOR_WHITE, canMove = false, canRotate = false, canChangeColor = false, glassState = false, hasMask =  true, rotateByEights =  true, canChangeState = false}
-local DEFAULT_LOGIC =   {t =    TYPE_LOGIC, state =  1, color =  COLOR_BLACK, canMove = false, canRotate = false, canChangeColor = false, glassState = false, hasMask =  true, rotateByEights = false, canChangeState = false}
-local DEFAULT_DELAY =   {t =    TYPE_DELAY, state =  1, color =  COLOR_WHITE, canMove = false, canRotate =  true, canChangeColor = false, glassState = false, hasMask =  true, rotateByEights = false, canChangeState = false}
+local Object =          {t = 0,     id = 0, xpos = nil, ypos = nil, state = 1, rotation = 0, color = COLOR_WHITE, canMove = false, canRotate = false, canChangeColor = false, glass = false}
+local DEFAULT_WALL =    {t =     TYPE_WALL, state = 13, color =  COLOR_WHITE, canMove = false, canRotate = false, canChangeColor = false, glass = false, hasMask = false, rotateByEights = false, canChangeState = false}
+local DEFAULT_GLASS =   {t =    TYPE_GLASS, state =  1, color =  COLOR_WHITE, canMove = false, canRotate = false, canChangeColor = false, glass =     0, hasMask = false, rotateByEights = false, canChangeState = false}
+local DEFAULT_SOURCE =  {t =   TYPE_SOURCE, state =  1, color =  COLOR_WHITE, canMove = false, canRotate = false, canChangeColor =  true, glass = false, hasMask =  true, rotateByEights = false, canChangeState =  true}
+local DEFAULT_RECEIVER ={t = TYPE_RECEIVER, state =  1, color =  COLOR_BLACK, canMove = false, canRotate = false, canChangeColor = false, glass = false, hasMask =  true, rotateByEights = false, canChangeState = false}
+local DEFAULT_MIRROR =  {t =   TYPE_MIRROR, state =  1, color =  COLOR_WHITE, canMove =  true, canRotate =  true, canChangeColor =  true, glass = false, hasMask =  true, rotateByEights =  true, canChangeState = false}
+local DEFAULT_PWHEEL =  {t =   TYPE_PWHEEL, state =  1, color =  COLOR_WHITE, canMove = false, canRotate = false, canChangeColor = false, glass = false, hasMask =  true, rotateByEights =  true, canChangeState = false}
+local DEFAULT_LOGIC =   {t =    TYPE_LOGIC, state =  1, color =  COLOR_BLACK, canMove = false, canRotate = false, canChangeColor = false, glass = false, hasMask =  true, rotateByEights = false, canChangeState = false}
+local DEFAULT_DELAY =   {t =    TYPE_DELAY, state =  1, color =  COLOR_WHITE, canMove = false, canRotate =  true, canChangeColor = false, glass = false, hasMask =  true, rotateByEights = false, canChangeState = false}
 DEFAULT_OBJECT =  {DEFAULT_WALL,DEFAULT_GLASS,DEFAULT_SOURCE,DEFAULT_RECEIVER,DEFAULT_MIRROR,DEFAULT_PWHEEL,DEFAULT_LOGIC,DEFAULT_DELAY}
 TYPES =            {"wall","glass","source","receiver","mirror","pwheel","logic","delay" }
 NUM_STATES =       {     1,      1,       2,         2,       2,       2,      3,      1 }
@@ -24,7 +24,7 @@ local Id = {} -- contains the Id of the newest object of each type (i.e. the amo
 
 -- DO NOT USE THIS METHOD EXTERNALLY ON OTHER OBJECTS; To create a new object use functions in the "grid" module.
 -- Creates a new Object table, with default values as defined in the DEFAULT_OBJECT table. 
-function Object:new(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glassState,canChangeState)
+function Object:new(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glass,canChangeState)
   local o = {}
   setmetatable(o, self)
   self.__index = self
@@ -45,7 +45,7 @@ function Object:new(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChange
   else o.canChangeColor = DEFAULT_OBJECT[o.t].canChangeColor end
   if type(canChangeState) == "boolean" then o.canChangeState = canChangeState
   else o.canChangeState = DEFAULT_OBJECT[o.t].canChangeState end
-  o.glassState = glassState or false
+  o.glass = glass or false
   o.glassRotation = 0
   
   -- Object specific initialization
@@ -64,7 +64,7 @@ function Object:new(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChange
   
   -- Signals new object was created
   UpdateObjectType[o.t] = true
-  if o.glassState then UpdateObjectType[TYPE_GLASS] = true end
+  if o.glass then UpdateObjectType[TYPE_GLASS] = true end
   
   -- Index the object and return the reference
   ObjectReferences[o.t][o.id] = o
@@ -152,8 +152,8 @@ end
 
 
 -- ONLY CALLED THROUGH GRID FUNCTIONS DO NOT CALL DIRECTLY: Create a new object (does not place in grid!)
-function objects.newObject(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glassState)
-  return Object:new(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glassState)
+function objects.newObject(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glass)
+  return Object:new(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glass)
 end
 -- ONLY CALLED THROUGH GRID FUNCTIONS DO NOT CALL DIRECTLY: Note that this only changes the position info for the object not the position in the grid; 
 function Object:changePosition(xpos,ypos)

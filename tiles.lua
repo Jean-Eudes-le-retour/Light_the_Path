@@ -207,9 +207,9 @@ function tiles.updateGlass()
   for j=1,#TYPES do
     for i=1,objects.getId(j) do
       o = ObjectReferences[j][i]
-      if o and o.glassState and Grid[o.xpos] and Grid[o.xpos][o.ypos] then
+      if o and o.glass and Grid[o.xpos] and Grid[o.xpos][o.ypos] then
         --tiles.setColor(o.color) (issue with o not necessarily being a glass type, but rather an object with glass)
-        xpos,ypos,state,rotation = o.xpos-1, o.ypos-1, o.glassState, o.glassRotation
+        xpos,ypos,state,rotation = o.xpos-1, o.ypos-1, o.glass, o.glassRotation
         love.graphics.drawLayer(TEXTURES[TYPE_GLASS],1,xpos*TEXTURE_BASE_SIZE,ypos*TEXTURE_BASE_SIZE)
         love.graphics.setColor(1,1,1)
         
@@ -260,7 +260,7 @@ end
 
 -- Used exclusively in updateConnectedTextureTypeState(), do not use.
 function tiles.checkTypeAt(t,xpos,ypos,state,index,update_self)
-  if Grid[xpos] and Grid[xpos][ypos] and (Grid[xpos][ypos].t == t or (t == TYPE_GLASS and Grid[xpos][ypos].glassState)) then
+  if Grid[xpos] and Grid[xpos][ypos] and (Grid[xpos][ypos].t == t or (t == TYPE_GLASS and Grid[xpos][ypos].glass)) then
     state = state + lshift(1,index)
     if update_self then updateConnectedTextureTypeState(t,xpos,ypos,false) end
   end
@@ -275,7 +275,7 @@ function tiles.updateConnectedTextureTypeState(t,xpos,ypos,updateNeighbors)
   local typeIsPresent = false
   if updateNeighbors == nil then updateNeighbors = true end
   if xpos and ypos then
-    typeIsPresent = grid.check(xpos,ypos,t) or ((t == TYPE_GLASS) and Grid[xpos][ypos] and Grid[xpos][ypos].glassState)
+    typeIsPresent = grid.check(xpos,ypos,t) or ((t == TYPE_GLASS) and Grid[xpos][ypos] and Grid[xpos][ypos].glass)
     for i=xpos-1,xpos+1 do
       state, index = tiles.checkTypeAt(t,i,ypos-1,state,index,updateNeighbors)
     end
@@ -300,7 +300,7 @@ function tiles.updateConnectedTextureTypeState(t,xpos,ypos,updateNeighbors)
     for i=0,3 do
       if STATE_CONFIGURATIONS[state] then
         if t == TYPE_GLASS then
-          Grid[xpos][ypos].glassState = STATE_CONFIGURATIONS[state]
+          Grid[xpos][ypos].glass = STATE_CONFIGURATIONS[state]
           Grid[xpos][ypos].glassRotation = i%4
         else
           Grid[xpos][ypos].state = STATE_CONFIGURATIONS[state]

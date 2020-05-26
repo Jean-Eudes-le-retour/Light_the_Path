@@ -30,16 +30,16 @@ function level.load()
 	grid.set(TYPE_WALL, 1, i)
 	grid.set(TYPE_WALL, level.x, i)
   end
-  grid.set(TYPE_RECEIVER, 8, 3, 1, 3, COLOR_CYAN)
+  grid.set(TYPE_RECEIVER, 8, 3, {rotation = 3, color = COLOR_CYAN})
   
-  grid.set(TYPE_SOURCE, 2, 2, 1, 1, COLOR_BLUE)
-  grid.set(TYPE_SOURCE, 2, 3, 1, 1, COLOR_CYAN)
-  grid.set(TYPE_SOURCE, 2, 4, 1, 1, COLOR_GREEN)
+  grid.set(TYPE_SOURCE, 2, 2, {rotation = 1, color = COLOR_BLUE})
+  grid.set(TYPE_SOURCE, 2, 3, {rotation = 1, color = COLOR_CYAN})
+  grid.set(TYPE_SOURCE, 2, 4, {rotation = 1, color = COLOR_GREEN})
   
-  grid.set(TYPE_MIRROR, 4, 4, 2, 1, COLOR_GREEN)
-  grid.set(TYPE_MIRROR, 4, 3, 2, 1, COLOR_GREEN)
-  grid.set(TYPE_MIRROR, 5, 2, 2, 2, COLOR_BLUE)
-  grid.set(TYPE_MIRROR, 5, 3, 2, 2, COLOR_BLUE)
+  grid.set(TYPE_MIRROR, 4, 4, {state = 2, rotation = 1, color = COLOR_GREEN})
+  grid.set(TYPE_MIRROR, 4, 3, {state = 2, rotation = 1, color = COLOR_GREEN})
+  grid.set(TYPE_MIRROR, 5, 2, {state = 2, rotation = 2, color = COLOR_BLUE})
+  grid.set(TYPE_MIRROR, 5, 3, {state = 2, rotation = 2, color = COLOR_BLUE})
 
 -- ADD UI ELEMENTS -- use menu.create() type functions, not yet defined.
 end

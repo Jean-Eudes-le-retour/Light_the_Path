@@ -30,14 +30,14 @@ function level.load()
 	grid.set(TYPE_WALL, 1, i)
 	grid.set(TYPE_WALL, level.x, i)
   end
-  grid.set(TYPE_RECEIVER, 6, 1, 1, 2, COLOR_WHITE)
+  grid.set(TYPE_RECEIVER, 6, 1, {rotation = 2, color = COLOR_WHITE})
   
-  grid.set(TYPE_MIRROR, 2, 4, 1, 1, COLOR_RED)
-  grid.set(TYPE_MIRROR, 4, 4, 1, 1, COLOR_BLUE)
+  grid.set(TYPE_MIRROR, 2, 4, {rotation = 1, color = COLOR_RED})
+  grid.set(TYPE_MIRROR, 4, 4, {rotation = 1, color = COLOR_BLUE})
   
-  grid.set(TYPE_SOURCE, 2, 3, 1, 1, COLOR_RED)
-  grid.set(TYPE_SOURCE, 6, 5, 2, 0, COLOR_GREEN)
-  grid.set(TYPE_SOURCE, 10, 4, 2, 3, COLOR_BLUE)
+  grid.set(TYPE_SOURCE, 2, 3, {rotation = 1, color = COLOR_RED})
+  grid.set(TYPE_SOURCE, 6, 5, {state = 2, color = COLOR_GREEN})
+  grid.set(TYPE_SOURCE, 10, 4, {state = 2, rotation = 3, color = COLOR_BLUE})
 -- ADD UI ELEMENTS -- use menu.create() type functions, not yet defined.
 end
 

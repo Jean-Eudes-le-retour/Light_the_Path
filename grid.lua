@@ -51,16 +51,17 @@ function grid.clear()
 end
 
 -- Place a new object within the grid. The preferred function to create new objects.
-function grid.set(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glassState)
+function grid.set(t,xpos,ypos,options) -- state,rotation,color,canMove,canRotate,canChangeColor,glass
+  if type(options) ~= "table" then options = {} end
   if xpos > grid_size_x or ypos > grid_size_y or xpos < 1 or ypos < 1 then return nil end
   if Grid[xpos][ypos] then Grid[xpos][ypos]:delete() end
-  local o = objects.newObject(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glassState)
+  local o = objects.newObject(t,xpos,ypos,options.state,options.rotation,options.color,options.canMove,options.canRotate,options.canChangeColor,options.glass)
   Grid[xpos][ypos] = o
   return o
 end
 
 -- grid.set, but softer, may be preferred when programming a level (will never erase a block at destination)
-function grid.fit(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glassState)
+function grid.fit(t,xpos,ypos,options) -- state,rotation,color,canMove,canRotate,canChangeColor,glass
   if (not xpos) then xpos = math.ceil(grid_size_x/2) end
   if (not ypos) then ypos = math.ceil(grid_size_y/2) end
   for i=0,math.max(grid_size_x-1, grid_size_y-1) do
@@ -68,13 +69,13 @@ function grid.fit(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeCo
       if j == i or j == -i then
         for k=-i,i do
           if (Grid[xpos+k] and (ypos+j>0 and ypos+j<grid_size_y) and (not Grid[xpos+k][ypos+j])) then 
-            return grid.set(t,xpos+k,ypos+j,state,rotation,color,canMove,canRotate,canChangeColor,glassState)
+            return grid.set(t,xpos+k,ypos+j,options)
           end
         end
       elseif (Grid[xpos-i] and (ypos+j>0 and ypos+j<grid_size_y) and (not Grid[xpos-i][ypos+j])) then
-        return grid.set(t,xpos-i,ypos+j,state,rotation,color,canMove,canRotate,canChangeColor,glassState)
+        return grid.set(t,xpos-i,ypos+j,options)
       elseif (Grid[xpos+i] and (ypos+j>0 and ypos+j<grid_size_y) and (not Grid[xpos+i][ypos+j])) then
-        return grid.set(t,xpos+i,ypos+j,state,rotation,color,canMove,canRotate,canChangeColor,glassState)
+        return grid.set(t,xpos+i,ypos+j,options)
       end
     end
   end
@@ -87,13 +88,13 @@ function grid.move(o,xpos,ypos,old_xpos,old_ypos,force)
   if not (xpos > grid_size_x or xpos < 1 or ypos > grid_size_y or ypos < 1) then
     if Grid[xpos][ypos] then
       local dest_o = Grid[xpos][ypos]
-      if DEVELOPER_MODE or force or (not dest_o.glassState and dest_o.canMove) then
+      if DEVELOPER_MODE or force or (not dest_o.glass and dest_o.canMove) then
         force = true
         print("Changing position of destination object")
         dest_o:changePosition(old_xpos,old_ypos)
         Grid[old_xpos][old_ypos] = dest_o
         UpdateObjectType[dest_o.t] = true
-        if dest_o.glassState then UpdateObjectType[TYPE_GLASS] = true end
+        if dest_o.glass then UpdateObjectType[TYPE_GLASS] = true end
       end -- implicit else force = false
     else
       force = true
@@ -103,7 +104,7 @@ function grid.move(o,xpos,ypos,old_xpos,old_ypos,force)
       o:changePosition(xpos,ypos)
       Grid[xpos][ypos] = o
       UpdateObjectType[o.t] = true
-      if o.glassState then UpdateObjectType[TYPE_GLASS] = true end
+      if o.glass then UpdateObjectType[TYPE_GLASS] = true end
       return true
     end
   end

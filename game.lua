@@ -116,7 +116,7 @@ function game.onClick( x, y, button, istouch, presses )
     end
   elseif button == 1 then 
     if cursor_mode == CURSOR_MOVE then
-      if (not DEVELOPER_MODE) and (Grid[xpos][ypos].glassState or not Grid[xpos][ypos].canMove) then return false end
+      if (not DEVELOPER_MODE) and (Grid[xpos][ypos].glass or not Grid[xpos][ypos].canMove) then return false end
       local tile_size = grid.getTileSize()
       o_hand = Grid[xpos][ypos]
       local rotation = o_hand.rotation
@@ -128,7 +128,7 @@ function game.onClick( x, y, button, istouch, presses )
       sel_x, sel_y = xpos, ypos
     end
   elseif button == 2 then -- Will later make this button INTERACT with the block (o.state = o.state%NUM_STATES[o.t]+1) and move rotation to scroll wheel; remember: canChangeState only defined in default objects (not actual)
-    if (not DEVELOPER_MODE) and (Grid[xpos][ypos].glassState or not Grid[xpos][ypos].canChangeState) then return false end
+    if (not DEVELOPER_MODE) and (Grid[xpos][ypos].glass or not Grid[xpos][ypos].canChangeState) then return false end
     Grid[xpos][ypos]:changeState()
   elseif button == 3 then
     sel_x, sel_y = xpos, ypos
@@ -153,7 +153,7 @@ function game.onScroll(x, y)
     end
   end
   
-  if Grid[xpos] and Grid[xpos][ypos] and ((not Grid[xpos][ypos].glassState and Grid[xpos][ypos].canRotate) or DEVELOPER_MODE) then
+  if Grid[xpos] and Grid[xpos][ypos] and ((not Grid[xpos][ypos].glass and Grid[xpos][ypos].canRotate) or DEVELOPER_MODE) then
     Grid[xpos][ypos]:rotate(y > 0)
   end
 end
