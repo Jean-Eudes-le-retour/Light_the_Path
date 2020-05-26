@@ -15,7 +15,7 @@ local sel_x, sel_y =  false, false
 canvas_UI = love.graphics.newCanvas() -- WILL NEED TO MOVE INTO WHICHEVER FUNCTION CHANGES SCREEN RESOLUTION
 
 -- GAME AUDIO VARIABLES --
-local next_track, current_track
+local next_track, next_volume_step, current_track
 local audio_fadein = false
 local audio_fadeout = false
 local audio_muffle = false
@@ -234,15 +234,19 @@ function game.updateAudio(dt)
     local volume = current_track:getVolume()
     volume = volume - dt*volume_step
     if volume <= 0 then
-      volume = DEFAULT_VOLUME
-      audio_fadeout = false
       current_track:stop()
+      audio_fadeout = false
       if next_track then
         audio_fadein = true
         current_track = next_track
+        volume_step = next_volume_step
         current_track:setVolume(0)
         current_track:play()
         next_track = nil
+        next_volume_step = nil
+        volume = 0
+      else
+        volume = DEFAULT_VOLUME
       end
     end
     current_track:setVolume(volume)
@@ -292,12 +296,13 @@ function game.audio.fadein(track_id,volume,duration)
   if current_track and current_track:isPlaying() then
     game.audio.fadeout(duration/2)
     next_track = TRACK[track_id]
+    next_volume_step = 2*volume_permanent/duration
   else
     audio_fadein = true
     current_track = TRACK[track_id]
     current_track:setVolume(0)
     current_track:play()
-    volume_step = 1/duration
+    volume_step = volume_permanent/duration
   end
 end
 
