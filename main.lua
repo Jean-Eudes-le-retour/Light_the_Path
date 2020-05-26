@@ -126,10 +126,10 @@ function love.resize(width,height,dontResetUI)
   ui_elements.redraw()
 end
 
-function load_level(level_no)
-  if type(level_no) ~= "string" then level_no = tostring(level_no) end
+function load_level(level_id)
+  if type(level_id) ~= "string" then level_id = tostring(level_id) end
   local path = nil
-  local name = "level_"..level_no
+  local name = "level_"..level_id
   local Files = love.filesystem.getDirectoryItems("Levels/")
   for i=1,#Files do
     if string.find(Files[i],name) then
@@ -154,6 +154,7 @@ function load_level(level_no)
   
   level = love.filesystem.load(path)()
   level.load()
+  level.level_id = level_id
   grid_dim_x, grid_dim_y = grid.getDimensions()
   drawbox_x, drawbox_y, texture_scale = grid.getDrawboxInfo()
   if not level.track_id then
