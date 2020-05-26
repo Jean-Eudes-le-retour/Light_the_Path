@@ -147,15 +147,6 @@ function objects.getId(t)
   return Id[t] or 0
 end
 
--- Must also be run once for initialization of variables (this is accomplished via grid.clearGrid() or grid.init()); note that Ids are set back to 0
-function objects.resetObjects() 
-  for i = 1,#TYPES do
-    Id[i] = 0
-    ObjectReferences[i] = {}
-  end
-end
-
-
 
 
 
@@ -169,6 +160,13 @@ function Object:changePosition(xpos,ypos)
   self.xpos = xpos
   self.ypos = ypos
   if self.t == TYPE_LOGIC then self.color = COLOR_BLACK end
+end
+-- ONLY CALLED THROUGH GRID FUNCTIONS DO NOT CALL DIRECTLY; Must also be run once for initialization of variables (this is accomplished via grid.clear() or grid.init()); note that Ids are set back to 0, does not remove from grid.
+function objects.resetObjects() 
+  for i = 1,#TYPES do
+    Id[i] = 0
+    ObjectReferences[i] = {}
+  end
 end
 
 return objects

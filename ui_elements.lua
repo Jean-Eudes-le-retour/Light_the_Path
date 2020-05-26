@@ -718,7 +718,7 @@ function ui_elements.levelSelect()
                               lvlid = Levels[i].id,
                               texture_id = 1,
                               text = Levels[i].name or "Level "..tostring(Levels[i].id),
-                              onClick = function(m,b) load_level(b.lvlid) m:close() m.parentmenu:close() end
+                              onClick = function(m,b) load_level(b.lvlid) m.parentmenu:close() end
                             }
     if b_x == 4 then
       b_x = 136

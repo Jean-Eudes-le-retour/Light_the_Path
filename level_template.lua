@@ -21,8 +21,8 @@ function level.load()
 -- CREATE GRID -- grid is made to the specified dimensions, and drawbox is defined (by default, x fits to screen and y is centered)
   grid.setDimensions(level.x,level.y,level.drawbox_mode,level.x_val,level.y_val)
   
--- PREPARE LEVEL -- use grid.setNewObject(...) or grid.fitNewObject(...)
---grid.fitNewObject(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glassState,canChangeState)
+-- PREPARE LEVEL -- use grid.set(...) or grid.fit(...)
+--grid.fit(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glassState,canChangeState)
 
 -- ADD UI ELEMENTS -- use ui_elements.create(<MENU TYPE ID>) and modify values at will
 end

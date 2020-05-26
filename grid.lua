@@ -17,8 +17,8 @@ function grid.setDimensions(x_res,y_res,mode,x_val,y_val)
   Grid = {} -- GLOBAL VARIABLE
   if type(x_res) == "number" then grid_size_x = math.floor(x_res) end
   if type(y_res) == "number" then grid_size_y = math.floor(y_res) end
-  grid.clearGrid()
-  -- maybe attempt to place objects back into the grid here (rather than resetting the objects in clearGrid())
+  grid.clear()
+  -- maybe attempt to place objects back into the grid here (rather than resetting the objects in clear())
   local grid_x_pixel_dim, grid_y_pixel_dim = grid_size_x*TEXTURE_BASE_SIZE, grid_size_y*TEXTURE_BASE_SIZE
   UpdateBackgroundFG = true
   canvas_WL = love.graphics.newCanvas( grid_x_pixel_dim, grid_y_pixel_dim )
@@ -43,7 +43,7 @@ function grid.getDrawboxInfo()
 end
 
 -- Clears the grid of all objects and resets all objects
-function grid.clearGrid()
+function grid.clear()
   for i=1,grid_size_x do
     Grid[i]={}
   end
@@ -51,16 +51,17 @@ function grid.clearGrid()
 end
 
 -- Place a new object within the grid. The preferred function to create new objects.
-function grid.setNewObject(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glassState)
+function grid.set(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glassState)
   if xpos > grid_size_x or ypos > grid_size_y or xpos < 1 or ypos < 1 then return nil end
   if Grid[xpos][ypos] then Grid[xpos][ypos]:delete() end
   local o = objects.newObject(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glassState)
   Grid[xpos][ypos] = o
   return o
 end
+grid.setNewObject = grid.set
 
--- grid.setNewObject, but softer, may be preferred when programming a level (will never erase a block at destination)
-function grid.fitNewObject(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glassState)
+-- grid.set, but softer, may be preferred when programming a level (will never erase a block at destination)
+function grid.fit(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glassState)
   if (not xpos) then xpos = math.ceil(grid_size_x/2) end
   if (not ypos) then ypos = math.ceil(grid_size_y/2) end
   for i=0,math.max(grid_size_x-1, grid_size_y-1) do
@@ -68,22 +69,23 @@ function grid.fitNewObject(t,xpos,ypos,state,rotation,color,canMove,canRotate,ca
       if j == i or j == -i then
         for k=-i,i do
           if (Grid[xpos+k] and (ypos+j>0 and ypos+j<grid_size_y) and (not Grid[xpos+k][ypos+j])) then 
-            return grid.setNewObject(t,xpos+k,ypos+j,state,rotation,color,canMove,canRotate,canChangeColor,glassState)
+            return grid.set(t,xpos+k,ypos+j,state,rotation,color,canMove,canRotate,canChangeColor,glassState)
           end
         end
       elseif (Grid[xpos-i] and (ypos+j>0 and ypos+j<grid_size_y) and (not Grid[xpos-i][ypos+j])) then
-        return grid.setNewObject(t,xpos-i,ypos+j,state,rotation,color,canMove,canRotate,canChangeColor,glassState)
+        return grid.set(t,xpos-i,ypos+j,state,rotation,color,canMove,canRotate,canChangeColor,glassState)
       elseif (Grid[xpos+i] and (ypos+j>0 and ypos+j<grid_size_y) and (not Grid[xpos+i][ypos+j])) then
-        return grid.setNewObject(t,xpos+i,ypos+j,state,rotation,color,canMove,canRotate,canChangeColor,glassState)
+        return grid.set(t,xpos+i,ypos+j,state,rotation,color,canMove,canRotate,canChangeColor,glassState)
       end
     end
   end
   print("Could not fit the "..(t and TYPES[t] or "wall"))
   return nil
 end
+grid.fitNewObject = grid.fit
 
 -- Will attempt to move an object from one point to another within the grid (Might want to make the function ignore 'canMove' and test this externally before moving?)
-function grid.moveObject(o,xpos,ypos,old_xpos,old_ypos,force)
+function grid.move(o,xpos,ypos,old_xpos,old_ypos,force)
   if not (xpos > grid_size_x or xpos < 1 or ypos > grid_size_y or ypos < 1) then
     if Grid[xpos][ypos] then
       local dest_o = Grid[xpos][ypos]
@@ -114,8 +116,8 @@ function grid.moveObject(o,xpos,ypos,old_xpos,old_ypos,force)
 end
 
 -- Deletes the object from the grid. Then deletes the object from ObjectReferences table via Object:delete(); garbage collection should handle the rest; optionally does not delete the object reference.
-function grid.deleteObject(xpos,ypos,o,keep_reference)
-  o = o or Grid[xpos][ypos] -- if object is passed directly, it takes precedence on the coordinates (can call deleteObject(nil,nil,Object))
+function grid.delete(xpos,ypos,o,keep_reference)
+  o = o or Grid[xpos][ypos] -- if object is passed directly, it takes precedence on the coordinates (can call delete(nil,nil,Object))
   if not o then return false end
   UpdateObjectType[o.t] = true
   Grid[o.xpos][o.ypos] = nil -- assumes correct info is stored in the object (shouldn't be an issue)
@@ -124,7 +126,7 @@ function grid.deleteObject(xpos,ypos,o,keep_reference)
 end
 
 -- Returns whether t string matches the object at x and y OR if not specified, the object type at x and y
-function grid.checkGrid(xpos,ypos,t)
+function grid.check(xpos,ypos,t)
   if t then
     if Grid[xpos] and Grid[xpos][ypos] and Grid[xpos][ypos].t == t then return true end
     return false
@@ -132,6 +134,7 @@ function grid.checkGrid(xpos,ypos,t)
   if Grid[xpos] and Grid[xpos][ypos] then return Grid[xpos][ypos].t end
   return nil
 end
+grid.checkGrid = grid.check
 
 function grid.getState(xpos,ypos)
   if Grid[xpos] and Grid[xpos][ypos] then return Grid[xpos][ypos].state end

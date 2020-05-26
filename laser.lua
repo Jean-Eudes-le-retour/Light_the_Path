@@ -196,7 +196,7 @@ function laser.create(x,y,vertical,dir,color) --dir is true for positive directi
       local grid_x, grid_y = x, y - 1 + dir
       if grid_x > grid_width or grid_x < 1 or grid_y > grid_height or grid_y < 1 then return nil end
 
-      local obj_tp = grid.checkGrid(grid_x,grid_y)
+      local obj_tp = grid.check(grid_x,grid_y)
       if obj_tp then
 
         if obj_tp == TYPE_MIRROR then
@@ -273,7 +273,7 @@ function laser.create(x,y,vertical,dir,color) --dir is true for positive directi
       local grid_x, grid_y = x - 1 + dir, y
       if grid_x > grid_width or grid_x < 1 or grid_y > grid_height or grid_y < 1 then return nil end
 
-      local obj_tp = grid.checkGrid(grid_x,grid_y)
+      local obj_tp = grid.check(grid_x,grid_y)
       if obj_tp then
 
         if obj_tp == TYPE_MIRROR then
@@ -357,7 +357,7 @@ function laser.drawFrame(frame)
         love.graphics.setCanvas{canvas_Texture,stencil = true}
         love.graphics.clear()
 
-        local obj = grid.checkGrid(i,j)
+        local obj = grid.check(i,j)
         if obj == TYPE_MIRROR or obj == TYPE_PWHEEL then
   --    MIRROR OR PWHEEL, COMPLICATED DRAWING
           if band(Grid[i][j].state,1) == 1 then

@@ -275,7 +275,7 @@ function tiles.updateConnectedTextureTypeState(t,xpos,ypos,updateNeighbors)
   local typeIsPresent = false
   if updateNeighbors == nil then updateNeighbors = true end
   if xpos and ypos then
-    typeIsPresent = grid.checkGrid(xpos,ypos,t) or ((t == TYPE_GLASS) and Grid[xpos][ypos] and Grid[xpos][ypos].glassState)
+    typeIsPresent = grid.check(xpos,ypos,t) or ((t == TYPE_GLASS) and Grid[xpos][ypos] and Grid[xpos][ypos].glassState)
     for i=xpos-1,xpos+1 do
       state, index = tiles.checkTypeAt(t,i,ypos-1,state,index,updateNeighbors)
     end

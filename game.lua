@@ -122,7 +122,7 @@ function game.onClick( x, y, button, istouch, presses )
       local rotation = o_hand.rotation
       xpos = xpos + ((rotation == 1 or rotation == 2) and 1 or 0)
       if rotation > 1 then ypos = ypos+1 end
-      grid.deleteObject(nil,nil,o_hand,true)
+      grid.delete(nil,nil,o_hand,true)
       o_displacement_x, o_displacement_y = math.ceil((xpos-f_xpos-1)*tile_size), math.ceil((ypos-f_ypos-1)*tile_size)
     elseif cursor_mode == CURSOR_SELECT then
       sel_x, sel_y = xpos, ypos
@@ -162,7 +162,7 @@ end
 function game.onRelease( x, y, button, istouch, presses )
   local xpos, ypos = grid.getCursorPosition()
   if button == 1 and o_hand then
-    local bool = grid.moveObject(o_hand,xpos,ypos,o_hand.xpos,o_hand.ypos)
+    local bool = grid.move(o_hand,xpos,ypos,o_hand.xpos,o_hand.ypos)
     o_hand = false
     return bool
   end
