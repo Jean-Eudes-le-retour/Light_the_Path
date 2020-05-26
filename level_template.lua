@@ -22,7 +22,7 @@ function level.load()
   grid.setDimensions(level.x,level.y,level.drawbox_mode,level.x_val,level.y_val)
   
 -- PREPARE LEVEL -- use grid.set(...) or grid.fit(...)
---grid.fit(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glass,canChangeState)
+--grid.fit(t,xpos,ypos[,options]) 
 
 -- ADD UI ELEMENTS -- use ui_elements.create(<MENU TYPE ID>) and modify values at will
 end

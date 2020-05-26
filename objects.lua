@@ -37,14 +37,14 @@ function Object:new(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChange
   o.state = state or DEFAULT_OBJECT[o.t].state
   o.rotation = rotation or 0
   o.color = color or DEFAULT_OBJECT[o.t].color
-  if type(canMove)         == "boolean" then o.canMove = canMove
-  else o.canMove         = DEFAULT_OBJECT[o.t].canMove end
-  if type(canRotate)  == "boolean" then o.canRotate = canRotate
-  else o.canRotate  = DEFAULT_OBJECT[o.t].canRotate end
+  if type(canMove)        == "boolean" then o.canMove = canMove
+  else o.canMove          = DEFAULT_OBJECT[o.t].canMove end
+  if type(canRotate)      == "boolean" then o.canRotate = canRotate
+  else o.canRotate        = DEFAULT_OBJECT[o.t].canRotate end
   if type(canChangeColor) == "boolean" then o.canChangeColor = canChangeColor
-  else o.canChangeColor = DEFAULT_OBJECT[o.t].canChangeColor end
+  else o.canChangeColor   = DEFAULT_OBJECT[o.t].canChangeColor end
   if type(canChangeState) == "boolean" then o.canChangeState = canChangeState
-  else o.canChangeState = DEFAULT_OBJECT[o.t].canChangeState end
+  else o.canChangeState   = DEFAULT_OBJECT[o.t].canChangeState end
   o.glass = glass or false
   o.glassRotation = 0
   
