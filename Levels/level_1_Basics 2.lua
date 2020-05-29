@@ -48,8 +48,8 @@ function level.load()
 	m = ui_elements.create(UI_DIALOG)
 	m.text = {
   {{0.5,0.5,0.5},"Let's give you a quick crash course on how this laboratory works!"},
-  {{0.5,0.5,0.5},"To get started off with, try to position the ",{1,0,0},"RED",{0.5,0.5,0.5}," mirror such that light gets diverted into the ",{1,0,0},"RED",{0.5,0.5,0.5}," receiver up top. Then turn on the ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," laser with ",{0,0,0},"RIGHT CLICK",{0.5,0.5,0.5},". Note that you can rotate certain objects with your ",{0,0,0},"SCROLL WHEEL",{0.5,0.5,0.5}," when hovering over them."}}
-	m.charname = {"Mr. X", "Mr. X"}
+  {{0.5,0.5,0.5},"To get started, try to position the ",{1,0,0},"RED",{0.5,0.5,0.5}," mirror such that light gets diverted into the ",{1,0,0},"RED",{0.5,0.5,0.5}," receiver up top. Then turn on the ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," laser with ",{0,0,0},"RIGHT CLICK",{0.5,0.5,0.5},". Note that you can rotate certain objects with your ",{0,0,0},"SCROLL WHEEL",{0.5,0.5,0.5}," when hovering over them."}}
+	m.charname = {"Professeur Luminario", "Professeur Luminario"}
 	m.animation[1] = {}
 	m.animation[1][0] = {4,-1}
 	m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
@@ -87,11 +87,11 @@ function level.update(dt) -- dt is time since last update in seconds
     dialog_num = dialog_num + 1
     m = ui_elements.create(UI_DIALOG)
     m.text = {
-{{0.5,0.5,0.5},"Good! As you can see, a dichroic mirror reflects only part of the incoming laser. Here, the ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," laser, which is a combination of ",{1,0,0},"RED",{0.5,0.5,0.5}," and ",{0,1,0},"GREEN",{0.5,0.5,0.5},", sees its ",{1,0,0},"RED",{0.5,0.5,0.5}," part get diverted while the ",{0,1,0},"GREEN",{0.5,0.5,0.5}," part goes through. Let's now see what happens with a ",{0,1,1},"CYAN",{0.5,0.5,0.5}," source!"},
+{{0.5,0.5,0.5},"Good! As you can see, a dichroic mirror reflects only part of the incoming laser. Here, the ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," laser, which is a combination of ",{1,0,0},"RED",{0.5,0.5,0.5}," and ",{0,1,0},"GREEN",{0.5,0.5,0.5},", sees its ",{1,0,0},"RED",{0.5,0.5,0.5}," part get diverted while the ",{0,1,0},"GREEN",{0.5,0.5,0.5}," part goes through.\n\nLet's now see what happens with a ",{0,1,1},"CYAN",{0.5,0.5,0.5}," source!"},
 {{0.5,0.5,0.5},"Can you see how the ",{0,1,1},"CYAN",{0.5,0.5,0.5}," laser can go through the ",{1,0,0},"RED",{0.5,0.5,0.5}," dichroic mirror? It is because ",{0,1,1},"CYAN",{0.5,0.5,0.5}," is a superposition of ",{0,0,1},"BLUE",{0.5,0.5,0.5}," and ",{0,1,0},"GREEN",{0.5,0.5,0.5},", so it has no ",{1,0,0},"RED",{0.5,0.5,0.5}," constituent to be reflected!"},
 {{0.5,0.5,0.5},"Now try to power all of the receivers again."}
                      }
-    m.charname = {"Mr. X","Mr. X","Mr. X"}
+    m.charname = {"Professeur Luminario","Professeur Luminario","Professeur Luminario"}
     m.animation[1] = {}
     m.animation[1][0] = {4,-1}
     m.animation[1][1] = love.graphics.newImage("Textures/test1.png")

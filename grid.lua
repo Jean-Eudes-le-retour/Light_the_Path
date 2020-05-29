@@ -140,6 +140,11 @@ function grid.getState(xpos,ypos)
   return nil
 end
 
+function grid.getColor(xpos,ypos)
+  if Grid[xpos] and Grid[xpos][ypos] then return Grid[xpos][ypos].color end
+  return nil
+end
+
 function grid.getTileSize()
   return tile_size
 end

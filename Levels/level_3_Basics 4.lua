@@ -6,9 +6,9 @@ local level = {}
 
 -- IMPORTANT VARIABLES --
 level.complete = false
-level.x = 9
-level.y = 5
-level.name = "Basics 4"
+level.x = 15
+level.y = 8
+level.name = "Basics 5"
 
 -- OPTIONAL VARIABLES --
 level.drawbox_mode = nil
@@ -22,24 +22,23 @@ function level.load()
   
 -- PREPARE LEVEL -- use grid.set(...) or grid.fit(...)
 --grid.fit(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glassState)
-  for i=1,level.x do
-    grid.set(TYPE_WALL, i, 1)
-	grid.set(TYPE_WALL, i, level.y)
+
+  grid.set(TYPE_MIRROR, 3, 3, {state =  2, color =  COLOR_RED})
+  grid.set(TYPE_MIRROR, 6, 3, {state =  2, color =  COLOR_GREEN})
+  grid.set(TYPE_MIRROR, 9, 3, {state =  2, color =  COLOR_BLUE})
+  grid.set(TYPE_MIRROR, 3, 7, {state =  2, color =  COLOR_YELLOW})
+  grid.set(TYPE_MIRROR, 6, 7, {state =  2, color =  COLOR_MAGENTA})
+  grid.set(TYPE_MIRROR, 9, 7, {state =  2, color =  COLOR_CYAN})
+
+  for i=3, 9, 3 do
+  grid.set(TYPE_WALL, i-2, 3)
+  grid.set(TYPE_WALL, i-2, 7)
+  grid.set(TYPE_WALL, i, 1)
+  grid.set(TYPE_WALL, i, 5)
+  grid.set(TYPE_SOURCE, i, 4, {color =  COLOR_WHITE})
+  grid.set(TYPE_SOURCE, i, 8, {color =  COLOR_WHITE})
   end
-  for i=1,level.y do
-	grid.set(TYPE_WALL, 1, i)
-	grid.set(TYPE_WALL, level.x, i)
-  end
-  grid.set(TYPE_RECEIVER, 8, 3, {rotation = 3, color = COLOR_CYAN})
-  
-  grid.set(TYPE_SOURCE, 2, 2, {rotation = 1, color = COLOR_BLUE})
-  grid.set(TYPE_SOURCE, 2, 3, {rotation = 1, color = COLOR_CYAN})
-  grid.set(TYPE_SOURCE, 2, 4, {rotation = 1, color = COLOR_GREEN})
-  
-  grid.set(TYPE_MIRROR, 4, 4, {state = 2, rotation = 1, color = COLOR_GREEN})
-  grid.set(TYPE_MIRROR, 4, 3, {state = 2, rotation = 1, color = COLOR_GREEN})
-  grid.set(TYPE_MIRROR, 5, 2, {state = 2, rotation = 2, color = COLOR_BLUE})
-  grid.set(TYPE_MIRROR, 5, 3, {state = 2, rotation = 2, color = COLOR_BLUE})
+
 
 -- ADD UI ELEMENTS -- use menu.create() type functions, not yet defined.
 end
@@ -49,7 +48,6 @@ function level.update(dt) -- dt is time since last update in seconds
   if win_condition then level.complete = true end
 
 -- OPTIONAL INTERACTIVE LEVEL FUNCTIONS -- direct modifications of object states do not trigger and UpdateObjectType flag! (Needs to be done manually)
-   --when the laser hits the cyan target, pause and then remove the cyan source to show that it doesn't change anything
    
 end
 

@@ -8,7 +8,7 @@ local level = {}
 level.complete = false
 level.x = 22
 level.y = 10
-level.name = "Projo"
+level.name = "Sandbox"
 
 -- OPTIONAL VARIABLES --
 level.drawbox_mode = nil
@@ -52,9 +52,9 @@ function level.load()
   grid.set(TYPE_MIRROR, i, 9, {state =  1, color =  COLOR_WHITE, canMove = true, canRotate = true, canChangeColor =  true})
   end
   
-  grid.set(TYPE_PWHEEL, 2, 10, {rotation = 1, color = COLOR_YELLOW, canMove = true, canRotate = true})
-  grid.set(TYPE_PWHEEL, 3, 10, {rotation = 1, color = COLOR_YELLOW, canMove = true, canRotate = true})
-  grid.set(TYPE_PWHEEL, 4, 10, {rotation = 1, color = COLOR_YELLOW, canMove = true, canRotate = true})
+  grid.set(TYPE_LOGIC, 2, 10,{state = LOGIC_OR, canMove = true, canRotate = true}):setSides("in","in","in","out")
+  grid.set(TYPE_LOGIC, 3, 10,{state = LOGIC_OR, canMove = true, canRotate = true}):setSides("in","in","in","out")
+  grid.set(TYPE_LOGIC, 4, 10,{state = LOGIC_OR, canMove = true, canRotate = true}):setSides("in","in","in","out")
   
   grid.set(TYPE_PWHEEL, 7, 3, {state =  1, color =  COLOR_RED, canMove = true, canRotate = true, canChangeColor =  true})
   grid.set(TYPE_PWHEEL, 7, 4, {state =  1, color =  COLOR_GREEN, canMove = true, canRotate = true, canChangeColor =  true})
