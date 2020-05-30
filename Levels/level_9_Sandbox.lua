@@ -63,7 +63,10 @@ function level.load()
   grid.set(TYPE_PWHEEL, 7, 7, {state =  1, color =  COLOR_MAGENTA, canMove = true, canRotate = true, canChangeColor =  true})
   grid.set(TYPE_PWHEEL, 7, 8, {state =  1, color =  COLOR_CYAN, canMove = true, canRotate = true, canChangeColor =  true})
   grid.set(TYPE_PWHEEL, 7, 9, {state =  1, color =  COLOR_WHITE, canMove = true, canRotate = true, canChangeColor =  true})
-
+  
+  grid.set(TYPE_RECEIVER,6,10,{color = COLOR_BLACK, canMove = true, canRotate = true}):setSides(nil,nil,"activate",nil)
+  grid.set(TYPE_LOGIC,7,10,{state = LOGIC_NOT, canMove = true, canRotate = true}):setSides("in","in","in","out")
+  grid.set(TYPE_LOGIC,8,10,{state = LOGIC_AND, canMove = true, canRotate = true}):setSides("in","in","in","out")
 -- ADD UI ELEMENTS -- use menu.create() type functions, not yet defined.
 end
 

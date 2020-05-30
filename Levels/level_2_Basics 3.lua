@@ -153,7 +153,7 @@ function level.update(dt) -- dt is time since last update in seconds
     dialog_num = dialog_num + 1
     m = ui_elements.create(UI_DIALOG)
     m.text = {
-{{0.5,0.5,0.5},"Can you see how the ",{0,0,1},"BLUE",{0.5,0.5,0.5}," constituent gets reflected even though the mirror is ",{0,1,1},"CYAN",{0.5,0.5,0.5},"? That's because ",{0,1,1},"CYAN",{0.5,0.5,0.5}," is made of ",{0,1,0},"GREEN",{0.5,0.5,0.5}," and ",{0,0,1},"BLUE",{0.5,0.5,0.5}," and because there is no ",{0,1,0},"GREEN",{0.5,0.5,0.5}," in the ",{1,0,1},"MAGENTA",{0.5,0.5,0.5}," beam, there's only some ",{0,0,1},"BLUE",{0.5,0.5,0.5}," that gets reflected."},
+{{0.5,0.5,0.5},"Can you see how the ",{0,0,1},"BLUE",{0.5,0.5,0.5}," constituent gets reflected even though the mirror is ",{0,1,1},"CYAN",{0.5,0.5,0.5},"? That's because ",{0,1,1},"CYAN",{0.5,0.5,0.5}," is made of ",{0,1,0},"GREEN",{0.5,0.5,0.5}," and ",{0,0,1},"BLUE",{0.5,0.5,0.5}," and because there is no ",{0,1,0},"GREEN",{0.5,0.5,0.5}," in the ",{1,0,1},"MAGENTA",{0.5,0.5,0.5}," beam, there's only the ",{0,0,1},"BLUE",{0.5,0.5,0.5}," part that gets reflected."},
 {{0.5,0.5,0.5},"Finally, shine the ",{1,0,0},"RED",{0.5,0.5,0.5}," reciever!"},
     }
     m.charname = {"Professeur Luminario","Professeur Luminario","Professeur Luminario"}
