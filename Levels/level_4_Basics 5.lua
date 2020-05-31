@@ -1,6 +1,7 @@
 local objects = require("objects")  -- Used to iterate on objects (objects.getId()...) for example check every receiver for win condition; be careful with functions in this module, some only modify the information stored on the object, not the grid!
 local grid = require("grid")        -- Used to modify or observe the grid and its content.
 local tiles = require("tiles")      -- Possibly used to interact directly with the game state (interactive level functions), or for the versatile drawTexture function.
+local ui_elements = require("ui_elements")
 
 local level = {}
 
@@ -8,7 +9,10 @@ local level = {}
 level.complete = false
 level.x = 9
 level.y = 5
-level.name = "Basics 5"
+level.name = "Basics 5 (the phosphor one)"
+
+local dialog_num = 1
+local flag = false
 
 -- OPTIONAL VARIABLES --
 level.drawbox_mode = nil
@@ -30,15 +34,27 @@ function level.load()
 	grid.set(TYPE_WALL, 1, i)
 	grid.set(TYPE_WALL, level.x, i)
   end
-  grid.set(TYPE_RECEIVER, 8, 4, {rotation = 3, color = COLOR_YELLOW})
-  grid.set(TYPE_PWHEEL, 4, 2, {rotation = 2, color = COLOR_YELLOW})
+  grid.set(TYPE_RECEIVER, 8, 2, {rotation = 3, color = COLOR_WHITE})
+  grid.set(TYPE_PWHEEL, 2, 2, {rotation = 1, color = COLOR_YELLOW})
   
-  grid.set(TYPE_MIRROR, 4, 4, {state = 2, rotation = 1, color = COLOR_YELLOW})
-  grid.set(TYPE_MIRROR, 4, 3, {state = 2, rotation = 1, color = COLOR_BLUE})
+  grid.set(TYPE_MIRROR, 5, 4, {color = COLOR_BLUE})
+  grid.set(TYPE_MIRROR, 6, 4, {color = COLOR_BLUE})
   
-  grid.set(TYPE_SOURCE, 2, 3, {rotation = 1, color = COLOR_BLUE})
+  grid.set(TYPE_SOURCE, 3, 4, {color = COLOR_BLUE})
 
 -- ADD UI ELEMENTS -- use menu.create() type functions, not yet defined.
+	m = ui_elements.create(UI_DIALOG)
+	m.text = {
+    {{0.5,0.5,0.5},"Now we are going to look at phorphor wheels ! When a high energy beam hits them like a ",{0,0,1},"BLUE",{0.5,0.5,0.5}," light for example, a fluorescence phenomenon happens. That means that a lower energy light is produced. The color of the emitted beam depends on the composition of the phosphor: a Y2O2S:Eu3+ coating will result in a ",{1,0,0},"RED",{0.5,0.5,0.5}," color and a ZnO:Zn one in a ",{0,1,0},"GREEN",{0.5,0.5,0.5}," light[1].\n\n[1] Shionoya, Shigeo (1999). 'VI: Phosphors for cathode ray tubes'. Phosphor handbook. Boca Raton, Fla.: CRC Press. ISBN 978-0-8493-7560-6."},
+	{{0.5,0.5,0.5},"Here we have a ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," phosphor used in ",{1,1,1},"WHITE",{0.5,0.5,0.5}," LEDs. When it is shined with ",{0,0,1},"BLUE",{0.5,0.5,0.5}," light it produces ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," light. Try it now !"}}
+    m.charname = {"Professeur Luminario","Professeur Luminario"}
+	m.animation[1] = {}
+	m.animation[1][0] = {4,-1}
+	m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
+	m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
+	m.animation[1][3] = m.animation[1][1]
+	m.animation[2] = m.animation[1]
+	m:resize()
 end
 
 function level.update(dt) -- dt is time since last update in seconds
@@ -46,7 +62,37 @@ function level.update(dt) -- dt is time since last update in seconds
   if win_condition then level.complete = true end
 
 -- OPTIONAL INTERACTIVE LEVEL FUNCTIONS -- direct modifications of object states do not trigger and UpdateObjectType flag! (Needs to be done manually)
-   
+  if grid.getState(3, 4)==2 and grid.getState(3, 2)==2 and grid.getColor(3, 2)==COLOR_BLUE and (grid.getRotation(3, 2)==0 or grid.getRotation(3, 2)==2)and dialog_num==1 then
+    m:close()
+    dialog_num = dialog_num + 1
+    m = ui_elements.create(UI_DIALOG)
+    m.text = {
+{{0.5,0.5,0.5},"Here the ",{0,0,1},"BLUE",{0.5,0.5,0.5}," dichroic mirror is very useful, it directs the ",{0,0,1},"BLUE",{0.5,0.5,0.5}," beam to the phosphor wheel and then when ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," light is produced it lets it go through."},
+{{0.5,0.5,0.5},"Lets make ",{1,1,1},"WHITE",{0.5,0.5,0.5}," light with ",{0,0,1},"BLUE",{0.5,0.5,0.5}," sources only !"},
+{{0.5,0.5,0.5},"Here is another ",{0,0,1},"BLUE",{0.5,0.5,0.5}," source, turn on the ",{1,1,1},"WHITE",{0.5,0.5,0.5}," receiver !"}
+                     }
+    m.charname = {"Professeur Luminario","Professeur Luminario","Professeur Luminario"}
+    m.animation[1] = {}
+    m.animation[1][0] = {4,-1}
+    m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
+    m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
+    m.animation[1][3] = m.animation[1][1]
+	m.animation[2] = m.animation[1]
+	m.animation[3] = m.animation[1]
+    m:resize()
+  end 
+  if dialog_num==1 and m.page==2 then
+    m.noSkip = true
+    m.isBlocking = false
+  end
+  if dialog_num==2 and m.page==3 then
+    if not flag then
+      flag = true
+      grid.set(TYPE_SOURCE, 5, 1, {rotation = 2, color = COLOR_BLUE})
+    end
+	m.noSkip = true
+	m.isBlocking = false
+  end
 end
 
 return level

@@ -112,11 +112,7 @@ function level.update(dt) -- dt is time since last update in seconds
     m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
     m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
     m.animation[1][3] = m.animation[1][1]
-    m.animation[2] = {}
-    m.animation[2][0] = {4,-1}
-    m.animation[2][1] = love.graphics.newImage("Textures/test1.png")
-    m.animation[2][2] = love.graphics.newImage("Textures/test2.png")
-    m.animation[2][3] = m.animation[1][1]
+	m.animation[2] = m.animation[1]
     m:resize()
   end
   
@@ -127,7 +123,7 @@ function level.update(dt) -- dt is time since last update in seconds
     m.text = {
 {{0.5,0.5,0.5},"Interesting, the ",{0,1,0},"GREEN",{0.5,0.5,0.5}," receiver turns on when ",{0,1,1},"CYAN",{0.5,0.5,0.5}," light hits it !"},
 {{0.5,0.5,0.5},"..."},
-{{0.5,0.5,0.5},"Oh wait, that's because the ",{0,1,0},"GREEN",{0.5,0.5,0.5}," part of CYAN is detected !\nWe are going to need the ",{0,1,1},"CYAN",{0.5,0.5,0.5}," mirror later, change it with the ",{0,1,0},"GREEN",{0.5,0.5,0.5}," one for now."},
+{{0.5,0.5,0.5},"Oh wait, that's because the ",{0,1,0},"GREEN",{0.5,0.5,0.5}," part of ",{0,1,1},"CYAN",{0.5,0.5,0.5}," is detected !\nWe are going to need the ",{0,1,1},"CYAN",{0.5,0.5,0.5}," mirror later, change it with the ",{0,1,0},"GREEN",{0.5,0.5,0.5}," one for now."},
     }
     m.charname = {"Professeur Luminario","Professeur Luminario","Professeur Luminario"}
     m.animation[1] = {}
@@ -135,16 +131,8 @@ function level.update(dt) -- dt is time since last update in seconds
     m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
     m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
     m.animation[1][3] = m.animation[1][1]
-    m.animation[2] = {love.graphics.newImage("Textures/test1.png")}
-    m.animation[2][0] = {4,-1}
-    m.animation[2][1] = love.graphics.newImage("Textures/test1.png")
-    m.animation[2][2] = love.graphics.newImage("Textures/test2.png")
-    m.animation[2][3] = m.animation[1][1]
-    m.animation[3] = {}
-    m.animation[3][0] = {4,-1}
-    m.animation[3][1] = love.graphics.newImage("Textures/test1.png")
-    m.animation[3][2] = love.graphics.newImage("Textures/test2.png")
-    m.animation[3][3] = m.animation[1][1]
+	m.animation[2] = m.animation[1]
+	m.animation[3] = m.animation[1]
     m:resize()
   end
   
@@ -162,11 +150,7 @@ function level.update(dt) -- dt is time since last update in seconds
     m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
     m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
     m.animation[1][3] = m.animation[1][1]
-    m.animation[2] = {}
-    m.animation[2][0] = {4,-1}
-    m.animation[2][1] = love.graphics.newImage("Textures/test1.png")
-    m.animation[2][2] = love.graphics.newImage("Textures/test2.png")
-    m.animation[2][3] = m.animation[1][1]
+	m.animation[2] = m.animation[1]
     m:resize()
   end
   

@@ -97,16 +97,8 @@ function level.update(dt) -- dt is time since last update in seconds
     m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
     m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
     m.animation[1][3] = m.animation[1][1]
-    m.animation[2] = {}
-    m.animation[2][0] = {4,-1}
-    m.animation[2][1] = love.graphics.newImage("Textures/test1.png")
-    m.animation[2][2] = love.graphics.newImage("Textures/test2.png")
-    m.animation[2][3] = m.animation[1][1]
-    m.animation[3] = {}
-    m.animation[3][0] = {4,-1}
-    m.animation[3][1] = love.graphics.newImage("Textures/test1.png")
-    m.animation[3][2] = love.graphics.newImage("Textures/test2.png")
-    m.animation[3][3] = m.animation[1][1]
+	m.animation[2] = m.animation[1]
+	m.animation[3] = m.animation[1]
     m:resize()
   end
   

@@ -1,6 +1,7 @@
 local objects = require("objects")  -- Used to iterate on objects (objects.getId()...) for example check every receiver for win condition; be careful with functions in this module, some only modify the information stored on the object, not the grid!
 local grid = require("grid")        -- Used to modify or observe the grid and its content.
 local tiles = require("tiles")      -- Possibly used to interact directly with the game state (interactive level functions), or for the versatile drawTexture function.
+local ui_elements = require("ui_elements")
 
 local level = {}
 
@@ -8,7 +9,9 @@ local level = {}
 level.complete = false
 level.x = 11
 level.y = 6
-level.name = "Prisme dichroique"
+level.name = "Prisme dichroique (ou basics 4)"
+
+local dialog_num = 1
 
 -- OPTIONAL VARIABLES --
 level.drawbox_mode = nil
@@ -36,9 +39,19 @@ function level.load()
   grid.set(TYPE_MIRROR, 4, 4, {rotation = 1, color = COLOR_BLUE})
   
   grid.set(TYPE_SOURCE, 2, 3, {rotation = 1, color = COLOR_RED})
-  grid.set(TYPE_SOURCE, 6, 5, {state = 2, color = COLOR_GREEN})
-  grid.set(TYPE_SOURCE, 10, 4, {state = 2, rotation = 3, color = COLOR_BLUE})
+  grid.set(TYPE_SOURCE, 6, 5, {color = COLOR_GREEN})
+  grid.set(TYPE_SOURCE, 10, 4, {rotation = 3, color = COLOR_BLUE})
 -- ADD UI ELEMENTS -- use menu.create() type functions, not yet defined.
+	m = ui_elements.create(UI_DIALOG)
+	m.text = {
+    {{0.5,0.5,0.5},"We saw earlier that you could extract the three primary ",{1,0,0},"CO",{0,1,0},"LO",{0,0,1},"RS",{0.5,0.5,0.5}," from ",{1,1,1},"WHITE",{0.5,0.5,0.5},", but we can also do the reverse! Here we have a ",{1,0,0},"RED",{0.5,0.5,0.5},", a ",{0,1,0},"GREEN",{0.5,0.5,0.5}," and a ",{0,0,1},"BLUE",{0.5,0.5,0.5}," laser source. Using the dichroic mirrors, make all beams overlap each other."}}
+    m.charname = {"Professeur Luminario"}
+	m.animation[1] = {}
+	m.animation[1][0] = {4,-1}
+	m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
+	m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
+	m.animation[1][3] = m.animation[1][1]
+	m:resize()
 end
 
 function level.update(dt) -- dt is time since last update in seconds
@@ -46,7 +59,10 @@ function level.update(dt) -- dt is time since last update in seconds
   if win_condition then level.complete = true end
 
 -- OPTIONAL INTERACTIVE LEVEL FUNCTIONS -- direct modifications of object states do not trigger and UpdateObjectType flag! (Needs to be done manually)
-
+  if dialog_num==1 then
+    m.noSkip = true
+    m.isBlocking = false
+  end
 end
 
 return level
