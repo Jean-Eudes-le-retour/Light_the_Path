@@ -91,6 +91,7 @@ function Object:rotate(invert)
         side[0],side[1],side[2],side[3] = side[3],side[0],side[1],side[2] 
       end
     else
+    --Receiver with activators
       self.rotation = (self.rotation + (invert and -1 or 1))%4
       self.state = 1
     end

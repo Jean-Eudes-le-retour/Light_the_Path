@@ -87,7 +87,13 @@ function love.update(dt)
   game_time = game_time + dt --dt is in seconds, should be 0.0166-repeating on average (60 FPS capped)
   game.update(dt)
   if level and level.update then level.update(dt) end
-  if level and level.complete then --[[open victory menu]] end
+  if level and level.complete then
+    local blocked = false
+    for i=1,#Menus do
+      blocked = blocked or (Menus[i] and Menus[i].isBlocking)
+    end
+    if not blocked then game.audio.muffle() ui_elements.victory() end
+  end
   drawbox_x, drawbox_y, texture_scale = grid.getDrawboxInfo()
   grid_pos_x, grid_pos_y = grid.getCursorPosition(true)
 end
@@ -124,6 +130,14 @@ function love.resize(width,height,dontResetUI)
     ui_elements.changeUIScale(math.min(window_w*UI_autoscale_factor_x, window_h*UI_autoscale_factor_y))
   end
   ui_elements.redraw()
+end
+
+function DEFAULT_LEVEL_UPDATE()
+  level.complete = true
+  for i=1,object.getId(TYPE_RECEIVER) do
+    local receiver = ObjectReferences[TYPE_RECEIVER][i]
+    if receiver then level.complete = level.complete and (receiver.state==2) end
+  end
 end
 
 function load_level(level_id)
@@ -166,4 +180,5 @@ function load_level(level_id)
   else
     game.audio.fadein(level.track_id,level.volume,1)
   end
+  if not level.update then level.update = DEFAULT_LEVEL_UPDATE end
 end

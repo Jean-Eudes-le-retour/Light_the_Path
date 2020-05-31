@@ -96,7 +96,7 @@ end
 function tiles.drawTexture(t,state,color,side)
   love.graphics.setCanvas{canvas_Texture,stencil = true}
   love.graphics.clear()
-  if not state or state < 1 or state > NUM_STATES[t] then state = 1 end
+  if not state or state < 1 or state > NUM_STATES[t] then state = (state-1)%NUM_STATES[t]+1 end
   tiles.setColor(color)
   if MASK[t] then
     mask = MASK[(DEFAULT_OBJECT[t].rotateByEights and band(state,2) ~= 0) and -t or t]

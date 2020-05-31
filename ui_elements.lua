@@ -1,4 +1,6 @@
 local grid = require("grid")
+local bit = require("bit")
+local bnot, band, bor, bxor, rshift, lshift = bit.bnot, bit.band, bit.bor, bit.bxor, bit.rshift, bit.lshift
 
 local ui_elements = {}
 
@@ -10,6 +12,7 @@ local UI_autoscale_factor_x = 1/384 --UI_scale 3*128*UI_scale = ww
 local UI_autoscale_factor_y = 1/512 --16*32*UI_scale = wh
 local MIN_UI_SCALE = 0.5 --Only applies for manual mode
 local MAX_UI_SCALE = 5 --Only applies for manual mode
+local MenuCallStack = {}
 
 local UI_scale = 1.5
 if UI_automatic_scaling then
@@ -47,7 +50,8 @@ local TEXTURE_SQ_BUTTON_GREYED   = love.graphics.newImage("Textures/sq_button_4.
 local TEXTURE_SQ_BUTTON_INVIS    = love.graphics.newImage("Textures/sq_button_5.png")
 
 local TEXTURE_DIALOG_SIDE = love.graphics.newImage("Textures/dialog_side.png")
-local TEXTURE_DIALOG_NAME = love.graphics.newImage("Textures/dialog_name.png")
+local TEXTURE_DIALOG_NAMEBAR = love.graphics.newImage("Textures/dialog_namebar.png")
+local TEXTURE_DIALOG_NAMEBAR_EDGE = love.graphics.newImage("Textures/dialog_namebar_edge.png")
 
 
 local Menu = {} -- Object from which all others are derived (here to define methods)
@@ -246,9 +250,16 @@ function Menu:draw()
       love.graphics.draw(self.texture[b_tid],b_x,b_y)
       
       if self.buttons[i].text then
-        local b_str, b_ft, b_al = self.buttons[i].text, self.buttons[i].font, self.buttons[i].align
+        local b_str, b_ft, b_al, b_c = self.buttons[i].text, self.buttons[i].font, self.buttons[i].align, self.buttons[i].textcolor
         if not b_ft then b_ft = FONT_DEFAULT end
         if not b_al then b_al = "center" end
+        if b_c then
+          if type(b_c) == "table" then
+            love.graphics.setColor(unpack(b_c))
+          else
+            love.graphics.setColor(band(b_c,1), band(b_c,2)==1 and 1 or 0, band(b_c,4)==1 and 1 or 0)
+          end
+        end
         local t_w = b_ft:getWidth(b_str)
         local t_h = b_ft:getHeight()
         
@@ -260,6 +271,7 @@ function Menu:draw()
         else
           love.graphics.print(b_str, b_x+TEXT_MARGIN, math.ceil(b_y + (b_h - t_h)/2))
         end
+        love.graphics.setColor(1,1,1)
       end
       love.graphics.setFont(FONT_BASE)
     end
@@ -267,23 +279,34 @@ function Menu:draw()
     love.graphics.setFont(FONT_DEFAULT)
     if self.current_frame then
       local framewidth, frameheight = self.current_frame:getDimensions()
-      love.graphics.draw(self.current_frame, self.width_factor, math.floor(self.height_factor/2), nil, nil, nil, framewidth, frameheight)
+      love.graphics.draw(self.current_frame, self.width_factor, math.ceil(self.height_factor/2), nil, nil, nil, framewidth, frameheight)
     end
     if self.texture[0] then love.graphics.draw(self.texture[0]) end
-    if self.charname and self.charname[self.page] then love.graphics.print(self.charname[self.page], DEFAULT_DIALOG_H_DEADZONE, math.ceil(self.height_factor/2)-12) end
+    if self.charname and self.charname[self.page] then
+      local nl, nbl, nb_y = FONT_DEFAULT:getWidth(self.charname[self.page]), self.namebar:getWidth(), math.ceil(self.height_factor/2)-self.namebar:getHeight()
+      love.graphics.draw(self.namebar_edge,nl+2*DEFAULT_DIALOG_H_DEADZONE,nb_y)
+      for i=nl+2*DEFAULT_DIALOG_H_DEADZONE-nbl,-nbl,-nbl do
+        love.graphics.draw(self.namebar, i, nb_y)
+      end
+      love.graphics.print(self.charname[self.page], DEFAULT_DIALOG_H_DEADZONE, math.ceil(self.height_factor/2)-12)
+    end
     if self.textcanvas then love.graphics.draw(self.textcanvas, DEFAULT_DIALOG_H_DEADZONE, math.ceil(self.height_factor/2)+DEFAULT_DIALOG_V_DEADZONE) end
     love.graphics.setFont(FONT_BASE)
   end
   love.graphics.setCanvas()
 end
 
-function Menu:close()
+function Menu:close(noInvoke)
   -- print("Attempt to close a menu: "..UI_TYPES[self.t])
   if self.id == MenuId then
     MenuId = MenuId-1
     while not Menus[MenuId] and MenuId > 0 do MenuId = MenuId-1 end
   end
   Menus[self.id] = nil
+  if not noInvoke and #MenuCallStack ~= 0 then
+    MenuCallStack[#MenuCallStack](true)
+    MenuCallStack[#MenuCallStack] = nil
+  end
 end
 
 function Menu:resize()
@@ -339,6 +362,10 @@ function Menu:resize()
     self.text_width = self.width_factor-2*DEFAULT_DIALOG_H_DEADZONE
     self.text_height = math.floor(self.height_factor/2)-2*DEFAULT_DIALOG_V_DEADZONE
     self.texture[0] = ui_elements.getDialogBox(self.width_factor,self.height_factor)
+    if not self.namebar or not self.namebar_edge then
+      self.namebar = TEXTURE_DIALOG_NAMEBAR
+      self.namebar_edge = TEXTURE_DIALOG_NAMEBAR_EDGE
+    end
     self.imagedata = self.texture[0]:newImageData()
     self.xpos = 0
     self.ypos = window_y-self.height
@@ -396,13 +423,13 @@ function ui_elements.getNewMenuBackground(width,height,tc_path,ts_path,bg_color)
   return canvas
 end
 
-function ui_elements.getDialogBox(width,height,ts_path,nb_path,bg_color)
-  local t_side, t_nb = nil, nil
+function ui_elements.getDialogBox(width,height,ts_path,bg_color)
+  local t_side = nil
   local halfway_pos = math.ceil(height/2)
   bg_color = bg_color or {0.8,0.8,0.8,1}
-  if not ts_path or not nb_path then t_side, t_nb = TEXTURE_DIALOG_SIDE, TEXTURE_DIALOG_NAME
-  else t_side, t_nb = love.graphics.newImage(ts_path), love.graphics.newImage(nb_path) end
-  local side_w, side_h, nb_dim = t_side:getPixelWidth(), t_side:getPixelHeight(), t_nb:getPixelHeight()
+  if not ts_path then t_side = TEXTURE_DIALOG_SIDE
+  else t_side = love.graphics.newImage(ts_path) end
+  local side_w, side_h = t_side:getPixelWidth(), t_side:getPixelHeight()
 
   local h_rep = math.floor(width/side_w+0.5)
   if h_rep == 0 then h_rep = 1 end
@@ -410,7 +437,6 @@ function ui_elements.getDialogBox(width,height,ts_path,nb_path,bg_color)
   
   local canvas = love.graphics.newCanvas(width,height)
   love.graphics.setCanvas(canvas)
-  love.graphics.draw(t_nb,0,halfway_pos-nb_dim)
   for i=0,h_rep-1 do
     love.graphics.draw(t_side,i*h_scale*side_w,halfway_pos,0,h_scale,1)
   end
@@ -469,12 +495,14 @@ function ui_elements.checkButtonUpdate(m)
   end
   
   for i=1,#m.buttons do
-    if m.buttons[i].cursorPresent then
-      if not m.buttons[i].pressed then m.buttons[i].texture_id = BUTTON_TEXTURE_HOVERED
-      else m.buttons[i].texture_id = BUTTON_TEXTURE_PRESSED end
-    else 
-      m.buttons[i].pressed = false
-      m.buttons[i].texture_id = BUTTON_TEXTURE_NORMAL
+    if not m.buttons[i].noUpdate then
+      if m.buttons[i].cursorPresent then
+        if not m.buttons[i].pressed then m.buttons[i].texture_id = BUTTON_TEXTURE_HOVERED
+        else m.buttons[i].texture_id = BUTTON_TEXTURE_PRESSED end
+      else 
+        m.buttons[i].pressed = false
+        m.buttons[i].texture_id = BUTTON_TEXTURE_NORMAL
+      end
     end
   end
   
@@ -626,11 +654,15 @@ function ui_elements.getUIScaleMode()
   return UI_automatic_scaling, UI_autoscale_factor_x, UI_autoscale_factor_y
 end
 
+function ui_elements.resetCallStack()
+  MenuCallStack = {}
+end
+
 
 --------------------------------------------------------------------------------------------------------------------------------
 function ui_elements.escapeMenu()
   local m = ui_elements.create(UI_MENU)
-  m.buttons = {{onClick = function(m,b) love.event.quit("restart") end, text = "Main Menu"},{onClick = function(m,b) m:close() ui_elements.levelSelect() end, text = "Level Select"},{onClick = function(m,b) m:close() ui_elements.optionsMenu() end, text = "Options"},{onClick = function(m,b) m:close() end, text = "Return to Game"}}
+  m.buttons = {{onClick = function(m,b) m:close() ui_elements.mainMenu() end, text = "Main Menu"},{onClick = function(m,b) m:close(true) ui_elements.levelSelect() table.insert(MenuCallStack,ui_elements.escapeMenu) end, text = "Level Select"},{onClick = function(m,b) m:close(true) ui_elements.videoOptions() table.insert(MenuCallStack,ui_elements.escapeMenu) end, text = "Video Options"},{onClick = function(m,b) m:close() end, text = "Return to Game"}}
   m.texture[1] = TEXTURE_REG_BUTTON_NORMAL
   ui_elements.fitButtons(m)
 
@@ -640,6 +672,7 @@ function ui_elements.escapeMenu()
 
   -- m.imagedata = m.texture[0]:newImageData() -- ImageData test
   m:resize()
+  return m
 end
 
 function ui_elements.levelSelect()
@@ -648,32 +681,19 @@ function ui_elements.levelSelect()
   m.texture[1] = TEXTURE_REG_BUTTON_NORMAL
   m.texture[2] = TEXTURE_REG_BUTTON_PRESSED
   m.texture[5] = TEXTURE_REG_BUTTON_INVIS --INVISIBLE BUTTON 'text area'
-  m.buttons = {{xpos = 100, ypos = 24, texture_id = 5,text = "Level Select"},{xpos = 100, ypos = 378, texture_id = 1, text = "Back", onClick = function(m,b) m:close() ui_elements.escapeMenu() end}}
-  m.update = function(m)
-    m.buttons[1].texture_id = 5
+  m.buttons = {{xpos = 100, ypos = 24, texture_id = 5,text = "LEVEL SELECT", textcolor = COLOR_BLACK, noUpdate = true},{xpos = 100, ypos = 378, texture_id = 1, text = "Back", onClick = function(m,b) m:close() end}}
 
-    if (not m:isInButton(2)) or (not m.buttons[2].pressed) then
-      m.buttons[2].previous_texture_id = m.buttons[2].texture_id
-      m.buttons[2].texture_id = BUTTON_TEXTURE_NORMAL
-      m.buttons[2].pressed = false
-    else
-      m.buttons[2].previous_texture_id = m.buttons[2].texture_id
-      m.buttons[2].texture_id = BUTTON_TEXTURE_PRESSED
-    end
-    
-    if m.buttons[2].previous_texture_id ~= m.buttons[2].texture_id then
-      ui_elements.updateButtonDimensions(m)
-      m:draw()
-      return true
-    end
-  end
-  function m:close()
-    m.submenu:close()
+  function m:close(noInvoke)
+    m.submenu:close(true)
     if self.id == MenuId then
       MenuId = MenuId-1
       while not Menus[MenuId] and MenuId > 0 do MenuId = MenuId-1 end
     end
     Menus[self.id] = nil
+    if not noInvoke and #MenuCallStack ~= 0 then
+      MenuCallStack[#MenuCallStack](true)
+      MenuCallStack[#MenuCallStack] = nil
+    end
   end
   
   local Files = love.filesystem.getDirectoryItems("Levels/")
@@ -718,7 +738,7 @@ function ui_elements.levelSelect()
                               lvlid = Levels[i].id,
                               texture_id = 1,
                               text = Levels[i].name or "Level "..tostring(Levels[i].id),
-                              onClick = function(m,b) load_level(b.lvlid) m.parentmenu:close() end
+                              onClick = function(m,b) ui_elements.resetCallStack() load_level(b.lvlid) m.parentmenu:close() end
                             }
     if b_x == 4 then
       b_x = 136
@@ -744,19 +764,20 @@ function ui_elements.levelSelect()
   ui_elements.updateButtonDimensions(m.submenu)
   m:resize()
   m.submenu:resize()
+  return m
 end
 
-function ui_elements.optionsMenu()
+function ui_elements.videoOptions()
   local m = ui_elements.create(UI_MENU)
-  local BUTTON_OPTIONS_TEXT, BUTTON_OPTIONS_WINDOWTEXT, BUTTON_OPTIONS_SCREENMODE, BUTTON_OPTIONS_SCALETEXT, BUTTON_OPTIONS_SCALEMODE, BUTTON_OPTIONS_SCALE , BUTTONS_OPTIONS_RETURN, BUTTON_OPTIONS_SCALE_MINUS, BUTTON_OPTIONS_SCALE_PLUS= enum(9)
+  local BUTTON_OPTIONS_TEXT, BUTTON_OPTIONS_WINDOWTEXT, BUTTON_OPTIONS_SCREENMODE, BUTTON_OPTIONS_SCALETEXT, BUTTON_OPTIONS_SCALEMODE, BUTTON_OPTIONS_SCALE , BUTTONS_OPTIONS_RETURN, BUTTON_OPTIONS_SCALE_MINUS, BUTTON_OPTIONS_SCALE_PLUS = enum(9)
   m.buttons = {
-    {text = "UI Options", texture_id = 5, noUpdate = true},
+    {text = "VIDEO OPTIONS", textcolor = COLOR_BLACK, texture_id = 5, noUpdate = true},
     {text = "Window Mode", align = "left", texture_id = 5, noUpdate = true},
     {text = "Windowed"},
     {text = "UI Scale Options", align = "left", texture_id = 5, noUpdate = true},
     {text = "Auto", compl2SQButton = true, onClick = function(m,b) ui_elements.changeUIScaleMode() end},
     {text = "Scale:", texture_id = 5, noUpdate = true},
-    {text = "Back", onClick = function(m,b) m:close() ui_elements.escapeMenu() end}
+    {text = "Back", onClick = function(m,b) m:close() end}
   }
   m.texture[1] = TEXTURE_REG_BUTTON_NORMAL
   m.texture[2] = TEXTURE_REG_BUTTON_PRESSED
@@ -849,6 +870,146 @@ function ui_elements.optionsMenu()
     end
   end
   m:resize()
+  return m
+end
+
+function ui_elements.audioOptions()
+  local m = ui_elements.create(UI_MENU)
+  m.texture[1] = TEXTURE_REG_BUTTON_NORMAL
+  m.texture[2] = TEXTURE_REG_BUTTON_PRESSED
+  m.texture[5] = TEXTURE_REG_BUTTON_INVIS
+  
+  m.buttons = {
+    {text = "AUDIO OPTIONS", textcolor = COLOR_BLACK, texture_id = 5, noUpdate = true},
+    {text = "Nothing yet!!!", texture_id = 5, noUpdate = true},
+    {text = "Back", onClick = function(m,b) m:close() end}
+  }
+  ui_elements.fitButtons(m)
+  m:resize()
+ return m
+end
+
+function ui_elements.credits()
+  local m = ui_elements.create(UI_MENU)
+  m.texture[0] = love.graphics.newImage("Textures/levelselect.png")
+  m.texture[1] = TEXTURE_REG_BUTTON_NORMAL
+  m.texture[2] = TEXTURE_REG_BUTTON_PRESSED
+  m.texture[5] = TEXTURE_REG_BUTTON_INVIS
+  m.buttons = {{xpos = 100, ypos = 24, texture_id = 5,text = "CREDITS", textcolor = COLOR_BLACK, noUpdate = true},{xpos = 100, ypos = 378, texture_id = 1, text = "Back", onClick = function(m,b) m:close() end}}
+
+  function m:close(noInvoke)
+    m.submenu:close(true)
+    if self.id == MenuId then
+      MenuId = MenuId-1
+      while not Menus[MenuId] and MenuId > 0 do MenuId = MenuId-1 end
+    end
+    Menus[self.id] = nil
+    if not noInvoke and #MenuCallStack ~= 0 then
+      MenuCallStack[#MenuCallStack](true)
+      MenuCallStack[#MenuCallStack] = nil
+    end
+  end
+
+  m.submenu = ui_elements.create(UI_MENU)
+  m.submenu.parentmenu = m
+  m.submenu.width_factor, m.submenu.height_factor = 268, 292
+  m.submenu.isBlocking = false
+  m.submenu.scrollOffset = 0
+  m.submenu.texture[1] = m.texture[5]
+  m.submenu.buttons = {
+    {text = "Music tracks from AIRGLOW's album:\nMemory Bank", align = "left"},
+    {text = "Check him out at\nhttps://soundcloud.com/airglowsounds", align = "left"},
+    {text = "SFX", align = "left"},
+    {text = "Programming", align = "left"},
+    {text = "Art", align = "left"},
+    {text = "", align = "left"}
+  }
+  
+  local b_y = 4
+  for i=1,#m.submenu.buttons do
+    m.submenu.buttons[i].xpos = 4
+    m.submenu.buttons[i].ypos = b_y
+    b_y = b_y + 36
+  end
+  m.submenu.onScroll = function(m,x,y)
+    y = y*4
+    if (y > 0 and m.scrollOffset-y < 0) then y = m.scrollOffset end
+    if (y < 0 and m.scrollOffset-y > 36*#m.buttons-288) then y = m.scrollOffset+288-36*#m.buttons end
+    if y ~= 0 then
+      m.scrollOffset = m.scrollOffset - y
+      for i=1,#m.buttons do
+        m.buttons[i].ypos = m.buttons[i].ypos + y
+      end
+      m:draw()
+    end
+  end
+
+  ui_elements.updateButtonDimensions(m)
+  ui_elements.updateButtonDimensions(m.submenu)
+  m:resize()
+  m.submenu:resize()
+  return m
+end
+
+function ui_elements.mainMenu(fromSubmenu)
+  local m = ui_elements.create(UI_MENU)
+  m.noEscape = true
+  m.texture[1] = TEXTURE_REG_BUTTON_NORMAL
+  m.texture[2] = TEXTURE_REG_BUTTON_PRESSED
+  m.texture[5] = TEXTURE_REG_BUTTON_INVIS
+
+  m.buttons = {
+    {text = "MAIN MENU", textcolor = COLOR_BLACK, texture_id = 5, noUpdate = true},
+    {text = "Play", onClick = function(m,b) m:close() load_level(0) end},
+    {
+      text = "Level Select",
+      onClick = function(m,b) m:close() table.insert(MenuCallStack,ui_elements.mainMenu) ui_elements.levelSelect() end
+    },
+    {
+      text = "Video Options",
+      onClick = function(m,b) m:close() table.insert(MenuCallStack,ui_elements.mainMenu) ui_elements.videoOptions() end
+    },
+    {
+      text = "Audio Options",
+      onClick = function(m,b) m:close() table.insert(MenuCallStack,ui_elements.mainMenu) ui_elements.audioOptions() end
+    },
+    {
+      text = "Credits",
+      onClick = function(m,b) m:close() table.insert(MenuCallStack,ui_elements.mainMenu) ui_elements.credits() end
+    },
+    {text = "Exit", onClick = function(m,b) love.event.quit() end}
+  }
+  ui_elements.fitButtons(m)
+  
+  m:resize()
+  return m
+end
+
+function ui_elements.victory()
+  ui_elements.resetCallStack()
+  for i=1,#Menus do
+    if Menus[i] then Menus[i]:close() end
+  end
+  local m = ui_elements.create(UI_MENU)
+  m.noEscape = true
+  
+  m.texture[1] = TEXTURE_REG_BUTTON_NORMAL
+  m.texture[2] = TEXTURE_REG_BUTTON_PRESSED
+  m.texture[5] = TEXTURE_REG_BUTTON_INVIS
+
+  level_id = (level and level.level_id) or -1
+  level_name = (level and level.name) or "Unnamed"
+  
+  m.buttons = {
+    {text = "LEVEL "..tostring(level_id)..":", texture_id = 5, noUpdate = true},
+    {text = tostring(level_name), texture_id = 5, noUpdate = true},
+    {text = "COMPLETE!", texture_id = 5, noUpdate = true},
+    {text = "Next Level", onClick = function(m,b) m:close() load_level(level_id+1) end},
+    {text = "Level Select", onClick = function(m,b) m:close() table.insert(MenuCallStack,ui_elements.victory) ui_elements.levelSelect() end},
+    {text = "Main Menu", onClick = function(m,b) m:close() ui_elements.mainMenu() end}
+  }
+  ui_elements.fitButtons(m)
+  m:resize()
 end
 
 function ui_elements.dialogTest()
@@ -861,6 +1022,7 @@ function ui_elements.dialogTest()
   m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
   m.animation[1][3] = m.animation[1][1]
   m:resize()
+  return m
 end
 
 return ui_elements

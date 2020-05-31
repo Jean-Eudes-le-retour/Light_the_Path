@@ -189,6 +189,7 @@ function game.onPress( key, scancode, isrepeat)
     local MenuId = ui_elements.getMenuId()
     for i=MenuId,1,-1 do
       if Menus[i] and Menus[i].isBlocking and Menus[i].t ~= UI_DIALOG then
+        if Menus[i].noEscape then return end
         Menus[i]:close()
         return
       end
