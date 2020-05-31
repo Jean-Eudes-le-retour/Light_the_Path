@@ -56,7 +56,7 @@ function level.load()
   
   grid.set(TYPE_LOGIC, 5, 8,{state = LOGIC_OR, canMove = true, canRotate = true}):setSides("in","in","in","out")
   
-  grid.set(TYPE_PWHEEL, 7, 8, {state =  2, rotation = 2, color =  COLOR_RED, canMove = true, canRotate = true})
+  grid.set(TYPE_PWHEEL, 7, 8, {state =  2, rotation = 1, color =  COLOR_RED, canMove = true, canRotate = true})
 
 -- ADD UI ELEMENTS -- use menu.create() type functions, not yet defined.
 end

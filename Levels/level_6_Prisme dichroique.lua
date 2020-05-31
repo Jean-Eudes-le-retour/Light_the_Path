@@ -1,6 +1,7 @@
 local objects = require("objects")  -- Used to iterate on objects (objects.getId()...) for example check every receiver for win condition; be careful with functions in this module, some only modify the information stored on the object, not the grid!
 local grid = require("grid")        -- Used to modify or observe the grid and its content.
 local tiles = require("tiles")      -- Possibly used to interact directly with the game state (interactive level functions), or for the versatile drawTexture function.
+local ui_elements = require("ui_elements")
 
 local level = {}
 
@@ -8,7 +9,10 @@ local level = {}
 level.complete = false
 level.x = 11
 level.y = 6
-level.name = "Prisme dichroique"
+level.name = "Prisme dichroique (ou basics 4)"
+
+local dialog_num = 1
+local flag = {}
 
 -- OPTIONAL VARIABLES --
 level.drawbox_mode = nil
@@ -36,9 +40,19 @@ function level.load()
   grid.set(TYPE_MIRROR, 4, 4, {rotation = 1, color = COLOR_BLUE})
   
   grid.set(TYPE_SOURCE, 2, 3, {rotation = 1, color = COLOR_RED})
-  grid.set(TYPE_SOURCE, 6, 5, {state = 2, color = COLOR_GREEN})
-  grid.set(TYPE_SOURCE, 10, 4, {state = 2, rotation = 3, color = COLOR_BLUE})
+  grid.set(TYPE_SOURCE, 6, 5, {color = COLOR_GREEN})
+  grid.set(TYPE_SOURCE, 10, 4, {rotation = 3, color = COLOR_BLUE})
 -- ADD UI ELEMENTS -- use menu.create() type functions, not yet defined.
+	m = ui_elements.create(UI_DIALOG)
+	m.text = {
+    {{0.5,0.5,0.5},"We saw earlier that you could extract the three primary ",{1,0,0},"CO",{0,1,0},"LO",{0,0,1},"RS",{0.5,0.5,0.5}," from ",{1,1,1},"WHITE",{0.5,0.5,0.5},", but we can also do the reverse! Here we have a ",{1,0,0},"RED",{0.5,0.5,0.5},", a ",{0,1,0},"GREEN",{0.5,0.5,0.5}," and a ",{0,0,1},"BLUE",{0.5,0.5,0.5}," laser source. Using the dichroic mirrors, make all beams overlap each other."}}
+    m.charname = {"Professeur Luminario"}
+	m.animation[1] = {}
+	m.animation[1][0] = {4,-1}
+	m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
+	m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
+	m.animation[1][3] = m.animation[1][1]
+	m:resize()
 end
 
 function level.update(dt) -- dt is time since last update in seconds
@@ -46,7 +60,101 @@ function level.update(dt) -- dt is time since last update in seconds
   if win_condition then level.complete = true end
 
 -- OPTIONAL INTERACTIVE LEVEL FUNCTIONS -- direct modifications of object states do not trigger and UpdateObjectType flag! (Needs to be done manually)
-
+  if grid.getState(6, 1)==2 and dialog_num==1 then
+    m:close()
+    dialog_num = dialog_num + 1
+    m = ui_elements.create(UI_DIALOG)
+    m.text = {
+{{0.5,0.5,0.5},"You just made a dichroic prism ! It is used in almost all projectors, I'll show you why in just a moment."},
+{{0.5,0.5,0.5},"Instead of always using two elements, people have engineered it in a single element. In my laboratory it looks like this:"},
+{{0.5,0.5,0.5},"By blocking the different channels we can create different colors: ",{1,0,0},"RED"},
+{{1,1,0},"YELLOW"},
+{{0,1,0},"GREEN"},
+{{0,1,1},"CYAN"},
+{{0,0,1},"BLUE"},
+{{1,0,1},"MAGENTA"},
+{{0.5,0.5,0.5},"And technically ",{0,0,0},"BLACK",{0.5,0.5,0.5},", the absence of color"},
+    }
+    m.charname = {"Professeur Luminario","Professeur Luminario","Professeur Luminario","Professeur Luminario","Professeur Luminario","Professeur Luminario","Professeur Luminario","Professeur Luminario","Professeur Luminario"}
+    m.animation[1] = {}
+    m.animation[1][0] = {4,-1}
+    m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
+    m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
+    m.animation[1][3] = m.animation[1][1]
+	for i=2,9 do
+		m.animation[i] = m.animation[1]
+	end
+	m:resize()
+  end
+  if dialog_num==1 then
+    m.noSkip = true
+    m.isBlocking = false
+  end
+  if dialog_num==2 and m.page==2 then
+    if not flag[1] then
+      flag[1] = true
+	  grid.delete(10,4)
+	  grid.delete(6,4)
+      grid.set(TYPE_LOGIC, 6, 3,{state = LOGIC_OR}):setSides("out","in","in","in")
+	  grid.set(TYPE_SOURCE, 10, 3, {rotation = 3, state = 2, color = COLOR_BLUE})
+    end
+  end
+  if dialog_num==2 and m.page==3 then
+    if not flag[2] then
+      flag[2] = true
+      grid.set(TYPE_WALL,7,3)
+	  grid.set(TYPE_WALL,6,4)
+	  grid.delete(5,3)
+    end
+  end
+  if dialog_num==2 and m.page==4 then
+    if not flag[3] then
+      flag[3] = true
+      grid.set(TYPE_WALL,7,3)
+	  grid.delete(5,3)
+	  grid.delete(6,4)
+    end
+  end
+  if dialog_num==2 and m.page==5 then
+    if not flag[4] then
+      flag[4] = true
+      grid.set(TYPE_WALL,5,3)
+	  grid.set(TYPE_WALL,7,3)
+	  grid.delete(6,4)
+    end
+  end
+  if dialog_num==2 and m.page==6 then
+    if not flag[5] then
+      flag[5] = true
+	  grid.set(TYPE_WALL,5,3)
+	  grid.delete(7,3)
+	  grid.delete(6,4)
+    end
+  end
+  if dialog_num==2 and m.page==7 then
+    if not flag[6] then
+      flag[6] = true
+      grid.set(TYPE_WALL,5,3)
+	  grid.set(TYPE_WALL,6,4)
+	  grid.delete(7,3)
+    end
+  end
+  if dialog_num==2 and m.page==8 then
+    if not flag[7] then
+      flag[7] = true
+	  grid.set(TYPE_WALL,6,4)
+	  grid.delete(5,3)
+	  grid.delete(7,3)
+    end
+  end
+  if dialog_num==2 and m.page==9 then
+    if not flag[8] then
+      flag[8] = true
+      grid.set(TYPE_WALL,7,3)
+      grid.set(TYPE_WALL,5,3)
+	  grid.set(TYPE_WALL,6,4)
+    end
+  end
 end
 
 return level

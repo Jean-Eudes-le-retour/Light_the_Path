@@ -145,6 +145,10 @@ function grid.getColor(xpos,ypos)
   return nil
 end
 
+function grid.getRotation(xpos,ypos)
+  if Grid[xpos] and Grid[xpos][ypos] then return Grid[xpos][ypos].rotation end
+  return nil
+end
 function grid.getTileSize()
   return tile_size
 end
