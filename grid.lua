@@ -7,8 +7,12 @@ local grid = {}
 local grid_size_x = 16*2 --DEFAULT
 local grid_size_y = 9 *2 --DEFAULT
 local texture_scale = 1  --PLACEHOLDER
+local texture_scale_factor = 1
+local true_texture_scale = 1
 local tile_size = TEXTURE_BASE_SIZE --PLACEHOLDER
 local drawbox_pos_x, drawbox_pos_y = 0, 0
+local drawbox_offset_x, drawbox_offset_y = 0, 0
+local true_drawbox_pos_x, true_drawbox_pos_y = 0, 0
 local cursor_grid_frac_pos_x, cursor_grid_frac_pos_y = 0, 0
 local cursor_grid_pos_x, cursor_grid_pos_y = 0, 0
 
@@ -18,7 +22,6 @@ function grid.setDimensions(x_res,y_res,mode,x_val,y_val)
   if type(x_res) == "number" then grid_size_x = math.floor(x_res) end
   if type(y_res) == "number" then grid_size_y = math.floor(y_res) end
   grid.clear()
-  -- maybe attempt to place objects back into the grid here (rather than resetting the objects in clear())
   local grid_x_pixel_dim, grid_y_pixel_dim = grid_size_x*TEXTURE_BASE_SIZE, grid_size_y*TEXTURE_BASE_SIZE
   UpdateBackgroundFG = true
   canvas_WL = love.graphics.newCanvas( grid_x_pixel_dim, grid_y_pixel_dim )
@@ -38,8 +41,19 @@ function grid.getDimensions()
   return grid_size_x, grid_size_y
 end
 
+-- Only works for centered-type drawboxes!
+function grid.setOffset(x_offset, y_offset, scale_factor)
+  drawbox_offset_x = x_offset or drawbox_offset_x
+  drawbox_offset_y = y_offset or drawbox_offset_y
+  texture_scale_factor = scale_factor or texture_scale_factor
+  true_texture_scale = texture_scale_factor*texture_scale
+  tile_size = TEXTURE_BASE_SIZE*true_texture_scale
+  true_drawbox_pos_x = (love.graphics.getWidth() - tile_size*(2*drawbox_offset_x + grid_size_x))/2
+  true_drawbox_pos_y = (love.graphics.getHeight() - tile_size*(2*drawbox_offset_y + grid_size_y))/2
+end
+
 function grid.getDrawboxInfo()
-  return drawbox_pos_x, drawbox_pos_y, texture_scale
+  return true_drawbox_pos_x, true_drawbox_pos_y, true_texture_scale
 end
 
 -- Clears the grid of all objects and resets all objects
@@ -153,7 +167,7 @@ function grid.getTileSize()
   return tile_size
 end
 function grid.getTextureScale()
-  return texture_scale
+  return true_texture_scale
 end
 
 -- Function calculates the variables necessary to define the grid's visual bounding box.
@@ -164,6 +178,7 @@ function grid.defineDrawbox(mode,x_val,y_val)
   local x_dim, y_dim = love.graphics.getDimensions()
   local x_grid, y_grid = grid.getDimensions()
   x_val, y_val = x_val or 0, y_val or 0
+  drawbox_offset_x, drawbox_offset_y, texture_scale_factor = 0, 0, 1
   drawbox_pos_x, drawbox_pos_y = 0, 0
 
 --DEBUG INFO--
@@ -191,14 +206,15 @@ function grid.defineDrawbox(mode,x_val,y_val)
   debugUtils.print(texture_scale,"texture scale factor")
   debugUtils.print({drawbox_pos_x,drawbox_pos_y},"pos","drawbox_|_pos")
 --------------
+  true_drawbox_pos_x, true_drawbox_pos_y, true_texture_scale = drawbox_pos_x, drawbox_pos_y, texture_scale
   return drawbox_pos_x, drawbox_pos_y, texture_scale
 end
 
 -- Updates the cursor's position relative to the grid (this is the first operation in game.update() so there should be no reason to use it anywhere else)
 function grid.updateCursorPosition(getFraction,cursor_pos_x,cursor_pos_y)
   if not cursor_pos_x then cursor_pos_x, cursor_pos_y = love.mouse.getPosition() end
-  cursor_grid_frac_pos_x = (cursor_pos_x-drawbox_pos_x)/tile_size
-  cursor_grid_frac_pos_y = (cursor_pos_y-drawbox_pos_y)/tile_size
+  cursor_grid_frac_pos_x = (cursor_pos_x-true_drawbox_pos_x)/tile_size
+  cursor_grid_frac_pos_y = (cursor_pos_y-true_drawbox_pos_y)/tile_size
   cursor_grid_pos_x = math.ceil(cursor_grid_frac_pos_x)
   cursor_grid_pos_y = math.ceil(cursor_grid_frac_pos_y)
   if getFraction then return cursor_grid_frac_pos_x, cursor_grid_frac_pos_y end
@@ -213,7 +229,7 @@ end
 
 --Return coordinates of specified tile (or position based on grid based position)
 function grid.getTilePosition(grid_pos_x, grid_pos_y)
-  return drawbox_pos_x+grid_pos_x*tile_size, drawbox_pos_y+grid_pos_y*tile_size
+  return true_drawbox_pos_x+grid_pos_x*tile_size, true_drawbox_pos_y+grid_pos_y*tile_size
 end
 
 

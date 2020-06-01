@@ -69,7 +69,7 @@ _________________________________________________________________
 FUN IDEAS
 _________________________________________________________________
 
-You can change level.x_val, level.y_val, level.drawbox_mode and call love.resize() (with 3rd argument dontResetUI true for efficiency) to emulate a screenshake!
+You can use grid.setOffset for screenshakes!
 Custom backgrounds with draw operations to background canvas!
 Custom drawing on walls with draw operations to overlay canvas!
 

@@ -30,10 +30,12 @@ function game.init(x_res,y_res,mode,x_val,y_val)
   love.wheelmoved = game.onScroll
   love.keypressed = game.onPress
   tiles.loadTextures()
-  current_track = TRACK[4]
-  current_track:play()
-  -- Menus = {MAIN_MENU}
-  return grid.init(x_res,y_res,mode,x_val,y_val)
+  if (not x_res) or (not y_res) then
+    ui_elements.mainMenu()
+    return grid.getDrawboxInfo()
+  else
+    return grid.init(x_res,y_res,mode,x_val,y_val)
+  end
 end
 
 -- Function called to update the game state and canvases
@@ -227,6 +229,7 @@ end
 
 
 function game.updateAudio(dt)
+  if not current_track then current_track = TRACK[4] end
   if audio_muffle then game.audio.muffleUpdate() end
 
   if audio_fadeout then

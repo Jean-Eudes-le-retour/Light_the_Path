@@ -26,7 +26,7 @@ level = false
 
 
 function love.load()
-  drawbox_x, drawbox_y, texture_scale = game.init(20,10)
+  drawbox_x, drawbox_y, texture_scale = game.init(20,10) --remove variables for main menu
   
   
 --grid.fit(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glass,canChangeState)
@@ -89,7 +89,7 @@ function love.update(dt)
   if level and level.update then level.update(dt) end
   if level and level.complete then
     local blocked = false
-    for i=1,#Menus do
+    for i=1,ui_elements.getMenuId() do
       blocked = blocked or (Menus[i] and Menus[i].isBlocking)
     end
     if not blocked then game.audio.muffle() ui_elements.victory() end

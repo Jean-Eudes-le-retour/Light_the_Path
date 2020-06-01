@@ -167,6 +167,7 @@ function objects.resetObjects()
   for i = 1,#TYPES do
     Id[i] = 0
     ObjectReferences[i] = {}
+    UpdateObjectType[i] = true
   end
 end
 

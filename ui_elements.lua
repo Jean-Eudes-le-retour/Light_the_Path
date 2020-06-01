@@ -658,6 +658,15 @@ function ui_elements.resetCallStack()
   MenuCallStack = {}
 end
 
+function ui_elements.close(t)
+  t = t or 0
+  if t<0 or t>#UI_TYPES then t = 0 end
+  for i=1,MenuId do
+    if Menus[i] and (t==0 or Menus[i].t == t) then
+      Menus[i]:close()
+    end
+  end
+end
 
 --------------------------------------------------------------------------------------------------------------------------------
 function ui_elements.escapeMenu()
@@ -982,12 +991,13 @@ function ui_elements.mainMenu(fromSubmenu)
   ui_elements.fitButtons(m)
   
   m:resize()
+  if not fromSubmenu then load_level("main") end
   return m
 end
 
 function ui_elements.victory()
   ui_elements.resetCallStack()
-  for i=1,#Menus do
+  for i=1,MenuId do
     if Menus[i] then Menus[i]:close() end
   end
   local m = ui_elements.create(UI_MENU)
