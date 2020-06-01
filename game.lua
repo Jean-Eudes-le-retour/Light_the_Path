@@ -131,7 +131,7 @@ function game.onClick( x, y, button, istouch, presses )
     end
   elseif button == 2 then -- Will later make this button INTERACT with the block (o.state = o.state%NUM_STATES[o.t]+1) and move rotation to scroll wheel; remember: canChangeState only defined in default objects (not actual)
     if (not DEVELOPER_MODE) and (Grid[xpos][ypos].glass or not Grid[xpos][ypos].canChangeState) then return false end
-    Grid[xpos][ypos]:changeState()
+    Grid[xpos][ypos]:changeState(f_xpos, f_ypos)
   elseif button == 3 then
     sel_x, sel_y = xpos, ypos
   end

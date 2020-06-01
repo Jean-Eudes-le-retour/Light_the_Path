@@ -65,11 +65,11 @@ function grid.clear()
 end
 
 -- Place a new object within the grid. The preferred function to create new objects.
-function grid.set(t,xpos,ypos,options) -- state,rotation,color,canMove,canRotate,canChangeColor,glass
+function grid.set(t,xpos,ypos,options) -- state,rotation,color,canMove,canRotate,canChangeColor,glass,canChangeState
   if type(options) ~= "table" then options = {} end
   if xpos > grid_size_x or ypos > grid_size_y or xpos < 1 or ypos < 1 then return nil end
   if Grid[xpos][ypos] then Grid[xpos][ypos]:delete() end
-  local o = objects.newObject(t,xpos,ypos,options.state,options.rotation,options.color,options.canMove,options.canRotate,options.canChangeColor,options.glass)
+  local o = objects.newObject(t,xpos,ypos,options.state,options.rotation,options.color,options.canMove,options.canRotate,options.canChangeColor,options.glass,options.canChangeState)
   Grid[xpos][ypos] = o
   return o
 end
@@ -82,13 +82,13 @@ function grid.fit(t,xpos,ypos,options) -- state,rotation,color,canMove,canRotate
     for j=-i,i do
       if j == i or j == -i then
         for k=-i,i do
-          if (Grid[xpos+k] and (ypos+j>0 and ypos+j<grid_size_y) and (not Grid[xpos+k][ypos+j])) then 
+          if (Grid[xpos+k] and (ypos+j>0 and ypos+j<=grid_size_y) and (not Grid[xpos+k][ypos+j])) then 
             return grid.set(t,xpos+k,ypos+j,options)
           end
         end
-      elseif (Grid[xpos-i] and (ypos+j>0 and ypos+j<grid_size_y) and (not Grid[xpos-i][ypos+j])) then
+      elseif (Grid[xpos-i] and (ypos+j>0 and ypos+j<=grid_size_y) and (not Grid[xpos-i][ypos+j])) then
         return grid.set(t,xpos-i,ypos+j,options)
-      elseif (Grid[xpos+i] and (ypos+j>0 and ypos+j<grid_size_y) and (not Grid[xpos+i][ypos+j])) then
+      elseif (Grid[xpos+i] and (ypos+j>0 and ypos+j<=grid_size_y) and (not Grid[xpos+i][ypos+j])) then
         return grid.set(t,xpos+i,ypos+j,options)
       end
     end

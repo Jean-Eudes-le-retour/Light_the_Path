@@ -102,8 +102,42 @@ function Object:rotate(invert)
   UpdateObjectType[self.t] = true
 end
 
-function Object:changeState()
-  self.state = self.state%NUM_STATES[self.t]+1
+local function getQuadrant(f_x,f_y)
+  f_x, f_y = f_x - math.floor(f_x), f_y - math.floor(f_y)
+  local r
+  if f_x>f_y then
+    if 1-f_x>f_y then
+      r = 0
+    else
+      r = 1
+    end
+  elseif 1-f_x>f_y then
+    r = 3
+  else
+    r = 2 
+  end
+  return r
+end
+
+function Object:changeState(f_x,f_y)
+  if (self.t ~= TYPE_LOGIC and self.t ~= TYPE_RECEIVER) or not f_x or not f_y then
+    self.state = self.state%NUM_STATES[self.t]+1
+  else
+    local q = getQuadrant(f_x,f_y)
+    q = (q - self.rotation)%4
+    if not self.side then self.side = {} end
+    if not self.side[q] then
+      if self.t == TYPE_RECEIVER then
+        if q~=0 then self.side[q] = "activate" end
+      else
+        self.side[q] = "in"
+      end
+    elseif self.side[q] == "in" then
+      self.side[q] = "out"
+    else
+      self.side[q] = nil
+    end
+  end
   UpdateObjectType[self.t] = true
 end
 
@@ -153,8 +187,8 @@ end
 
 
 -- ONLY CALLED THROUGH GRID FUNCTIONS DO NOT CALL DIRECTLY: Create a new object (does not place in grid!)
-function objects.newObject(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glass)
-  return Object:new(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glass)
+function objects.newObject(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glass,canChangeState)
+  return Object:new(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glass,canChangeState)
 end
 -- ONLY CALLED THROUGH GRID FUNCTIONS DO NOT CALL DIRECTLY: Note that this only changes the position info for the object not the position in the grid; 
 function Object:changePosition(xpos,ypos)
