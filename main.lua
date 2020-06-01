@@ -67,7 +67,7 @@ function love.load()
   grid.fit(TYPE_LOGIC,nil,nil,{state = LOGIC_AND, canMove = true, canRotate = true, canChangeState = true}):setSides("in",nil,"in","out")
   grid.fit(TYPE_LOGIC,nil,nil,{state = LOGIC_NOT, canMove = true, canRotate = true, canChangeState = true}):setSides(nil,"in","in","out")
   grid.fit(TYPE_RECEIVER,nil,nil,{color = COLOR_BLACK, canMove = true, canRotate = true, canChangeState = true}):setSides(nil,nil,"activate",nil)
-  grid.fit(TYPE_LOGIC,nil,nil,{canRotate = true})
+  grid.fit(TYPE_LOGIC,nil,nil,{canRotate = true, canChangeState = true})
 
   grid.set(TYPE_RECEIVER,17,8,{rotation = 3, color = COLOR_WHITE, glass = true}):setSides(nil,nil,"activate",nil)
   grid.set(TYPE_SOURCE,18,8,{rotation = 2, color = COLOR_WHITE, glass = true})
