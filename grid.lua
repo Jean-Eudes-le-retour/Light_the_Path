@@ -104,27 +104,23 @@ function grid.move(o,xpos,ypos,old_xpos,old_ypos,force)
       local dest_o = Grid[xpos][ypos]
       if DEVELOPER_MODE or force or (not dest_o.glass and dest_o.canMove) then
         force = true
-        print("Changing position of destination object")
         dest_o:changePosition(old_xpos,old_ypos)
         Grid[old_xpos][old_ypos] = dest_o
-        UpdateObjectType[dest_o.t] = true
-        if dest_o.glass then UpdateObjectType[TYPE_GLASS] = true end
+        dest_o:update()
       end -- implicit else force = false
     else
       force = true
     end
     if force then
-      print("Object was moved")
       o:changePosition(xpos,ypos)
       Grid[xpos][ypos] = o
-      UpdateObjectType[o.t] = true
-      if o.glass then UpdateObjectType[TYPE_GLASS] = true end
+      o:update()
       return true
     end
   end
   print("Couldn't move the object")
   Grid[old_xpos][old_ypos] = o
-  UpdateObjectType[o.t] = true
+  o:update()
   return false
 end
 
@@ -132,7 +128,7 @@ end
 function grid.delete(xpos,ypos,o,keep_reference)
   o = o or Grid[xpos][ypos] -- if object is passed directly, it takes precedence on the coordinates (can call delete(nil,nil,Object))
   if not o then return false end
-  UpdateObjectType[o.t] = true
+  o:update()
   Grid[o.xpos][o.ypos] = nil -- assumes correct info is stored in the object (shouldn't be an issue)
   if not keep_reference then o:delete() end
   return true

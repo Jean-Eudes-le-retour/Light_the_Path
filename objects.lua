@@ -45,7 +45,7 @@ function Object:new(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChange
   else o.canChangeColor   = DEFAULT_OBJECT[o.t].canChangeColor end
   if type(canChangeState) == "boolean" then o.canChangeState = canChangeState
   else o.canChangeState   = DEFAULT_OBJECT[o.t].canChangeState end
-  o.glass = glass or false
+  o.glass = glass or o.t == TYPE_GLASS or false
   o.glassRotation = 0
   
   -- Object specific initialization
@@ -63,8 +63,7 @@ function Object:new(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChange
   end
   
   -- Signals new object was created
-  UpdateObjectType[o.t] = true
-  if o.glass then UpdateObjectType[TYPE_GLASS] = true end
+  o:update()
   
   -- Index the object and return the reference
   ObjectReferences[o.t][o.id] = o
@@ -141,9 +140,15 @@ function Object:changeState(f_x,f_y)
   UpdateObjectType[self.t] = true
 end
 
+function Object:update()
+  UpdateObjectType[self.t] = true
+  if self.glass then UpdateObjectType[TYPE_GLASS] = true end
+  if not self.canMove then UpdateBackgroundFG = true end
+end
+
 -- Remove the reference to object within ObjectReferences and from the grid. If it was externally removed from everywhere else garbage collection should handle the rest
 function Object:delete()
-  UpdateObjectType[self.t] = true
+  self:update()
   ObjectReferences[self.t][self.id] = nil
   if Grid[self.xpos] and Grid[self.xpos][self.ypos] and Grid[self.xpos][self.ypos].id == self.id then Grid[self.xpos][self.ypos] = nil end
 end

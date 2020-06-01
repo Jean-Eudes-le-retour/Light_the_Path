@@ -47,6 +47,8 @@ function tiles.loadTextures()
     end
   end
   TEXTURES[0] = love.graphics.newArrayImage(Path)
+  TEXTURES[-1] = love.graphics.newImage("Textures/BG_plate.png")
+  TEXTURES[-2] = love.graphics.newImage("Textures/BG_disk.png")
   
   print("Loading overlays...")
   OVERLAY_TEXTURES = {}
@@ -162,6 +164,14 @@ function tiles.updateBG()
   for i=0,grid_size_x-1 do
     for j=0,grid_size_y-1 do
       love.graphics.drawLayer(TEXTURES[0],selected_background,i*TEXTURE_BASE_SIZE,j*TEXTURE_BASE_SIZE)
+      local o = Grid[i+1][j+1]
+      if o and not o.canMove and not o.glass then
+        if o.canRotate then
+          love.graphics.draw(TEXTURES[-2],i*TEXTURE_BASE_SIZE,j*TEXTURE_BASE_SIZE)
+        else
+          love.graphics.draw(TEXTURES[-1],i*TEXTURE_BASE_SIZE,j*TEXTURE_BASE_SIZE)
+        end
+      end
     end
   end
   UpdateBackgroundFG = false
