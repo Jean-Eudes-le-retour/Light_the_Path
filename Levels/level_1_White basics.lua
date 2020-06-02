@@ -7,8 +7,8 @@ local level = {}
 
 -- IMPORTANT VARIABLES --
 level.complete = false
-level.x = 9
-level.y = 5
+level.x = 10
+level.y = 6
 level.name = "Basics 3"
 
 local m = false
@@ -17,6 +17,7 @@ local flag1 = false
 local flag2 = false
 local flag3 = false
 local alt1 = false
+local alt2 = false
 
 -- OPTIONAL VARIABLES --
 level.drawbox_mode = nil
@@ -32,21 +33,22 @@ function level.load()
 --grid.fit(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glassState)
   for i=1,level.x do
     grid.set(TYPE_WALL, i, 1)
+	grid.set(TYPE_WALL, i, level.y-1)
 	grid.set(TYPE_WALL, i, level.y)
   end
   for i=1,level.y do
 	grid.set(TYPE_WALL, 1, i)
 	grid.set(TYPE_WALL, level.x, i)
   end
-  grid.set(TYPE_RECEIVER, 4, 1, {rotation = 2, color = COLOR_GREEN})
+  grid.set(TYPE_RECEIVER, 4, 2, {rotation = 2, color = COLOR_GREEN})
   --grid.set(TYPE_RECEIVER, 6, 1, {rotation = 2, color = COLOR_BLACK})
   --grid.set(TYPE_RECEIVER, 8, 1, {rotation = 2, color = COLOR_BLACK})
   
   grid.set(TYPE_MIRROR, 3, 2, {rotation = 2, color = COLOR_CYAN})
   grid.set(TYPE_MIRROR, 3, 3, {rotation = 2, color = COLOR_GREEN})
-  grid.set(TYPE_MIRROR, 3, 4, {rotation = 2, color = COLOR_YELLOW})
+  grid.set(TYPE_MIRROR, 2, 2, {rotation = 2, color = COLOR_YELLOW})
   
-  grid.set(TYPE_SOURCE, 2, 3, {rotation = 1, color = COLOR_WHITE})
+  grid.set(TYPE_SOURCE, 2, 4, {rotation = 1, color = COLOR_WHITE})
 
 -- ADD UI ELEMENTS -- use menu.create() type functions, not yet defined.
 	m = ui_elements.create(UI_DIALOG)
@@ -65,12 +67,12 @@ end
 
 function level.update(dt) -- dt is time since last update in seconds
 -- CHECK WIN CONDITION -- use grid functions to check object states, update level.complete accordingly
-  if win_condition then level.complete = true end
+  if grid.getState(4, 2)==2 and grid.getState(6, 2)==2 and grid.getState(8, 2)==2 and dialog_num==3 then level.complete = true end
 
 -- OPTIONAL INTERACTIVE LEVEL FUNCTIONS -- direct modifications of object states do not trigger and UpdateObjectType flag! (Needs to be done manually)
    --when the laser splits and hits red and green, pause and then change the color of the source to cyan and the color of the mirror to blue but do not rotate the mirror
    
-  if dialog_num==1 and m.page==2 and alt1 == false then
+  if dialog_num==1 and m.page==2 and alt1 == false and alt2 == false then
 	m.noSkip = true
 	m.isBlocking = false
   end
@@ -83,7 +85,7 @@ function level.update(dt) -- dt is time since last update in seconds
   if dialog_num==2 and m.page==2 then
     if not flag1 then
       flag1 = true
-      grid.set(TYPE_RECEIVER, 6, 1, {rotation = 2, color = COLOR_BLUE})
+      grid.set(TYPE_RECEIVER, 6, 2, {rotation = 2, color = COLOR_BLUE})
     end
 	m.noSkip = true
 	m.isBlocking = false
@@ -92,13 +94,13 @@ function level.update(dt) -- dt is time since last update in seconds
   if dialog_num==3 and m.page==2 then
     if not flag2 then
       flag2 = true
-      grid.set(TYPE_RECEIVER, 8, 1, {rotation = 2, color = COLOR_RED})
+      grid.set(TYPE_RECEIVER, 8, 2, {rotation = 2, color = COLOR_RED})
     end
 	m.noSkip = true
 	m.isBlocking = false
   end
   
-  if grid.getState(4, 1)==2 and dialog_num==1 and grid.getColor(4, 3)==COLOR_GREEN then
+  if grid.getState(4, 2)==2 and dialog_num==1 and grid.getColor(4, 4)==COLOR_GREEN then
     m:close()
     dialog_num = dialog_num + 1
     m = ui_elements.create(UI_DIALOG)
@@ -116,7 +118,7 @@ function level.update(dt) -- dt is time since last update in seconds
     m:resize()
   end
   
-  if grid.getState(4, 1)==2 and dialog_num==1 and grid.getColor(4, 3)==COLOR_CYAN and alt1 == false then
+  if grid.getState(4, 2)==2 and dialog_num==1 and grid.getColor(4, 4)==COLOR_CYAN and alt1 == false then
     m:close()
     alt1 = true
     m = ui_elements.create(UI_DIALOG)
@@ -136,13 +138,14 @@ function level.update(dt) -- dt is time since last update in seconds
     m:resize()
   end
   
-  if grid.getState(4, 1)==2 and grid.getState(6, 1)==2 and dialog_num==2 then
+  if grid.getState(4, 2)==2 and dialog_num==1 and grid.getColor(4, 4)==COLOR_YELLOW and alt2 == false then
     m:close()
-    dialog_num = dialog_num + 1
+    alt2 = true
     m = ui_elements.create(UI_DIALOG)
     m.text = {
-{{0.5,0.5,0.5},"Can you see how the ",{0,0,1},"BLUE",{0.5,0.5,0.5}," constituent gets reflected even though the mirror is ",{0,1,1},"CYAN",{0.5,0.5,0.5},"? That's because ",{0,1,1},"CYAN",{0.5,0.5,0.5}," is made of ",{0,1,0},"GREEN",{0.5,0.5,0.5}," and ",{0,0,1},"BLUE",{0.5,0.5,0.5}," and because there is no ",{0,1,0},"GREEN",{0.5,0.5,0.5}," in the ",{1,0,1},"MAGENTA",{0.5,0.5,0.5}," beam, there's only the ",{0,0,1},"BLUE",{0.5,0.5,0.5}," part that gets reflected."},
-{{0.5,0.5,0.5},"Finally, shine the ",{1,0,0},"RED",{0.5,0.5,0.5}," reciever!"},
+{{0.5,0.5,0.5},"Interesting, the ",{0,1,0},"GREEN",{0.5,0.5,0.5}," receiver turns on when ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," light hits it !"},
+{{0.5,0.5,0.5},"..."},
+{{0.5,0.5,0.5},"Oh wait, that's because the ",{0,1,0},"GREEN",{0.5,0.5,0.5}," part of ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," is detected !\nWe are going to need the ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," mirror later, change it with the ",{0,1,0},"GREEN",{0.5,0.5,0.5}," one for now."},
     }
     m.charname = {"Professeur Luminario","Professeur Luminario","Professeur Luminario"}
     m.animation[1] = {}
@@ -151,21 +154,25 @@ function level.update(dt) -- dt is time since last update in seconds
     m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
     m.animation[1][3] = m.animation[1][1]
 	m.animation[2] = m.animation[1]
+	m.animation[3] = m.animation[1]
     m:resize()
   end
   
-  if grid.getState(4, 1)==2 and grid.getState(6, 1)==2 and grid.getState(8, 1)==2 and dialog_num==3 then
+  if grid.getState(4, 2)==2 and grid.getState(6, 2)==2 and dialog_num==2 then
     m:close()
     dialog_num = dialog_num + 1
     m = ui_elements.create(UI_DIALOG)
     m.text = {
-{{0.5,0.5,0.5},"Remember, in this laboratory ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," light is made of ",{1,0,0},"RED",{0.5,0.5,0.5}," and ",{0,1,0},"GREEN",{0.5,0.5,0.5},"."}}
+{{0.5,0.5,0.5},"Can you see how the ",{0,0,1},"BLUE",{0.5,0.5,0.5}," constituent gets reflected even though the mirror is ",{0,1,1},"CYAN",{0.5,0.5,0.5},"? That's because ",{0,1,1},"CYAN",{0.5,0.5,0.5}," is made of ",{0,1,0},"GREEN",{0.5,0.5,0.5}," and ",{0,0,1},"BLUE",{0.5,0.5,0.5}," and because there is no ",{0,1,0},"GREEN",{0.5,0.5,0.5}," in the ",{1,0,1},"MAGENTA",{0.5,0.5,0.5}," beam, there's only the ",{0,0,1},"BLUE",{0.5,0.5,0.5}," part that gets reflected."},
+{{0.5,0.5,0.5},"Finally, shine the ",{1,0,0},"RED",{0.5,0.5,0.5}," reciever!\nDon't forget that in this laboratory ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," light is made of ",{1,0,0},"RED",{0.5,0.5,0.5}," and ",{0,1,0},"GREEN",{0.5,0.5,0.5},"."},
+    }
     m.charname = {"Professeur Luminario","Professeur Luminario","Professeur Luminario"}
     m.animation[1] = {}
     m.animation[1][0] = {4,-1}
     m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
     m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
     m.animation[1][3] = m.animation[1][1]
+	m.animation[2] = m.animation[1]
     m:resize()
   end
 end

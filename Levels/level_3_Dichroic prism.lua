@@ -7,8 +7,8 @@ local level = {}
 
 -- IMPORTANT VARIABLES --
 level.complete = false
-level.x = 11
-level.y = 6
+level.x = 13
+level.y = 8
 level.name = "Prisme dichroique (ou basics 4)"
 
 local dialog_num = 1
@@ -28,20 +28,21 @@ function level.load()
 --grid.fit(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glassState)
   for i=1,level.x do
     grid.set(TYPE_WALL, i, 1)
+	grid.set(TYPE_WALL, i, level.y-1)
 	grid.set(TYPE_WALL, i, level.y)
   end
   for i=1,level.y do
 	grid.set(TYPE_WALL, 1, i)
 	grid.set(TYPE_WALL, level.x, i)
   end
-  grid.set(TYPE_RECEIVER, 6, 1, {rotation = 2, color = COLOR_WHITE})
+  grid.set(TYPE_RECEIVER, 7, 2, {rotation = 2, color = COLOR_WHITE})
   
-  grid.set(TYPE_MIRROR, 2, 4, {rotation = 1, color = COLOR_RED})
-  grid.set(TYPE_MIRROR, 4, 4, {rotation = 1, color = COLOR_BLUE})
+  grid.set(TYPE_MIRROR, 3, 5, {rotation = 1, color = COLOR_RED})
+  grid.set(TYPE_MIRROR, 4, 5, {rotation = 1, color = COLOR_BLUE})
   
-  grid.set(TYPE_SOURCE, 2, 3, {rotation = 1, color = COLOR_RED})
-  grid.set(TYPE_SOURCE, 6, 5, {color = COLOR_GREEN})
-  grid.set(TYPE_SOURCE, 10, 4, {rotation = 3, color = COLOR_BLUE})
+  grid.set(TYPE_SOURCE, 2, 4, {rotation = 1, color = COLOR_RED})
+  grid.set(TYPE_SOURCE, 7, 6, {color = COLOR_GREEN})
+  grid.set(TYPE_SOURCE, 12, 5, {rotation = 3, color = COLOR_BLUE})
 -- ADD UI ELEMENTS -- use menu.create() type functions, not yet defined.
 	m = ui_elements.create(UI_DIALOG)
 	m.text = {
@@ -60,7 +61,7 @@ function level.update(dt) -- dt is time since last update in seconds
   if win_condition then level.complete = true end
 
 -- OPTIONAL INTERACTIVE LEVEL FUNCTIONS -- direct modifications of object states do not trigger and UpdateObjectType flag! (Needs to be done manually)
-  if grid.getState(6, 1)==2 and dialog_num==1 then
+  if grid.getState(7, 2)==2 and dialog_num==1 then
     m:close()
     dialog_num = dialog_num + 1
     m = ui_elements.create(UI_DIALOG)
@@ -93,66 +94,66 @@ function level.update(dt) -- dt is time since last update in seconds
   if dialog_num==2 and m.page==2 then
     if not flag[1] then
       flag[1] = true
-	  grid.delete(10,4)
-	  grid.delete(6,4)
-      grid.set(TYPE_LOGIC, 6, 3,{state = LOGIC_OR}):setSides("out","in","in","in")
-	  grid.set(TYPE_SOURCE, 10, 3, {rotation = 3, state = 2, color = COLOR_BLUE})
+	  grid.delete(12,5)
+	  grid.delete(7,5)
+      grid.set(TYPE_LOGIC, 7, 4,{state = LOGIC_OR}):setSides("out","in","in","in")
+	  grid.set(TYPE_SOURCE, 12, 4, {rotation = 3, state = 2, color = COLOR_BLUE})
     end
   end
   if dialog_num==2 and m.page==3 then
     if not flag[2] then
       flag[2] = true
-      grid.set(TYPE_WALL,7,3)
-	  grid.set(TYPE_WALL,6,4)
-	  grid.delete(5,3)
+      grid.set(TYPE_WALL,8,4)
+	  grid.set(TYPE_WALL,7,5)
+	  grid.delete(6,4)
     end
   end
   if dialog_num==2 and m.page==4 then
     if not flag[3] then
       flag[3] = true
-      grid.set(TYPE_WALL,7,3)
-	  grid.delete(5,3)
+      grid.set(TYPE_WALL,8,4)
 	  grid.delete(6,4)
+	  grid.delete(7,5)
     end
   end
   if dialog_num==2 and m.page==5 then
     if not flag[4] then
       flag[4] = true
-      grid.set(TYPE_WALL,5,3)
-	  grid.set(TYPE_WALL,7,3)
-	  grid.delete(6,4)
+      grid.set(TYPE_WALL,6,4)
+	  grid.set(TYPE_WALL,8,4)
+	  grid.delete(7,5)
     end
   end
   if dialog_num==2 and m.page==6 then
     if not flag[5] then
       flag[5] = true
-	  grid.set(TYPE_WALL,5,3)
-	  grid.delete(7,3)
-	  grid.delete(6,4)
+	  grid.set(TYPE_WALL,6,4)
+	  grid.delete(8,4)
+	  grid.delete(7,5)
     end
   end
   if dialog_num==2 and m.page==7 then
     if not flag[6] then
       flag[6] = true
-      grid.set(TYPE_WALL,5,3)
-	  grid.set(TYPE_WALL,6,4)
-	  grid.delete(7,3)
+      grid.set(TYPE_WALL,6,4)
+	  grid.set(TYPE_WALL,7,5)
+	  grid.delete(8,4)
     end
   end
   if dialog_num==2 and m.page==8 then
     if not flag[7] then
       flag[7] = true
-	  grid.set(TYPE_WALL,6,4)
-	  grid.delete(5,3)
-	  grid.delete(7,3)
+	  grid.set(TYPE_WALL,7,5)
+	  grid.delete(6,4)
+	  grid.delete(8,4)
     end
   end
   if dialog_num==2 and m.page==9 then
     if not flag[8] then
       flag[8] = true
-      grid.set(TYPE_WALL,7,3)
-      grid.set(TYPE_WALL,5,3)
-	  grid.set(TYPE_WALL,6,4)
+      grid.set(TYPE_WALL,8,4)
+      grid.set(TYPE_WALL,6,4)
+	  grid.set(TYPE_WALL,7,5)
     end
   end
 end
