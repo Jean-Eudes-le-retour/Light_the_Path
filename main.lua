@@ -110,11 +110,13 @@ function love.draw()
   love.graphics.draw(canvas_OL,drawbox_x,drawbox_y,nil,texture_scale)
   love.graphics.draw(canvas_UI)
   love.graphics.setBlendMode("alpha")
-  love.graphics.print("X : "..string.sub(tostring(grid_pos_x),1,10))
-  love.graphics.print("Y : "..string.sub(tostring(grid_pos_y),1,10),100,0)
-  love.graphics.print("X_max : "..tostring(grid_dim_x),0,10)
-  love.graphics.print("Y_max : "..tostring(grid_dim_y),100,10)
-  love.graphics.print("Current FPS: "..tostring(love.timer.getFPS( )), 0, 25)
+  if DEVELOPER_MODE then
+    love.graphics.print("X : "..string.sub(tostring(grid_pos_x),1,10))
+    love.graphics.print("Y : "..string.sub(tostring(grid_pos_y),1,10),100,0)
+    love.graphics.print("X_max : "..tostring(grid_dim_x),0,10)
+    love.graphics.print("Y_max : "..tostring(grid_dim_y),100,10)
+    love.graphics.print("Current FPS: "..tostring(love.timer.getFPS( )), 0, 25)
+  end
 end
 
 --Global callback function for when the screen was resized EXTERNALLY, or resized INTERNALLY with bad parameters; width and height in DPI scaled-units (???)
