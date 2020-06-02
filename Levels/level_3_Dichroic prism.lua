@@ -9,7 +9,7 @@ local level = {}
 level.complete = false
 level.x = 13
 level.y = 8
-level.name = "Prisme dichroique (ou basics 4)"
+level.name = "Dichroic Prism"
 
 local dialog_num = 1
 local flag = {}
@@ -28,39 +28,35 @@ function level.load()
 --grid.fit(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glassState)
   for i=1,level.x do
     grid.set(TYPE_WALL, i, 1)
-	grid.set(TYPE_WALL, i, level.y-1)
-	grid.set(TYPE_WALL, i, level.y)
+    grid.set(TYPE_WALL, i, level.y-1)
+    grid.set(TYPE_WALL, i, level.y)
   end
   for i=1,level.y do
-	grid.set(TYPE_WALL, 1, i)
-	grid.set(TYPE_WALL, level.x, i)
+    grid.set(TYPE_WALL, 1, i)
+    grid.set(TYPE_WALL, level.x, i)
   end
-  grid.set(TYPE_RECEIVER, 7, 2, {rotation = 2, color = COLOR_WHITE})
+    grid.set(TYPE_RECEIVER, 7, 2, {rotation = 2, color = COLOR_WHITE})
   
-  grid.set(TYPE_MIRROR, 3, 5, {rotation = 1, color = COLOR_RED})
-  grid.set(TYPE_MIRROR, 4, 5, {rotation = 1, color = COLOR_BLUE})
+    grid.set(TYPE_MIRROR, 3, 5, {rotation = 1, color = COLOR_RED})
+    grid.set(TYPE_MIRROR, 4, 5, {rotation = 1, color = COLOR_BLUE})
   
-  grid.set(TYPE_SOURCE, 2, 4, {rotation = 1, color = COLOR_RED})
-  grid.set(TYPE_SOURCE, 7, 6, {color = COLOR_GREEN})
-  grid.set(TYPE_SOURCE, 12, 5, {rotation = 3, color = COLOR_BLUE})
+    grid.set(TYPE_SOURCE, 2, 4, {rotation = 1, color = COLOR_RED})
+    grid.set(TYPE_SOURCE, 7, 6, {color = COLOR_GREEN})
+    grid.set(TYPE_SOURCE, 12, 5, {rotation = 3, color = COLOR_BLUE})
 -- ADD UI ELEMENTS -- use menu.create() type functions, not yet defined.
 	m = ui_elements.create(UI_DIALOG)
 	m.text = {
     {{0.5,0.5,0.5},"We saw earlier that you could extract the three primary ",{1,0,0},"CO",{0,1,0},"LO",{0,0,1},"RS",{0.5,0.5,0.5}," from ",{1,1,1},"WHITE",{0.5,0.5,0.5},", but we can also do the reverse! Here we have a ",{1,0,0},"RED",{0.5,0.5,0.5},", a ",{0,1,0},"GREEN",{0.5,0.5,0.5}," and a ",{0,0,1},"BLUE",{0.5,0.5,0.5}," laser source. Using the dichroic mirrors, make all beams overlap each other."}}
     m.charname = {"Professeur Luminario"}
-	m.animation[1] = {}
-	m.animation[1][0] = {4,-1}
-	m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
-	m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
-	m.animation[1][3] = m.animation[1][1]
-	m:resize()
+    m.animation[1] = {}
+    m.animation[1][0] = {4,-1}
+    m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
+    m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
+    m.animation[1][3] = m.animation[1][1]
+    m:resize()
 end
 
 function level.update(dt) -- dt is time since last update in seconds
--- CHECK WIN CONDITION -- use grid functions to check object states, update level.complete accordingly
-  if win_condition then level.complete = true end
-
--- OPTIONAL INTERACTIVE LEVEL FUNCTIONS -- direct modifications of object states do not trigger and UpdateObjectType flag! (Needs to be done manually)
   if grid.getState(7, 2)==2 and dialog_num==1 then
     m:close()
     dialog_num = dialog_num + 1
@@ -94,58 +90,58 @@ function level.update(dt) -- dt is time since last update in seconds
   if dialog_num==2 and m.page==2 then
     if not flag[1] then
       flag[1] = true
-	  grid.delete(12,5)
-	  grid.delete(7,5)
+      grid.delete(12,5)
+      grid.delete(7,5)
       grid.set(TYPE_LOGIC, 7, 4,{state = LOGIC_OR}):setSides("out","in","in","in")
-	  grid.set(TYPE_SOURCE, 12, 4, {rotation = 3, state = 2, color = COLOR_BLUE})
+      grid.set(TYPE_SOURCE, 12, 4, {rotation = 3, state = 2, color = COLOR_BLUE})
     end
   end
   if dialog_num==2 and m.page==3 then
     if not flag[2] then
       flag[2] = true
       grid.set(TYPE_WALL,8,4)
-	  grid.set(TYPE_WALL,7,5)
-	  grid.delete(6,4)
+      grid.set(TYPE_WALL,7,5)
+      grid.delete(6,4)
     end
   end
   if dialog_num==2 and m.page==4 then
     if not flag[3] then
       flag[3] = true
       grid.set(TYPE_WALL,8,4)
-	  grid.delete(6,4)
-	  grid.delete(7,5)
+      grid.delete(6,4)
+      grid.delete(7,5)
     end
   end
   if dialog_num==2 and m.page==5 then
     if not flag[4] then
       flag[4] = true
       grid.set(TYPE_WALL,6,4)
-	  grid.set(TYPE_WALL,8,4)
-	  grid.delete(7,5)
+      grid.set(TYPE_WALL,8,4)
+      grid.delete(7,5)
     end
   end
   if dialog_num==2 and m.page==6 then
     if not flag[5] then
       flag[5] = true
-	  grid.set(TYPE_WALL,6,4)
-	  grid.delete(8,4)
-	  grid.delete(7,5)
+      grid.set(TYPE_WALL,6,4)
+      grid.delete(8,4)
+      grid.delete(7,5)
     end
   end
   if dialog_num==2 and m.page==7 then
     if not flag[6] then
       flag[6] = true
       grid.set(TYPE_WALL,6,4)
-	  grid.set(TYPE_WALL,7,5)
-	  grid.delete(8,4)
+      grid.set(TYPE_WALL,7,5)
+      grid.delete(8,4)
     end
   end
   if dialog_num==2 and m.page==8 then
     if not flag[7] then
       flag[7] = true
-	  grid.set(TYPE_WALL,7,5)
-	  grid.delete(6,4)
-	  grid.delete(8,4)
+      grid.set(TYPE_WALL,7,5)
+      grid.delete(6,4)
+      grid.delete(8,4)
     end
   end
   if dialog_num==2 and m.page==9 then
@@ -153,7 +149,8 @@ function level.update(dt) -- dt is time since last update in seconds
       flag[8] = true
       grid.set(TYPE_WALL,8,4)
       grid.set(TYPE_WALL,6,4)
-	  grid.set(TYPE_WALL,7,5)
+      grid.set(TYPE_WALL,7,5)
+      level.complete = true
     end
   end
 end

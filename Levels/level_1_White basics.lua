@@ -73,31 +73,31 @@ function level.update(dt) -- dt is time since last update in seconds
    --when the laser splits and hits red and green, pause and then change the color of the source to cyan and the color of the mirror to blue but do not rotate the mirror
    
   if dialog_num==1 and m.page==2 and alt1 == false and alt2 == false then
-	m.noSkip = true
-	m.isBlocking = false
+    m.noSkip = true
+    m.isBlocking = false
   end
   
   if dialog_num==1 and m.page==3 then
-	m.noSkip = true
-	m.isBlocking = false
+    m.noSkip = true
+    m.isBlocking = false
   end
   
   if dialog_num==2 and m.page==2 then
     if not flag1 then
       flag1 = true
-      grid.set(TYPE_RECEIVER, 6, 2, {rotation = 2, color = COLOR_BLUE})
+      grid.insert(TYPE_RECEIVER, 6, 2, {rotation = 2, color = COLOR_BLUE})
     end
-	m.noSkip = true
-	m.isBlocking = false
+    m.noSkip = true
+    m.isBlocking = false
   end
   
   if dialog_num==3 and m.page==2 then
     if not flag2 then
       flag2 = true
-      grid.set(TYPE_RECEIVER, 8, 2, {rotation = 2, color = COLOR_RED})
+      grid.insert(TYPE_RECEIVER, 8, 2, {rotation = 2, color = COLOR_RED})
     end
-	m.noSkip = true
-	m.isBlocking = false
+    m.noSkip = true
+    m.isBlocking = false
   end
   
   if grid.getState(4, 2)==2 and dialog_num==1 and grid.getColor(4, 4)==COLOR_GREEN then
@@ -114,7 +114,7 @@ function level.update(dt) -- dt is time since last update in seconds
     m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
     m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
     m.animation[1][3] = m.animation[1][1]
-	m.animation[2] = m.animation[1]
+    m.animation[2] = m.animation[1]
     m:resize()
   end
   
@@ -133,8 +133,8 @@ function level.update(dt) -- dt is time since last update in seconds
     m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
     m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
     m.animation[1][3] = m.animation[1][1]
-	m.animation[2] = m.animation[1]
-	m.animation[3] = m.animation[1]
+    m.animation[2] = m.animation[1]
+    m.animation[3] = m.animation[1]
     m:resize()
   end
   
@@ -153,8 +153,8 @@ function level.update(dt) -- dt is time since last update in seconds
     m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
     m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
     m.animation[1][3] = m.animation[1][1]
-	m.animation[2] = m.animation[1]
-	m.animation[3] = m.animation[1]
+    m.animation[2] = m.animation[1]
+    m.animation[3] = m.animation[1]
     m:resize()
   end
   
@@ -164,7 +164,7 @@ function level.update(dt) -- dt is time since last update in seconds
     m = ui_elements.create(UI_DIALOG)
     m.text = {
 {{0.5,0.5,0.5},"Can you see how the ",{0,0,1},"BLUE",{0.5,0.5,0.5}," constituent gets reflected even though the mirror is ",{0,1,1},"CYAN",{0.5,0.5,0.5},"? That's because ",{0,1,1},"CYAN",{0.5,0.5,0.5}," is made of ",{0,1,0},"GREEN",{0.5,0.5,0.5}," and ",{0,0,1},"BLUE",{0.5,0.5,0.5}," and because there is no ",{0,1,0},"GREEN",{0.5,0.5,0.5}," in the ",{1,0,1},"MAGENTA",{0.5,0.5,0.5}," beam, there's only the ",{0,0,1},"BLUE",{0.5,0.5,0.5}," part that gets reflected."},
-{{0.5,0.5,0.5},"Finally, shine the ",{1,0,0},"RED",{0.5,0.5,0.5}," reciever!\nDon't forget that in this laboratory ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," light is made of ",{1,0,0},"RED",{0.5,0.5,0.5}," and ",{0,1,0},"GREEN",{0.5,0.5,0.5},"."},
+{{0.5,0.5,0.5},"Finally, shine the ",{1,0,0},"RED",{0.5,0.5,0.5}," receiver!\nDon't forget that in this laboratory ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," light is made of ",{1,0,0},"RED",{0.5,0.5,0.5}," and ",{0,1,0},"GREEN",{0.5,0.5,0.5},"."},
     }
     m.charname = {"Professeur Luminario","Professeur Luminario","Professeur Luminario"}
     m.animation[1] = {}
@@ -172,7 +172,7 @@ function level.update(dt) -- dt is time since last update in seconds
     m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
     m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
     m.animation[1][3] = m.animation[1][1]
-	m.animation[2] = m.animation[1]
+    m.animation[2] = m.animation[1]
     m:resize()
   end
 end

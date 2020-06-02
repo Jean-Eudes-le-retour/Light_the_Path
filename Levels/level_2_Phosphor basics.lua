@@ -9,7 +9,7 @@ local level = {}
 level.complete = false
 level.x = 10
 level.y = 6
-level.name = "Basics 5 (the phosphor one)"
+level.name = "Phosphor Wheel"
 
 local dialog_num = 1
 local flag = false
@@ -78,8 +78,8 @@ function level.update(dt) -- dt is time since last update in seconds
     m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
     m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
     m.animation[1][3] = m.animation[1][1]
-	m.animation[2] = m.animation[1]
-	m.animation[3] = m.animation[1]
+    m.animation[2] = m.animation[1]
+    m.animation[3] = m.animation[1]
     m:resize()
   end 
   if dialog_num==1 and m.page==2 then
@@ -89,10 +89,10 @@ function level.update(dt) -- dt is time since last update in seconds
   if dialog_num==2 and m.page==3 then
     if not flag then
       flag = true
-      grid.set(TYPE_SOURCE, 5, 4, {color = COLOR_BLUE})
+      grid.insert(TYPE_SOURCE, 5, 4, {color = COLOR_BLUE})
     end
-	m.noSkip = true
-	m.isBlocking = false
+    m.noSkip = true
+    m.isBlocking = false
   end
 end
 
