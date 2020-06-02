@@ -1,14 +1,18 @@
 local objects = require("objects")  -- Used to iterate on objects (objects.getId()...) for example check every receiver for win condition; be careful with functions in this module, some only modify the information stored on the object, not the grid!
 local grid = require("grid")        -- Used to modify or observe the grid and its content.
 local tiles = require("tiles")      -- Possibly used to interact directly with the game state (interactive level functions), or for the versatile drawTexture function.
+local ui_elements = require("ui_elements")
 
 local level = {}
 
 -- IMPORTANT VARIABLES --
 level.complete = false
-level.x = 16
-level.y = 9
-level.name = "Puzzle 1"
+level.x = 10
+level.y = 6
+level.name = "Basics 5 (the phosphor one)"
+
+local dialog_num = 1
+local flag = false
 
 -- OPTIONAL VARIABLES --
 level.drawbox_mode = nil
@@ -22,51 +26,74 @@ function level.load()
   
 -- PREPARE LEVEL -- use grid.set(...) or grid.fit(...)
 --grid.fit(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glassState)
-  for i=3,(level.x-1) do
-    grid.set(TYPE_WALL, i, 2)
+  for i=1,level.x do
+    grid.set(TYPE_WALL, i, 1)
+	grid.set(TYPE_WALL, i, level.y-1)
+	grid.set(TYPE_WALL, i, level.y)
   end
-  grid.set(TYPE_WALL, 3, 1)
-  for i=1,3 do
-    grid.set(TYPE_WALL, i, 6)
+  for i=1,level.y do
+	grid.set(TYPE_WALL, 1, i)
+	grid.set(TYPE_WALL, level.x, i)
   end
-  for i=5, 9 do
-    grid.set(TYPE_WALL, i, 6)
-  end
-  for i=11, 15 do
-    grid.set(TYPE_WALL, i, 6)
-  end
+  grid.set(TYPE_RECEIVER, 9, 2, {rotation = 3, color = COLOR_WHITE})
+  grid.set(TYPE_PWHEEL, 2, 2, {rotation = 1, color = COLOR_YELLOW})
   
-  grid.set(TYPE_SOURCE, 1, 8, {rotation =  1, state =  1, color =  COLOR_WHITE})
+  grid.set(TYPE_MIRROR, 7, 4, {color = COLOR_BLUE})
+  grid.set(TYPE_MIRROR, 8, 4, {color = COLOR_BLUE})
   
-  grid.set(TYPE_RECEIVER, 4, 1, {rotation =  1, color =  COLOR_RED})
-  grid.set(TYPE_RECEIVER, 2, 1, {rotation =  2, color =  COLOR_YELLOW})
-  
-  grid.set(TYPE_MIRROR, 16, 6, {state =  1, color =  COLOR_YELLOW, glass = true})
-  grid.set(TYPE_MIRROR, 10, 6, {state =  1, color =  COLOR_MAGENTA, glass = true})
-  grid.set(TYPE_MIRROR, 4, 6, {state =  1, color =  COLOR_CYAN, glass = true})
-  
-  --player objects
-
-  grid.set(TYPE_MIRROR, 9, 8, {state =  1, color =  COLOR_RED})
-  grid.set(TYPE_MIRROR, 10, 8, {state =  1, color =  COLOR_GREEN})
-  grid.set(TYPE_MIRROR, 12, 8, {state =  1, color =  COLOR_WHITE})
-  grid.set(TYPE_MIRROR, 13, 8, {state =  1, color =  COLOR_WHITE})
-  grid.set(TYPE_MIRROR, 14, 8, {state =  1, color =  COLOR_WHITE})
-  grid.set(TYPE_MIRROR, 15, 8, {state =  1, color =  COLOR_WHITE})
-  
-  grid.set(TYPE_LOGIC, 5, 8,{state = LOGIC_OR, canMove = true, canRotate = true}):setSides("in","in","in","out")
-  
-  grid.set(TYPE_PWHEEL, 7, 8, {state =  2, rotation = 1, color =  COLOR_RED, canMove = true, canRotate = true})
+  grid.set(TYPE_SOURCE, 3, 4, {color = COLOR_BLUE})
 
 -- ADD UI ELEMENTS -- use menu.create() type functions, not yet defined.
+	m = ui_elements.create(UI_DIALOG)
+	m.text = {
+    {{0.5,0.5,0.5},"Now we are going to look at phorphor wheels ! When a high energy beam hits them like a ",{0,0,1},"BLUE",{0.5,0.5,0.5}," light for example, a fluorescence phenomenon happens. That means that a lower energy light is produced. The color of the emitted beam depends on the composition of the phosphor: a Y2O2S:Eu3+ coating will result in a ",{1,0,0},"RED",{0.5,0.5,0.5}," color and a ZnO:Zn one in a ",{0,1,0},"GREEN",{0.5,0.5,0.5}," light[1].\n\n[1] Shionoya, Shigeo (1999). 'VI: Phosphors for cathode ray tubes'. Phosphor handbook. Boca Raton, Fla.: CRC Press. ISBN 978-0-8493-7560-6."},
+	{{0.5,0.5,0.5},"Here we have a ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," phosphor used in ",{1,1,1},"WHITE",{0.5,0.5,0.5}," LEDs. When it is shined with ",{0,0,1},"BLUE",{0.5,0.5,0.5}," light it produces ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," light. Try it now !"}}
+    m.charname = {"Professeur Luminario","Professeur Luminario"}
+	m.animation[1] = {}
+	m.animation[1][0] = {4,-1}
+	m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
+	m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
+	m.animation[1][3] = m.animation[1][1]
+	m.animation[2] = m.animation[1]
+	m:resize()
 end
 
 function level.update(dt) -- dt is time since last update in seconds
 -- CHECK WIN CONDITION -- use grid functions to check object states, update level.complete accordingly
-  if win_condition then level.complete = true end
+  if grid.getState(9, 2)==2 then level.complete = true end
 
 -- OPTIONAL INTERACTIVE LEVEL FUNCTIONS -- direct modifications of object states do not trigger and UpdateObjectType flag! (Needs to be done manually)
-
+  if grid.getState(3, 4)==2 and grid.getState(3, 2)==2 and grid.getColor(3, 2)==COLOR_BLUE and (grid.getRotation(3, 2)==0 or grid.getRotation(3, 2)==2)and dialog_num==1 then
+    m:close()
+    dialog_num = dialog_num + 1
+    m = ui_elements.create(UI_DIALOG)
+    m.text = {
+{{0.5,0.5,0.5},"Here the ",{0,0,1},"BLUE",{0.5,0.5,0.5}," dichroic mirror is very useful, it directs the ",{0,0,1},"BLUE",{0.5,0.5,0.5}," beam to the phosphor wheel and then when ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," light is produced it lets it go through."},
+{{0.5,0.5,0.5},"Lets make ",{1,1,1},"WHITE",{0.5,0.5,0.5}," light with ",{0,0,1},"BLUE",{0.5,0.5,0.5}," sources only !"},
+{{0.5,0.5,0.5},"Here is another ",{0,0,1},"BLUE",{0.5,0.5,0.5}," source, turn on the ",{1,1,1},"WHITE",{0.5,0.5,0.5}," receiver !"}
+                     }
+    m.charname = {"Professeur Luminario","Professeur Luminario","Professeur Luminario"}
+    m.animation[1] = {}
+    m.animation[1][0] = {4,-1}
+    m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
+    m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
+    m.animation[1][3] = m.animation[1][1]
+	m.animation[2] = m.animation[1]
+	m.animation[3] = m.animation[1]
+    m:resize()
+  end 
+  if dialog_num==1 and m.page==2 then
+    m.noSkip = true
+    m.isBlocking = false
+  end
+  if dialog_num==2 and m.page==3 then
+    if not flag then
+      flag = true
+      grid.set(TYPE_SOURCE, 5, 4, {color = COLOR_BLUE})
+    end
+	m.noSkip = true
+	m.isBlocking = false
+  end
 end
 
 return level
