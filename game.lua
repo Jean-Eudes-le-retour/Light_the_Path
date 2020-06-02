@@ -164,7 +164,7 @@ end
 function game.onRelease( x, y, button, istouch, presses )
   local xpos, ypos = grid.getCursorPosition()
   if button == 1 and o_hand then
-    local bool = grid.move(o_hand,xpos,ypos,o_hand.xpos,o_hand.ypos)
+    local bool = grid.move(o_hand,xpos,ypos)
     o_hand = false
     return bool
   end

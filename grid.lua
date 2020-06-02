@@ -97,15 +97,24 @@ function grid.fit(t,xpos,ypos,options) -- state,rotation,color,canMove,canRotate
   return nil
 end
 
+-- Insert the given object into the grid at given position, moves existing object elsewhere (see grid.fit), can fail if no space remains
+function grid.insert(t,xpos,ypos,options)
+  if (not xpos) then xpos = math.ceil(grid_size_x/2) end
+  if (not ypos) then ypos = math.ceil(grid_size_y/2) end
+  local o = grid.fit(t,xpos,ypos,options)
+  if o then grid.move(o,xpos,ypos,true) end
+  return o
+end
+
 -- Will attempt to move an object from one point to another within the grid (Might want to make the function ignore 'canMove' and test this externally before moving?)
-function grid.move(o,xpos,ypos,old_xpos,old_ypos,force)
+function grid.move(o,xpos,ypos,force)
   if not (xpos > grid_size_x or xpos < 1 or ypos > grid_size_y or ypos < 1) then
     if Grid[xpos][ypos] then
       local dest_o = Grid[xpos][ypos]
       if DEVELOPER_MODE or force or (not dest_o.glass and dest_o.canMove) then
         force = true
-        dest_o:changePosition(old_xpos,old_ypos)
-        Grid[old_xpos][old_ypos] = dest_o
+        dest_o:changePosition(o.xpos,o.ypos)
+        Grid[o.xpos][o.ypos] = dest_o
         dest_o:update()
       end -- implicit else force = false
     else
@@ -119,7 +128,7 @@ function grid.move(o,xpos,ypos,old_xpos,old_ypos,force)
     end
   end
   print("Couldn't move the object")
-  Grid[old_xpos][old_ypos] = o
+  Grid[o.xpos][o.ypos] = o
   o:update()
   return false
 end

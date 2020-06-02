@@ -26,8 +26,12 @@ level = false
 
 
 function love.load()
-  drawbox_x, drawbox_y, texture_scale = game.init(20,10) --remove variables for main menu
+  if not DEVELOPER_MODE then
+    drawbox_x, drawbox_y, texture_scale = game.init()
+    return
+  end
   
+  drawbox_x, drawbox_y, texture_scale = game.init(20,10) --remove variables for main menu
   
 --grid.fit(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glass,canChangeState)
   grid_dim_x, grid_dim_y = grid.getDimensions()
