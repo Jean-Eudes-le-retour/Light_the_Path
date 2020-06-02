@@ -517,23 +517,39 @@ function ui_elements.checkButtonUpdate(m)
   return false
 end
 
---Assumes all buttons have the same dimensions as default texture[1] (safe enough...)
-function ui_elements.fitButtons(m,spacing,h_deadzone,v_deadzone)
-  spacing = spacing or DEFAULT_BUTTON_SPACING
-  h_deadzone = h_deadzone or DEFAULT_H_DEADZONE
-  v_deadzone = v_deadzone or DEFAULT_V_DEADZONE
-  if not m.texture[BUTTON_TEXTURE_NORMAL] then m.texture[BUTTON_TEXTURE_NORMAL] = TEXTURE_REG_BUTTON_NORMAL end
-  local b_w,b_h = m.texture[BUTTON_TEXTURE_NORMAL]:getDimensions()
-  local width = 2*h_deadzone+b_w
-  local height = 2*v_deadzone+#m.buttons*(b_h+spacing)-spacing
-  m.texture[0] = ui_elements.getNewMenuBackground(width,height)
+-- Fit the buttons into a custom made menu
+function ui_elements.fitButtons(m,options) --align,spacing,h_deadzone,v_deadzone,tc_path,ts_path,bg_color
+  if not options then options = {} end
+  options.spacing = options.spacing or DEFAULT_BUTTON_SPACING
+  options.h_deadzone = options.h_deadzone or DEFAULT_H_DEADZONE
+  options.v_deadzone = options.v_deadzone or DEFAULT_V_DEADZONE
+  options.align = options.align
+
+  local height = options.v_deadzone
+  local width = 0
   for i=1,#m.buttons do
-    m.buttons[i].xpos = v_deadzone
-    m.buttons[i].ypos = h_deadzone+(i-1)*(spacing+b_h)
+    if not m.buttons[i].texture_id then m.buttons[i].texture_id = BUTTON_TEXTURE_NORMAL end
+    local b_w, b_h = m.texture[m.buttons[i].texture_id]:getDimensions()
+    width = math.max(width,b_w)
+    m.buttons[i].ypos = height
     m.buttons[i].width = b_w
     m.buttons[i].height = b_h
-    if not m.buttons[i].texture_id then m.buttons[i].texture_id = BUTTON_TEXTURE_NORMAL end
+    height = height + options.spacing + b_h
   end
+  height = height + options.v_deadzone - options.spacing
+  width = width + 2*options.h_deadzone
+  for i=1,#m.buttons do
+    local b_w = m.texture[m.buttons[i].texture_id]:getDimensions()
+    if options.align == "left" then
+      m.buttons[i].xpos = options.h_deadzone
+    elseif options.align == "right" then
+      m.buttons[i].xpos = width - b_w - options.h_deadzone
+    else
+      m.buttons[i].xpos = math.ceil((width - b_w)/2)
+    end
+  end
+
+  m.texture[0] = ui_elements.getNewMenuBackground(width,height,options.tc_path,options.ts_path,options.bg_color)
 end
 
 function ui_elements.updateDialog(m)
@@ -673,11 +689,11 @@ function ui_elements.escapeMenu()
   local m = ui_elements.create(UI_MENU)
   m.buttons = {{onClick = function(m,b) m:close() ui_elements.mainMenu() end, text = "Main Menu"},{onClick = function(m,b) m:close(true) ui_elements.levelSelect() table.insert(MenuCallStack,ui_elements.escapeMenu) end, text = "Level Select"},{onClick = function(m,b) m:close(true) ui_elements.videoOptions() table.insert(MenuCallStack,ui_elements.escapeMenu) end, text = "Video Options"},{onClick = function(m,b) m:close() end, text = "Return to Game"}}
   m.texture[1] = TEXTURE_REG_BUTTON_NORMAL
+  m.texture[2] = TEXTURE_REG_BUTTON_PRESSED
   ui_elements.fitButtons(m)
 
   m.window_position_mode = MENU_CENTER
   m.isBlocking = true
-  m.texture[2] = TEXTURE_REG_BUTTON_PRESSED
 
   -- m.imagedata = m.texture[0]:newImageData() -- ImageData test
   m:resize()
@@ -781,11 +797,11 @@ function ui_elements.videoOptions()
   local BUTTON_OPTIONS_TEXT, BUTTON_OPTIONS_WINDOWTEXT, BUTTON_OPTIONS_SCREENMODE, BUTTON_OPTIONS_SCALETEXT, BUTTON_OPTIONS_SCALEMODE, BUTTON_OPTIONS_SCALE , BUTTONS_OPTIONS_RETURN, BUTTON_OPTIONS_SCALE_MINUS, BUTTON_OPTIONS_SCALE_PLUS = enum(9)
   m.buttons = {
     {text = "VIDEO OPTIONS", textcolor = COLOR_BLACK, texture_id = 5, noUpdate = true},
-    {text = "Window Mode", align = "left", texture_id = 5, noUpdate = true},
+    {text = "Window Mode", textcolor = {0.3,0.3,0.3}, align = "left", texture_id = 5, noUpdate = true},
     {text = "Windowed"},
-    {text = "UI Scale Options", align = "left", texture_id = 5, noUpdate = true},
+    {text = "UI Scale Options", textcolor = {0.3,0.3,0.3}, align = "left", texture_id = 5, noUpdate = true},
     {text = "Auto", compl2SQButton = true, onClick = function(m,b) ui_elements.changeUIScaleMode() end},
-    {text = "Scale:", texture_id = 5, noUpdate = true},
+    {text = "Scale:", textcolor = {0.3,0.3,0.3}, texture_id = 5, noUpdate = true},
     {text = "Back", onClick = function(m,b) m:close() end}
   }
   m.texture[1] = TEXTURE_REG_BUTTON_NORMAL
@@ -965,10 +981,10 @@ function ui_elements.mainMenu(fromSubmenu)
   m.noEscape = true
   m.texture[1] = TEXTURE_REG_BUTTON_NORMAL
   m.texture[2] = TEXTURE_REG_BUTTON_PRESSED
-  m.texture[5] = TEXTURE_REG_BUTTON_INVIS
+  m.texture[6] = love.graphics.newImage("Textures/title.png")
 
   m.buttons = {
-    {text = "MAIN MENU", textcolor = COLOR_BLACK, texture_id = 5, noUpdate = true},
+    {texture_id = 6, noUpdate = true},
     {text = "Play", onClick = function(m,b) m:close() load_level(0) end},
     {
       text = "Level Select",
