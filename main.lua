@@ -85,7 +85,7 @@ function love.load()
   grid.set(TYPE_GLASS,19,8)
   grid.fit(TYPE_DELAY,nil,nil,{state = 60})
   for i=1,50 do
-    grid.fit(TYPE_DELAY,nil,nil,{state = 5})
+    grid.fit(TYPE_DELAY,nil,nil,{delay = 5})
   end
   
   ui_elements.dialogTest()

@@ -74,7 +74,19 @@ function laser.update()
       if delay and Grid[delay.xpos] and Grid[delay.xpos][delay.ypos] then
         for j=0,3 do
           if delay.previous_light[(delay.index-delay.delay-1)%61+1][j]~=0 then
-            laser.create(delay.xpos + (j==3 and 1 or 0), delay.ypos + (j==0 and 1 or 0), j%2==0, (j==0 or j==3), delay.previous_light[(delay.index-delay.delay-1)%61+1][j])
+            if delay.state == DELAY_TRAVERSE then
+              laser.create(delay.xpos + (j==3 and 1 or 0), delay.ypos + (j==0 and 1 or 0), j%2==0, (j==0 or j==3), delay.previous_light[(delay.index-delay.delay-1)%61+1][j])
+            elseif delay.state == DELAY_FEEDBACK then
+              laser.create(delay.xpos + (j==1 and 1 or 0), delay.ypos + (j==2 and 1 or 0), j%2==0, (j==1 or j==2), delay.previous_light[(delay.index-delay.delay-1)%61+1][j])
+            elseif delay.state == DELAY_QUARTER then
+              laser.create(delay.xpos + (j==0 and 1 or 0), delay.ypos + (j==3 and 1 or 0), j%2==1, (j==0 or j==3), delay.previous_light[(delay.index-delay.delay-1)%61+1][j])
+            elseif delay.state == DELAY_IQUARTER then
+              laser.create(delay.xpos + (j==2 and 1 or 0), delay.ypos + (j==1 and 1 or 0), j%2==1, (j==1 or j==2), delay.previous_light[(delay.index-delay.delay-1)%61+1][j])
+            elseif delay.state == DELAY_SWIRL then
+              laser.create(delay.xpos + (j==0 and 1 or 0), delay.ypos + (j==1 and 1 or 0), j%2==1, (j==0 or j==1), delay.previous_light[(delay.index-delay.delay-1)%61+1][j])
+            elseif delay.state == DELAY_ISWIRL then
+              laser.create(delay.xpos + (j==2 and 1 or 0), delay.ypos + (j==3 and 1 or 0), j%2==1, (j==2 or j==3), delay.previous_light[(delay.index-delay.delay-1)%61+1][j])
+            end
           end
         end
       end

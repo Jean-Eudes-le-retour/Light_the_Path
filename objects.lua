@@ -17,14 +17,15 @@ local DEFAULT_LOGIC =   {t =    TYPE_LOGIC, state =  1, color =  COLOR_BLACK, ca
 local DEFAULT_DELAY =   {t =    TYPE_DELAY, state =  1, color =  COLOR_WHITE, canMove = false, canRotate =  true, canChangeColor = false, glass = false, hasMask = false, rotateByEights = false, canChangeState = false}
 DEFAULT_OBJECT =  {DEFAULT_WALL,DEFAULT_GLASS,DEFAULT_SOURCE,DEFAULT_RECEIVER,DEFAULT_MIRROR,DEFAULT_PWHEEL,DEFAULT_LOGIC,DEFAULT_DELAY}
 TYPES =            {"wall","glass","source","receiver","mirror","pwheel","logic","delay" }
-NUM_STATES =       {     1,      1,       2,         2,       2,       2,      3,      1 }
+NUM_STATES =       {     1,      1,       2,         2,       2,       2,      3,      6 }
 UpdateObjectType = { false,  false,   false,     false,   false,   false,  false,  false }
 ObjectReferences = {} -- contains tables of references to each object of each type sorted by type and Id; Object:ObjectReferences[int:type][int:id]
 local Id = {} -- contains the Id of the newest object of each type (i.e. the amount of each types unless some have been deleted); int:Id[int:type]
 
 -- DO NOT USE THIS METHOD EXTERNALLY ON OTHER OBJECTS; To create a new object use functions in the "grid" module.
 -- Creates a new Object table, with default values as defined in the DEFAULT_OBJECT table. 
-function Object:new(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glass,canChangeState)
+function Object:new(t,xpos,ypos,opt)--state,rotation,color,canMove,canRotate,canChangeColor,glass,canChangeState)
+  if type(opt) ~= "table" then opt = {} end
   local o = {}
   setmetatable(o, self)
   self.__index = self
@@ -34,25 +35,24 @@ function Object:new(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChange
   o.id = Id[o.t]
   o.xpos = xpos or 1
   o.ypos = ypos or 1
-  o.state = state or DEFAULT_OBJECT[o.t].state
-  o.rotation = rotation or 0
-  o.color = color or DEFAULT_OBJECT[o.t].color
-  if type(canMove)        == "boolean" then o.canMove = canMove
+  o.state = opt.state and (opt.state-1)%NUM_STATES[o.t] + 1 or DEFAULT_OBJECT[o.t].state
+  o.rotation = opt.rotation and (opt.rotation-1)%4 + 1 or 0
+  o.color = opt.color or DEFAULT_OBJECT[o.t].color
+  if type(opt.canMove)        == "boolean" then o.canMove = opt.canMove
   else o.canMove          = DEFAULT_OBJECT[o.t].canMove end
-  if type(canRotate)      == "boolean" then o.canRotate = canRotate
+  if type(opt.canRotate)      == "boolean" then o.canRotate = opt.canRotate
   else o.canRotate        = DEFAULT_OBJECT[o.t].canRotate end
-  if type(canChangeColor) == "boolean" then o.canChangeColor = canChangeColor
+  if type(opt.canChangeColor) == "boolean" then o.canChangeColor = opt.canChangeColor
   else o.canChangeColor   = DEFAULT_OBJECT[o.t].canChangeColor end
-  if type(canChangeState) == "boolean" then o.canChangeState = canChangeState
+  if type(opt.canChangeState) == "boolean" then o.canChangeState = opt.canChangeState
   else o.canChangeState   = DEFAULT_OBJECT[o.t].canChangeState end
-  o.glass = glass or o.t == TYPE_GLASS or false
+  o.glass = opt.glass or o.t == TYPE_GLASS or false
   o.glassRotation = 0
   
   -- Object specific initialization
-  if t == TYPE_DELAY then
+  if o.t == TYPE_DELAY then
     o.index = 1
-    o.delay = state and (state-1)%60+1 or 1
-    o.state = 1
+    o.delay = opt.delay and (opt.delay-1)%60+1 or 1
     o.previous_light = {}
     for i=1,61 do
       o.previous_light[i] = {}
@@ -120,6 +120,7 @@ end
 
 function Object:changeState(f_x,f_y)
   if (self.t ~= TYPE_LOGIC and self.t ~= TYPE_RECEIVER) or not f_x or not f_y then
+    f_x = (type(f_x) == "boolean") and f_x or false
     self.state = (self.state - (f_x and 2 or 0))%NUM_STATES[self.t]+1
   else
     local q = getQuadrant(f_x,f_y)
@@ -192,8 +193,8 @@ end
 
 
 -- ONLY CALLED THROUGH GRID FUNCTIONS DO NOT CALL DIRECTLY: Create a new object (does not place in grid!)
-function objects.newObject(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glass,canChangeState)
-  return Object:new(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glass,canChangeState)
+function objects.newObject(t,xpos,ypos,opt)--state,rotation,color,canMove,canRotate,canChangeColor,glass,canChangeState)
+  return Object:new(t,xpos,ypos,opt)--state,rotation,color,canMove,canRotate,canChangeColor,glass,canChangeState)
 end
 -- ONLY CALLED THROUGH GRID FUNCTIONS DO NOT CALL DIRECTLY: Note that this only changes the position info for the object not the position in the grid; 
 function Object:changePosition(xpos,ypos)

@@ -69,7 +69,7 @@ function grid.set(t,xpos,ypos,options) -- state,rotation,color,canMove,canRotate
   if type(options) ~= "table" then options = {} end
   if xpos > grid_size_x or ypos > grid_size_y or xpos < 1 or ypos < 1 then return nil end
   if Grid[xpos][ypos] then Grid[xpos][ypos]:delete() end
-  local o = objects.newObject(t,xpos,ypos,options.state,options.rotation,options.color,options.canMove,options.canRotate,options.canChangeColor,options.glass,options.canChangeState)
+  local o = objects.newObject(t,xpos,ypos,options)
   Grid[xpos][ypos] = o
   return o
 end
