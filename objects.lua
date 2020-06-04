@@ -36,7 +36,7 @@ function Object:new(t,xpos,ypos,opt)--state,rotation,color,canMove,canRotate,can
   o.xpos = xpos or 1
   o.ypos = ypos or 1
   o.state = opt.state and (opt.state-1)%NUM_STATES[o.t] + 1 or DEFAULT_OBJECT[o.t].state
-  o.rotation = opt.rotation and (opt.rotation-1)%4 + 1 or 0
+  o.rotation = opt.rotation and (opt.rotation)%4 or 0
   o.color = opt.color or DEFAULT_OBJECT[o.t].color
   if type(opt.canMove)        == "boolean" then o.canMove = opt.canMove
   else o.canMove          = DEFAULT_OBJECT[o.t].canMove end
