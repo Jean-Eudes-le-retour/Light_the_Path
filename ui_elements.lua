@@ -1194,6 +1194,10 @@ function ui_elements.makeSelection(x,y)
       }
     end
     ui_elements.updateButtonDimensions(sinfo)
+    
+    sinfo.onScroll = function(m, x, y)
+      if DEVELOPER_MODE or (m.o.canRotate and not m.o.glass) then m.o:rotate(y>0) end
+    end
 
     sinfo.update = function(m)
       if not m.o or not Grid[sel_x] or Grid[sel_x][sel_y] ~= m.o then
@@ -1300,6 +1304,10 @@ function ui_elements.makeSelection(x,y)
       return
     end
     ui_elements.updateButtonDimensions(splace)
+    
+    splace.onScroll = function(m, x, y)
+      m.ot = (m.ot - 1 - y) % #TYPES + 1
+    end
 
     splace.update = function(m)
       if Grid[m.sel_x] and Grid[m.sel_x][m.sel_y] then
