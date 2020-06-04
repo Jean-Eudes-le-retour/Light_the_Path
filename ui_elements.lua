@@ -55,11 +55,29 @@ local TEXTURE_MINISQ_BUTTON_GREYED = love.graphics.newImage("Textures/minisq_but
 local TEXTURE_MINISQ_PRESS_NORMAL = love.graphics.newImage("Textures/minisq_press_1.png")
 local TEXTURE_MINISQ_PRESS_PRESSED = love.graphics.newImage("Textures/minisq_press_2.png")
 local TEXTURE_MINISQ_PRESS_GREYED = love.graphics.newImage("Textures/minisq_press_4.png")
+local TEXTURE_THUMB_CHECK = love.graphics.newImage("Textures/thumbnail_check.png")
 local TEXTURE_THUMB_LOCK = love.graphics.newImage("Textures/thumbnail_lock.png")
 local TEXTURE_THUMB_NOLOCK = love.graphics.newImage("Textures/thumbnail_locknot.png")
 local TEXTURE_THUMB_GLASS = love.graphics.newImage("Textures/thumbnail_glass.png")
 local TEXTURE_THUMB_NOGLASS = love.graphics.newImage("Textures/thumbnail_glassnot.png")
 local TEXTURE_THUMB_TRASH = love.graphics.newImage("Textures/thumbnail_trash.png")
+local TEXTURE_THUMB_WALL = love.graphics.newImage("Textures/thumbnail_wall.png")
+local TEXTURE_THUMB_SOURCE = love.graphics.newImage("Textures/thumbnail_source.png")
+local TEXTURE_THUMB_RECEIVER = love.graphics.newImage("Textures/thumbnail_receiver.png")
+local TEXTURE_THUMB_MIRROR = love.graphics.newImage("Textures/thumbnail_mirror.png")
+local TEXTURE_THUMB_PWHEEL = love.graphics.newImage("Textures/thumbnail_pwheel.png")
+local TEXTURE_THUMB_LOGIC = love.graphics.newImage("Textures/thumbnail_logic.png")
+local TEXTURE_THUMB_DELAY = love.graphics.newImage("Textures/thumbnail_delay.png")
+local TEXTURE_THUMB = {
+  TEXTURE_THUMB_WALL,
+  TEXTURE_THUMB_GLASS,
+  TEXTURE_THUMB_SOURCE,
+  TEXTURE_THUMB_RECEIVER,
+  TEXTURE_THUMB_MIRROR,
+  TEXTURE_THUMB_PWHEEL,
+  TEXTURE_THUMB_LOGIC,
+  TEXTURE_THUMB_DELAY
+}
 
 local TEXTURE_DIALOG_SIDE = love.graphics.newImage("Textures/dialog_side.png")
 local TEXTURE_DIALOG_NAMEBAR = love.graphics.newImage("Textures/dialog_namebar.png")
@@ -723,12 +741,10 @@ end
 
 function ui_elements.select(x,y)
   local grid_x, grid_y = grid.getDimensions()
-  if sel_x and sel_y then
-    for i=1,MenuId do
-      if Menus[i] and Menus[i].isSelection then Menus[i]:close() end
-    end
+  for i=1,MenuId do
+    if Menus[i] and Menus[i].isSelection then Menus[i]:close() end
   end
-
+  
   if x < 1 or x > grid_x or y < 1 or y > grid_y or (sel_x == x and sel_y == y) then
     sel_x, sel_y = false, false
     return
@@ -1113,7 +1129,7 @@ end
 
 function ui_elements.makeSelection(x,y)
   sel_x, sel_y = x, y
-  print("selected "..tostring(x).." "..tostring(y))
+  print("Selected "..tostring(x).." "..tostring(y))
   local sbox = ui_elements.create(UI_TILE)
   sbox.isSelection = true
   sbox.x = x
@@ -1127,6 +1143,8 @@ function ui_elements.makeSelection(x,y)
     sinfo.isBlocking = false
     sinfo.window_position_mode = MENU_TR
     sinfo.o = o
+    sinfo.sel_x = sel_x
+    sinfo.sel_y = sel_y
     sinfo.texture[0] = love.graphics.newImage("Textures/selectionmenu.png")
     sinfo.texture[1] = TEXTURE_MINISQ_BUTTON_NORMAL
     sinfo.texture[2] = TEXTURE_MINISQ_BUTTON_PRESSED
@@ -1140,7 +1158,7 @@ function ui_elements.makeSelection(x,y)
         {xpos = 156, ypos = 138, texture_id = 1, onClick = function(m,b) sinfo.o.canChangeState = not sinfo.o.canChangeState end},
         {xpos = 156, ypos = 172, texture_id = 1, onClick = function(m,b) sinfo.o.canChangeColor = not sinfo.o.canChangeColor end},
         {xpos = 156, ypos = 206, texture_id = 1, onClick = function(m,b) sinfo.o.canRotate = not sinfo.o.canRotate UpdateBackgroundFG = true end},
-        {xpos = 156, ypos = 240, texture_id = 1, onClick = function(m,b) sinfo.o:delete() sinfo.o = nil end},
+        {xpos = 156, ypos = 240, texture_id = 1, onClick = function(m,b) sinfo.o:delete() sinfo.o = nil sel_x, sel_y = false, false ui_elements.select(sinfo.sel_x, sinfo.sel_y) end},
         {xpos = 14, ypos = 240, texture_id = 1, onClick = function(m,b) sinfo.o.glass = not sinfo.o.glass UpdateObjectType[TYPE_GLASS] = true end},
         {xpos = 104, ypos = 172, texture_id = 4, onClick = function(m,b) sinfo.o.color = COLOR_RED UpdateObjectType[sinfo.o.t] = true end},
         {xpos = 116, ypos = 172, texture_id = 4, onClick = function(m,b) sinfo.o.color = COLOR_GREEN UpdateObjectType[sinfo.o.t] = true end},
@@ -1150,7 +1168,7 @@ function ui_elements.makeSelection(x,y)
         {xpos = 116, ypos = 184, texture_id = 4, onClick = function(m,b) sinfo.o.color = COLOR_MAGENTA UpdateObjectType[sinfo.o.t] = true end},
         {xpos = 128, ypos = 184, texture_id = 4, onClick = function(m,b) sinfo.o.color = COLOR_YELLOW UpdateObjectType[sinfo.o.t] = true end},
         {xpos = 140, ypos = 184, texture_id = 4, onClick = function(m,b) sinfo.o.color = COLOR_BLACK UpdateObjectType[sinfo.o.t] = true end},
-        {xpos = 104, ypos = 140, texture_id = -1, width = 12, height = 20, onClick = function(m,b) sinfo.o:changeState(true) end},
+        {xpos = 100, ypos = 140, texture_id = -1, width = 12, height = 20, onClick = function(m,b) sinfo.o:changeState(true) end},
         {xpos = 140, ypos = 140, texture_id = -1, width = 12, height = 20, onClick = function(m,b) sinfo.o:changeState() end}
       }
     else
@@ -1161,7 +1179,7 @@ function ui_elements.makeSelection(x,y)
         {xpos = 156, ypos = 138, texture_id = 3, noUpdate = true},
         {xpos = 156, ypos = 172, texture_id = 3, noUpdate = true},
         {xpos = 156, ypos = 206, texture_id = 3, noUpdate = true},
-        {xpos = 156, ypos = 240, texture_id = (sinfo.o.playerMade and 1 or 3), noUpdate = (not sinfo.o.playerMade), onClick = (sinfo.o.playerMade and function(m,b) sinfo.o:delete() sinfo.o = nil end)},
+        {xpos = 156, ypos = 240, texture_id = (sinfo.o.playerMade and 1 or 3), noUpdate = (not sinfo.o.playerMade), onClick = (sinfo.o.playerMade and function(m,b) sinfo.o:delete() sinfo.o = nil sel_x, sel_y = false, false ui_elements.select(sinfo.sel_x, sinfo.sel_y) end)},
         {xpos = 14, ypos = 240, texture_id = 3, noUpdate = true},
         {xpos = 104, ypos = 172, texture_id = (mc and 4 or 6), noUpdate = (not mc), onClick = (mc and function(m,b) sinfo.o.color = COLOR_RED UpdateObjectType[sinfo.o.t] = true end)},
         {xpos = 116, ypos = 172, texture_id = (mc and 4 or 6), noUpdate = (not mc), onClick = (mc and function(m,b) sinfo.o.color = COLOR_GREEN UpdateObjectType[sinfo.o.t] = true end)},
@@ -1171,7 +1189,7 @@ function ui_elements.makeSelection(x,y)
         {xpos = 116, ypos = 184, texture_id = (mc and 4 or 6), noUpdate = (not mc), onClick = (mc and function(m,b) sinfo.o.color = COLOR_MAGENTA UpdateObjectType[sinfo.o.t] = true end)},
         {xpos = 128, ypos = 184, texture_id = (mc and 4 or 6), noUpdate = (not mc), onClick = (mc and function(m,b) sinfo.o.color = COLOR_YELLOW UpdateObjectType[sinfo.o.t] = true end)},
         {xpos = 140, ypos = 184, texture_id = (mc and 4 or 6), noUpdate = (not mc), onClick = (mc and function(m,b) sinfo.o.color = COLOR_BLACK UpdateObjectType[sinfo.o.t] = true end)},
-        {xpos = 104, ypos = 140, texture_id = -1, width = 12, height = 20, onClick = (ms and function(m,b) sinfo.o:changeState(true) end)},
+        {xpos = 100, ypos = 140, texture_id = -1, width = 12, height = 20, onClick = (ms and function(m,b) sinfo.o:changeState(true) end)},
         {xpos = 140, ypos = 140, texture_id = -1, width = 12, height = 20, onClick = (ms and function(m,b) sinfo.o:changeState() end)}
       }
     end
@@ -1243,12 +1261,12 @@ function ui_elements.makeSelection(x,y)
       love.graphics.setBlendMode("alpha")
       
       love.graphics.setFont(FONT_DEFAULT)
-      love.graphics.print(TYPES[m.o.t]:gsub("^%l", string.upper),12,2,nil,2)
+      love.graphics.print(TYPES[m.o.t]:gsub("^%l", string.upper),12,4,nil,2)
       love.graphics.print(tostring(m.o.xpos),122,65)
       love.graphics.print(tostring(m.o.ypos),122,99)
       local state = tostring(m.o.state)
       local tw = FONT_DEFAULT:getWidth(state)
-      love.graphics.print(tostring(m.o.state),128-math.floor(tw/2),146)
+      love.graphics.print(tostring(m.o.state),126-math.floor(tw/2),146)
       
       love.graphics.setFont(FONT_BASE)
       
@@ -1257,7 +1275,60 @@ function ui_elements.makeSelection(x,y)
 
     sinfo:resize()
   else
-  --CONTEXT MENU FOR NEW GRID/ADDING TILE
+    local splace = ui_elements.create(UI_MENU)
+    splace.isSelection = true
+    splace.isBlocking = false
+    splace.window_position_mode = MENU_TR
+    splace.sel_x = sel_x
+    splace.sel_y = sel_y
+    splace.ot = TYPE_WALL
+    splace.texture[0] = love.graphics.newImage("Textures/selectionempty.png")
+    splace.texture[1] = TEXTURE_MINISQ_BUTTON_NORMAL
+    splace.texture[2] = TEXTURE_MINISQ_BUTTON_PRESSED
+    splace.texture[3] = TEXTURE_MINISQ_BUTTON_GREYED
+    splace.buttons = {
+      {xpos = 114, ypos = 60, texture_id = 1, noUpdate = true},
+      {xpos = 156, ypos = 60, texture_id = 1},
+      {xpos = 100, ypos = 62, texture_id = -1, width = 12, height = 20, onClick = function(m,b) m.ot = (m.ot - 2) % #TYPES + 1 end},
+      {xpos = 140, ypos = 62, texture_id = -1, width = 12, height = 20, onClick = function(m,b) m.ot = m.ot % #TYPES + 1 end}
+    }
+    splace.buttons[2].onClick = function(m,b)
+      local o = grid.fit(m.ot, m.sel_x, m.sel_y, {canMove = true, canRotate = true, canChangeState = true, canChangeColor = true})
+      o.playerMade = true
+      sel_x, sel_y = false, false
+      ui_elements.select(m.sel_x, m.sel_y)
+      return
+    end
+    ui_elements.updateButtonDimensions(splace)
+
+    splace.update = function(m)
+      if Grid[m.sel_x] and Grid[m.sel_x][m.sel_y] then
+        sel_x, sel_y = false, false
+        ui_elements.select(m.sel_x, m.sel_y)
+        return
+      end
+      
+--    BUTTON UPDATES
+      for i=1,#m.buttons do
+        if m:isInButton(i) then m.buttons[i].cursorPresent = true
+        else m.buttons[i].cursorPresent = false end
+      end
+      if m.buttons[2].cursorPresent then
+        if not m.buttons[2].pressed then m.buttons[2].texture_id = 1
+        else m.buttons[2].texture_id = 2 end
+      else 
+        m.buttons[2].pressed = false
+        m.buttons[2].texture_id = 1
+      end
+      if not m.buttons[3].cursorPresent then m.buttons[3].pressed = false end
+      if not m.buttons[4].cursorPresent then m.buttons[4].pressed = false end
+      m:draw()
+      love.graphics.setCanvas(m.canvas)
+      love.graphics.draw(TEXTURE_THUMB[m.ot],114,60)
+      love.graphics.draw(TEXTURE_THUMB_CHECK,156,60)
+      love.graphics.setCanvas()
+    end
+    splace:resize()
   end
 end
 

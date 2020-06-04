@@ -126,8 +126,6 @@ function game.onClick( x, y, button, istouch, presses )
         if rotation > 1 then ypos = ypos+1 end
         grid.delete(nil,nil,o_hand,true)
         o_displacement_x, o_displacement_y = math.ceil((xpos-f_xpos-1)*tile_size), math.ceil((ypos-f_ypos-1)*tile_size)
-      elseif cursor_mode == CURSOR_SELECT then
-        sel_x, sel_y = xpos, ypos
       end
     elseif button == 2 then
       if (not DEVELOPER_MODE) and (Grid[xpos][ypos].glass or not Grid[xpos][ypos].canChangeState) then return false end
