@@ -60,18 +60,20 @@ function game.updateUI(dt)
   end
   love.graphics.setCanvas(canvas_UI)
   love.graphics.clear()
+  love.graphics.setBlendMode("alpha","premultiplied")
   for i=1,MenuId do
-    if Menus[i] and Menus[i].canvas then --UI MISTAKE, UI_TILE's position mode is grid-based! MENU_GRID too!
+    if Menus[i] and Menus[i].canvas then
       love.graphics.draw(Menus[i].canvas,Menus[i].xpos,Menus[i].ypos,nil,(Menus[i].t == UI_TILE) and texture_scale or UI_scale)
     end
   end
+  love.graphics.setBlendMode("alpha")
 
   if o_hand then
     local rotation = math.rad(90*o_hand.rotation)
     local state = o_hand.state
     tiles.drawTexture(o_hand.t,o_hand.state,o_hand.color,o_hand.side)
-    love.graphics.setCanvas(canvas_UI)
     love.graphics.setBlendMode("alpha","premultiplied")
+    love.graphics.setCanvas(canvas_UI)
     love.graphics.draw(canvas_Texture,cursor_x+o_displacement_x,cursor_y+o_displacement_y,rotation,texture_scale)
     love.graphics.setBlendMode("alpha")
   end
@@ -111,29 +113,26 @@ function game.onClick( x, y, button, istouch, presses )
     end
   end
   
-  if not (Grid[xpos] and Grid[xpos][ypos]) then
-    if (button == 1) and (cursor_mode == CURSOR_SELECT) then sel_x, sel_y = false, false end
-    if (button == 3) then
-      sel_x, sel_y = false, false
+  if (DEVELOPER_MODE or level.canModify) and (button == 3) or (button == 1) and (cursor_mode == CURSOR_SELECT) then ui_elements.select(xpos,ypos) end
+  
+  if (Grid[xpos] and Grid[xpos][ypos]) then
+    if button == 1 then 
+      if cursor_mode == CURSOR_MOVE then
+        if (not DEVELOPER_MODE) and (Grid[xpos][ypos].glass or not Grid[xpos][ypos].canMove) then return false end
+        local tile_size = grid.getTileSize()
+        o_hand = Grid[xpos][ypos]
+        local rotation = o_hand.rotation
+        xpos = xpos + ((rotation == 1 or rotation == 2) and 1 or 0)
+        if rotation > 1 then ypos = ypos+1 end
+        grid.delete(nil,nil,o_hand,true)
+        o_displacement_x, o_displacement_y = math.ceil((xpos-f_xpos-1)*tile_size), math.ceil((ypos-f_ypos-1)*tile_size)
+      elseif cursor_mode == CURSOR_SELECT then
+        sel_x, sel_y = xpos, ypos
+      end
+    elseif button == 2 then
+      if (not DEVELOPER_MODE) and (Grid[xpos][ypos].glass or not Grid[xpos][ypos].canChangeState) then return false end
+      Grid[xpos][ypos]:changeState(f_xpos, f_ypos)
     end
-  elseif button == 1 then 
-    if cursor_mode == CURSOR_MOVE then
-      if (not DEVELOPER_MODE) and (Grid[xpos][ypos].glass or not Grid[xpos][ypos].canMove) then return false end
-      local tile_size = grid.getTileSize()
-      o_hand = Grid[xpos][ypos]
-      local rotation = o_hand.rotation
-      xpos = xpos + ((rotation == 1 or rotation == 2) and 1 or 0)
-      if rotation > 1 then ypos = ypos+1 end
-      grid.delete(nil,nil,o_hand,true)
-      o_displacement_x, o_displacement_y = math.ceil((xpos-f_xpos-1)*tile_size), math.ceil((ypos-f_ypos-1)*tile_size)
-    elseif cursor_mode == CURSOR_SELECT then
-      sel_x, sel_y = xpos, ypos
-    end
-  elseif button == 2 then -- Will later make this button INTERACT with the block (o.state = o.state%NUM_STATES[o.t]+1) and move rotation to scroll wheel; remember: canChangeState only defined in default objects (not actual)
-    if (not DEVELOPER_MODE) and (Grid[xpos][ypos].glass or not Grid[xpos][ypos].canChangeState) then return false end
-    Grid[xpos][ypos]:changeState(f_xpos, f_ypos)
-  elseif button == 3 then
-    sel_x, sel_y = xpos, ypos
   end
   -- IF OTHERS UNDEFINED FOR NOW
 

@@ -1,11 +1,11 @@
 io.stdout:setvbuf("no")
 
--- SETTING UP CONSTANTS --
-require("constants")
-
 -- SETTING UP LOVE --
 --Prevents low-res textures from looking blurry (get that neat sharp look on the game)
 love.graphics.setDefaultFilter("nearest", "nearest")
+
+-- SETTING UP CONSTANTS --
+require("constants")
 
 -- LOADING MODULES --
 local objects = require("objects")
@@ -15,23 +15,25 @@ local game = require("game")
 local ui_elements = require("ui_elements")
 local debugUtils = require("debugUtils")
 
---temporary test var
-local grid_dim_x, grid_dim_y = 0, 0
-local grid_pos_x, grid_pos_y = 0, 0
-
 --Important variables in main
 local drawbox_x, drawbox_y, texture_scale = 0, 0, 0
 game_time = 0
 level = false
 
+--Developer info variables
+local grid_dim_x, grid_dim_y = 0, 0
+local grid_pos_x, grid_pos_y = 0, 0
 
 function love.load()
+  --[[ GO DIRECTLY TO MAIN MENU IF NOT IN DEVELOPER MODE
   if not DEVELOPER_MODE then
     drawbox_x, drawbox_y, texture_scale = game.init()
     return
-  end
-  
+  end]]
+
   drawbox_x, drawbox_y, texture_scale = game.init(20,10) --remove variables for main menu
+  level = {}
+  level.canModify = true
   
 --grid.fit(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glass,canChangeState)
   grid_dim_x, grid_dim_y = grid.getDimensions()
@@ -102,6 +104,7 @@ function love.update(dt)
   end
   drawbox_x, drawbox_y, texture_scale = grid.getDrawboxInfo()
   grid_pos_x, grid_pos_y = grid.getCursorPosition(true)
+  grid_dim_x, grid_dim_y = grid.getDimensions()
 end
 
 function love.draw()
@@ -117,9 +120,9 @@ function love.draw()
   if DEVELOPER_MODE then
     love.graphics.print("X : "..string.sub(tostring(grid_pos_x),1,10))
     love.graphics.print("Y : "..string.sub(tostring(grid_pos_y),1,10),100,0)
-    love.graphics.print("X_max : "..tostring(grid_dim_x),0,10)
-    love.graphics.print("Y_max : "..tostring(grid_dim_y),100,10)
-    love.graphics.print("Current FPS: "..tostring(love.timer.getFPS( )), 0, 25)
+    love.graphics.print("X_max : "..tostring(grid_dim_x),0,15)
+    love.graphics.print("Y_max : "..tostring(grid_dim_y),100,15)
+    love.graphics.print("Current FPS: "..tostring(love.timer.getFPS( )), 0, 30)
   end
 end
 

@@ -234,7 +234,7 @@ end
 
 --Return coordinates of specified tile (or position based on grid based position)
 function grid.getTilePosition(grid_pos_x, grid_pos_y)
-  return true_drawbox_pos_x+grid_pos_x*tile_size, true_drawbox_pos_y+grid_pos_y*tile_size
+  return true_drawbox_pos_x+(grid_pos_x-1)*tile_size, true_drawbox_pos_y+(grid_pos_y-1)*tile_size
 end
 
 

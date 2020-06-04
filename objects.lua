@@ -9,9 +9,9 @@ local objects = {}
 local Object =          {t = 0,     id = 0, xpos = nil, ypos = nil, state = 1, rotation = 0, color = COLOR_WHITE, canMove = false, canRotate = false, canChangeColor = false, glass = false}
 local DEFAULT_WALL =    {t =     TYPE_WALL, state = 13, color =  COLOR_WHITE, canMove = false, canRotate = false, canChangeColor = false, glass = false, hasMask = false, rotateByEights = false, canChangeState = false}
 local DEFAULT_GLASS =   {t =    TYPE_GLASS, state =  1, color =  COLOR_WHITE, canMove = false, canRotate = false, canChangeColor = false, glass =     0, hasMask = false, rotateByEights = false, canChangeState = false}
-local DEFAULT_SOURCE =  {t =   TYPE_SOURCE, state =  1, color =  COLOR_WHITE, canMove = false, canRotate = false, canChangeColor =  true, glass = false, hasMask =  true, rotateByEights = false, canChangeState =  true}
+local DEFAULT_SOURCE =  {t =   TYPE_SOURCE, state =  1, color =  COLOR_WHITE, canMove = false, canRotate = false, canChangeColor = false, glass = false, hasMask =  true, rotateByEights = false, canChangeState =  true}
 local DEFAULT_RECEIVER ={t = TYPE_RECEIVER, state =  1, color =  COLOR_BLACK, canMove = false, canRotate = false, canChangeColor = false, glass = false, hasMask =  true, rotateByEights = false, canChangeState = false}
-local DEFAULT_MIRROR =  {t =   TYPE_MIRROR, state =  1, color =  COLOR_WHITE, canMove =  true, canRotate =  true, canChangeColor =  true, glass = false, hasMask =  true, rotateByEights =  true, canChangeState = false}
+local DEFAULT_MIRROR =  {t =   TYPE_MIRROR, state =  1, color =  COLOR_WHITE, canMove =  true, canRotate =  true, canChangeColor = false, glass = false, hasMask =  true, rotateByEights =  true, canChangeState = false}
 local DEFAULT_PWHEEL =  {t =   TYPE_PWHEEL, state =  1, color =  COLOR_WHITE, canMove = false, canRotate = false, canChangeColor = false, glass = false, hasMask =  true, rotateByEights =  true, canChangeState = false}
 local DEFAULT_LOGIC =   {t =    TYPE_LOGIC, state =  1, color =  COLOR_BLACK, canMove = false, canRotate = false, canChangeColor = false, glass = false, hasMask =  true, rotateByEights = false, canChangeState = false}
 local DEFAULT_DELAY =   {t =    TYPE_DELAY, state =  1, color =  COLOR_WHITE, canMove = false, canRotate =  true, canChangeColor = false, glass = false, hasMask = false, rotateByEights = false, canChangeState = false}
@@ -120,7 +120,7 @@ end
 
 function Object:changeState(f_x,f_y)
   if (self.t ~= TYPE_LOGIC and self.t ~= TYPE_RECEIVER) or not f_x or not f_y then
-    self.state = self.state%NUM_STATES[self.t]+1
+    self.state = (self.state - (f_x and 2 or 0))%NUM_STATES[self.t]+1
   else
     local q = getQuadrant(f_x,f_y)
     q = (q - self.rotation)%4
