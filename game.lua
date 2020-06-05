@@ -3,6 +3,7 @@ local grid = require("grid")
 local tiles = require("tiles")
 local ui_elements = require("ui_elements")
 local laser = require("laser")
+local audio = require("audio")
 
 
 -- HIGH LEVEL GAME FUNCTIONS, ideally functions that provide user with UI and defines behaviour when player takes certain actions
@@ -13,15 +14,6 @@ local o_hand = false
 local o_displacement_x, o_displacement_y = 0,0
 local sel_x, sel_y =  false, false
 canvas_UI = love.graphics.newCanvas() -- WILL NEED TO MOVE INTO WHICHEVER FUNCTION CHANGES SCREEN RESOLUTION
-
--- GAME AUDIO VARIABLES --
-local next_track, next_volume_step, current_track
-local audio_fadein = false
-local audio_fadeout = false
-local audio_muffle = false
-local volume_permanent = DEFAULT_VOLUME
-local volume_muffle = DEFAULT_MUFFLE
-local volume_step = 0
 
 -- Initializes game (Maybe we can move the definition of callback functions into main, but this gives us more control for now)
 function game.init(x_res,y_res,mode,x_val,y_val)
@@ -42,7 +34,7 @@ end
 function game.update(dt)
   grid.updateCursorPosition()
   game.updateUI(dt)
-  game.updateAudio(dt)
+  audio.update(dt)
   game.tileActivation(TYPE_RECEIVER)
   laser.update()
   tiles.update()
@@ -183,19 +175,28 @@ function game.onRelease( x, y, button, istouch, presses )
 end
 
 function game.onPress( key, scancode, isrepeat)
+  local MenuId = ui_elements.getMenuId()
+  local blocked = false
+  for i=1,MenuId do
+    blocked = blocked or Menus[i] and Menus[i].isBlocking
+  end
 
   if key == "escape" then
-    local MenuId = ui_elements.getMenuId()
-    for i=MenuId,1,-1 do
-      if Menus[i] and Menus[i].isBlocking and Menus[i].t ~= UI_DIALOG then
-        if Menus[i].noEscape then return end
-        Menus[i]:close()
-        return
+    if laser.isHalted() then
+      laser.halt(false)
+    else
+      for i=MenuId,1,-1 do
+        if Menus[i] and Menus[i].isBlocking and Menus[i].t ~= UI_DIALOG then
+          if Menus[i].noEscape then return end
+          Menus[i]:close()
+          return
+        end
       end
+      ui_elements.escapeMenu()
+      return
     end
-    ui_elements.escapeMenu()
-    game.audio.muffle()
-    return
+  elseif key == "space" then
+    if not blocked then laser.step() end
   end
 
 end
@@ -221,96 +222,6 @@ function game.tileActivation(t)
       end
     end
   end
-end
-
-
-
-function game.updateAudio(dt)
-  if not current_track then current_track = TRACK[4] end
-  if audio_muffle then game.audio.muffleUpdate() end
-
-  if audio_fadeout then
-    audio_fadein = false
-    if audio_muffle then game.audio.unmuffle() end
-    local volume = current_track:getVolume()
-    volume = volume - dt*volume_step
-    if volume <= 0 then
-      current_track:stop()
-      audio_fadeout = false
-      if next_track then
-        audio_fadein = true
-        current_track = next_track
-        volume_step = next_volume_step
-        current_track:setVolume(0)
-        current_track:play()
-        next_track = nil
-        next_volume_step = nil
-        volume = 0
-      else
-        volume = DEFAULT_VOLUME
-      end
-    end
-    current_track:setVolume(volume)
-  end
-
-  if audio_fadein then
-    local volume = current_track:getVolume()
-    volume = volume + dt*volume_step
-    if volume >= volume_permanent then
-      volume = volume_permanent
-      audio_fadein = false
-    end
-    current_track:setVolume(volume)
-  end
-end
-
-game.audio = {}
-function game.audio.muffleUpdate()
-  for i=1,ui_elements.getMenuId() do
-    if Menus[i] and Menus[i].isBlocking and Menus[i].t ~= MENU_DIALOG then return true end
-  end
-  game.audio.unmuffle()
-  return false
-end
-
-function game.audio.muffle(volume)
-  volume_muffle = volume or DEFAULT_MUFFLE
-  current_track:setFilter({
-  type = 'lowpass',
-  volume = volume_muffle,
-  highgain = .05,
-})
-  audio_muffle = true
-  print("muffling")
-end
-
-function game.audio.unmuffle()
-  audio_muffle = false
-  current_track:setVolume(volume_permanent)
-  current_track:setFilter()
-  print("unmuffling")
-end
-
-function game.audio.fadein(track_id,volume,duration)
-  duration = duration or 3
-  volume_permanent = volume or DEFAULT_VOLUME
-  if current_track and current_track:isPlaying() then
-    game.audio.fadeout(duration/2)
-    next_track = TRACK[track_id]
-    next_volume_step = 2*volume_permanent/duration
-  else
-    audio_fadein = true
-    current_track = TRACK[track_id]
-    current_track:setVolume(0)
-    current_track:play()
-    volume_step = volume_permanent/duration
-  end
-end
-
-function game.audio.fadeout(duration)
-  duration = duration or 3
-  audio_fadeout = true
-  volume_step = current_track:getVolume()/duration
 end
 
 return game

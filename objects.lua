@@ -14,7 +14,7 @@ local DEFAULT_RECEIVER ={t = TYPE_RECEIVER, state =  1, color =  COLOR_BLACK, ca
 local DEFAULT_MIRROR =  {t =   TYPE_MIRROR, state =  1, color =  COLOR_WHITE, canMove =  true, canRotate =  true, canChangeColor = false, glass = false, hasMask =  true, rotateByEights =  true, canChangeState = false}
 local DEFAULT_PWHEEL =  {t =   TYPE_PWHEEL, state =  1, color =  COLOR_WHITE, canMove = false, canRotate = false, canChangeColor = false, glass = false, hasMask =  true, rotateByEights =  true, canChangeState = false}
 local DEFAULT_LOGIC =   {t =    TYPE_LOGIC, state =  1, color =  COLOR_BLACK, canMove = false, canRotate = false, canChangeColor = false, glass = false, hasMask =  true, rotateByEights = false, canChangeState = false}
-local DEFAULT_DELAY =   {t =    TYPE_DELAY, state =  1, color =  COLOR_WHITE, canMove = false, canRotate =  true, canChangeColor = false, glass = false, hasMask = false, rotateByEights = false, canChangeState = false}
+local DEFAULT_DELAY =   {t =    TYPE_DELAY, state =  1, color =  COLOR_BLACK, canMove = false, canRotate =  true, canChangeColor = false, glass = false, hasMask =  true, rotateByEights = false, canChangeState = false}
 DEFAULT_OBJECT =  {DEFAULT_WALL,DEFAULT_GLASS,DEFAULT_SOURCE,DEFAULT_RECEIVER,DEFAULT_MIRROR,DEFAULT_PWHEEL,DEFAULT_LOGIC,DEFAULT_DELAY}
 TYPES =            {"wall","glass","source","receiver","mirror","pwheel","logic","delay" }
 NUM_STATES =       {     1,      1,       2,         2,       2,       2,      3,      6 }
@@ -53,11 +53,11 @@ function Object:new(t,xpos,ypos,opt)--state,rotation,color,canMove,canRotate,can
   if o.t == TYPE_DELAY then
     o.index = 1
     o.delay = opt.delay and (opt.delay-1)%60+1 or 1
-    o.previous_light = {}
+    o.memory = {}
     for i=1,61 do
-      o.previous_light[i] = {}
+      o.memory[i] = {}
       for j=0,3 do
-        o.previous_light[i][j] = 0
+        o.memory[i][j] = 0
       end
     end
   end

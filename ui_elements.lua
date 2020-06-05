@@ -1,27 +1,24 @@
 local grid = require("grid")
+local audio = require("audio")
 local bit = require("bit")
 local bnot, band, bor, bxor, rshift, lshift = bit.bnot, bit.band, bit.bor, bit.bxor, bit.rshift, bit.lshift
 
 local ui_elements = {}
 
-local MenuId = 1 --DEFAULT HAS MAIN_MENU ACTIVE
+----------- VARIABLES -----------
+local MenuId = 0
 local uniqueId = 0
-local UI_TYPES = {"menu","dialog","tile"}
 local UI_automatic_scaling = true
-local UI_autoscale_factor_x = 1/384 --UI_scale 3*128*UI_scale = ww
-local UI_autoscale_factor_y = 1/512 --16*32*UI_scale = wh
-local MIN_UI_SCALE = 0.5 --Only applies for manual mode
-local MAX_UI_SCALE = 5 --Only applies for manual mode
 local MenuCallStack = {}
 local sel_x, sel_y = false, false
-
 local UI_scale = 1.5
-if UI_automatic_scaling then
-  local ww, wh = love.graphics.getDimensions()
-  UI_scale = math.min(ww*UI_autoscale_factor_x, wh*UI_autoscale_factor_y)
-end
 
-----------------------------------------------------------
+----------- CONSTANTS -----------
+local UI_TYPES = {"menu","dialog","tile"}
+local UI_AUTOSCALE_X = 1/384 --UI_scale 3*128*UI_scale = ww
+local UI_AUTOSCALE_Y = 1/512 --16*32*UI_scale = wh
+local MIN_UI_SCALE = 0.5 --Only applies for manual mode
+local MAX_UI_SCALE = 5 --Only applies for manual mode
 local DEFAULT_BUTTON_SPACING = 6
 local DEFAULT_H_DEADZONE = 32
 local DEFAULT_V_DEADZONE = 32
@@ -29,9 +26,15 @@ local DEFAULT_DIALOG_H_DEADZONE = 8
 local DEFAULT_DIALOG_V_DEADZONE = 8
 local DEFAULT_DIALOG_V_SPAN = 256
 local DEFAULT_ANIM_FREQ = 2
-----------------------------------------------------------
 local DEFAULT_TEXT_RATE = 30
-----------------------------------------------------------
+
+
+if UI_automatic_scaling then
+  local ww, wh = love.graphics.getDimensions()
+  UI_scale = math.min(ww*UI_AUTOSCALE_X, wh*UI_AUTOSCALE_Y)
+end
+
+----------- RESSOURCES -----------
 local TEXTURE_MENU_CORNER = love.graphics.newImage("Textures/menu_corner.png")
 local TEXTURE_MENU_SIDE   = love.graphics.newImage("Textures/menu_side.png")
 local TEXTURE_REG_BUTTON_NORMAL  = love.graphics.newImage("Textures/default_button_1.png")
@@ -82,7 +85,6 @@ local TEXTURE_THUMB = {
 local TEXTURE_DIALOG_SIDE = love.graphics.newImage("Textures/dialog_side.png")
 local TEXTURE_DIALOG_NAMEBAR = love.graphics.newImage("Textures/dialog_namebar.png")
 local TEXTURE_DIALOG_NAMEBAR_EDGE = love.graphics.newImage("Textures/dialog_namebar_edge.png")
-
 local TEXTURE_SELECTION_BOX = love.graphics.newImage("Textures/selection.png")
 
 
@@ -350,11 +352,15 @@ function Menu:draw()
 end
 
 function Menu:close(noInvoke)
-  -- print("Attempt to close a menu: "..UI_TYPES[self.t])
   if self.id == MenuId then
     MenuId = MenuId-1
     while not Menus[MenuId] and MenuId > 0 do MenuId = MenuId-1 end
   end
+
+  local blocked = false
+  for i=1,MenuId do blocked = blocked or (Menus[i] and Menus[i].t ~= UI_DIALOG and Menus[i].isBlocking) end
+  if not blocked then audio.unmuffle() end
+
   Menus[self.id] = nil
   if not noInvoke and #MenuCallStack ~= 0 then
     MenuCallStack[#MenuCallStack](true)
@@ -364,6 +370,7 @@ end
 
 function Menu:resize()
   if self.t == UI_MENU then
+    if self.isBlocking and not audio.getMuffle() then audio.muffle() end
 
     local window_x, window_y = love.graphics.getDimensions()
     local pmode = self.window_position_mode
@@ -717,12 +724,12 @@ function ui_elements.changeUIScaleMode()
   UI_automatic_scaling = not UI_automatic_scaling
   if UI_automatic_scaling then
     local window_w, window_h = love.graphics.getDimensions()
-    ui_elements.changeUIScale(math.min(window_w*UI_autoscale_factor_x, window_h*UI_autoscale_factor_y))
+    ui_elements.changeUIScale(math.min(window_w*UI_AUTOSCALE_X, window_h*UI_AUTOSCALE_Y))
   end
 end
 
 function ui_elements.getUIScaleMode()
-  return UI_automatic_scaling, UI_autoscale_factor_x, UI_autoscale_factor_y
+  return UI_automatic_scaling, UI_AUTOSCALE_X, UI_AUTOSCALE_Y
 end
 
 function ui_elements.resetCallStack()
@@ -753,7 +760,10 @@ function ui_elements.select(x,y)
   ui_elements.makeSelection(x,y)
 end
 
---------------------------------------------------------------------------------------------------------------------------------
+--IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII--
+--II                                                                          SPECIFIC PREDEFINED MENUS                                                                        II--
+--IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII--
+
 function ui_elements.escapeMenu()
   local m = ui_elements.create(UI_MENU)
   m.buttons = {{onClick = function(m,b) m:close() ui_elements.mainMenu() end, text = "Main Menu"},{onClick = function(m,b) m:close(true) ui_elements.levelSelect() table.insert(MenuCallStack,ui_elements.escapeMenu) end, text = "Level Select"},{onClick = function(m,b) m:close(true) ui_elements.videoOptions() table.insert(MenuCallStack,ui_elements.escapeMenu) end, text = "Video Options"},{onClick = function(m,b) m:close() end, text = "Return to Game"}}

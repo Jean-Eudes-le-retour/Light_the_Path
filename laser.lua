@@ -16,6 +16,8 @@ local mask2 = false
 local mask2_r = 0
 local laser_r = 0
 local frame = 1
+local halt = false
+local step = false
 local function stencilFunction()
    love.graphics.setShader(MASK_EFFECT2)
    if mask1 then love.graphics.draw(mask1, TEXTURE_OFFSET, TEXTURE_OFFSET, mask1_r, nil, nil, TEXTURE_OFFSET, TEXTURE_OFFSET) end
@@ -36,6 +38,9 @@ function laser.update()
     if UpdateObjectType[i] then UpdateLaserFG = true end
   end
   if laser.checkDelayUpdate() then UpdateLaserFG = true end
+
+  if halt and not step then goto skip_update end
+  step = false
   if UpdateLaserFG then
     for i=1,#TEXTURE_LASER do
       LaserFrameUpdate[i] = true
@@ -73,19 +78,20 @@ function laser.update()
       local delay = ObjectReferences[TYPE_DELAY][i]
       if delay and Grid[delay.xpos] and Grid[delay.xpos][delay.ypos] then
         for j=0,3 do
-          if delay.previous_light[(delay.index-delay.delay-1)%61+1][j]~=0 then
+          local l_c = delay.memory[(delay.index-delay.delay-1)%61+1][j]
+          if l_c ~= 0 then
             if delay.state == DELAY_TRAVERSE then
-              laser.create(delay.xpos + (j==3 and 1 or 0), delay.ypos + (j==0 and 1 or 0), j%2==0, (j==0 or j==3), delay.previous_light[(delay.index-delay.delay-1)%61+1][j])
+              laser.create(delay.xpos + (j==3 and 1 or 0), delay.ypos + (j==0 and 1 or 0), j%2==0, (j==0 or j==3), delay.color == COLOR_BLACK and l_c or delay.color)
             elseif delay.state == DELAY_FEEDBACK then
-              laser.create(delay.xpos + (j==1 and 1 or 0), delay.ypos + (j==2 and 1 or 0), j%2==0, (j==1 or j==2), delay.previous_light[(delay.index-delay.delay-1)%61+1][j])
+              laser.create(delay.xpos + (j==1 and 1 or 0), delay.ypos + (j==2 and 1 or 0), j%2==0, (j==1 or j==2), delay.color == COLOR_BLACK and l_c or delay.color)
             elseif delay.state == DELAY_QUARTER then
-              laser.create(delay.xpos + (j==0 and 1 or 0), delay.ypos + (j==3 and 1 or 0), j%2==1, (j==0 or j==3), delay.previous_light[(delay.index-delay.delay-1)%61+1][j])
+              laser.create(delay.xpos + (j==0 and 1 or 0), delay.ypos + (j==3 and 1 or 0), j%2==1, (j==0 or j==3), delay.color == COLOR_BLACK and l_c or delay.color)
             elseif delay.state == DELAY_IQUARTER then
-              laser.create(delay.xpos + (j==2 and 1 or 0), delay.ypos + (j==1 and 1 or 0), j%2==1, (j==1 or j==2), delay.previous_light[(delay.index-delay.delay-1)%61+1][j])
+              laser.create(delay.xpos + (j==2 and 1 or 0), delay.ypos + (j==1 and 1 or 0), j%2==1, (j==1 or j==2), delay.color == COLOR_BLACK and l_c or delay.color)
             elseif delay.state == DELAY_SWIRL then
-              laser.create(delay.xpos + (j==0 and 1 or 0), delay.ypos + (j==1 and 1 or 0), j%2==1, (j==0 or j==1), delay.previous_light[(delay.index-delay.delay-1)%61+1][j])
+              laser.create(delay.xpos + (j==0 and 1 or 0), delay.ypos + (j==1 and 1 or 0), j%2==1, (j==0 or j==1), delay.color == COLOR_BLACK and l_c or delay.color)
             elseif delay.state == DELAY_ISWIRL then
-              laser.create(delay.xpos + (j==2 and 1 or 0), delay.ypos + (j==3 and 1 or 0), j%2==1, (j==2 or j==3), delay.previous_light[(delay.index-delay.delay-1)%61+1][j])
+              laser.create(delay.xpos + (j==2 and 1 or 0), delay.ypos + (j==3 and 1 or 0), j%2==1, (j==2 or j==3), delay.color == COLOR_BLACK and l_c or delay.color)
             end
           end
         end
@@ -169,15 +175,15 @@ function laser.update()
       if Grid[delay.xpos] and Grid[delay.xpos][delay.ypos] then
         for j=0,3 do
           if j%2 == 0 then
-            delay.previous_light[delay.index][j] = LaserGridV[delay.xpos][delay.ypos + (j==0 and 0 or 1)][(j==0 and 1 or 0)]
+            delay.memory[delay.index][j] = LaserGridV[delay.xpos][delay.ypos + (j==0 and 0 or 1)][(j==0 and 1 or 0)]
           else
-            delay.previous_light[delay.index][j] = LaserGridH[delay.xpos + (j==3 and 0 or 1)][delay.ypos][(j==3 and 1 or 0)]
+            delay.memory[delay.index][j] = LaserGridH[delay.xpos + (j==3 and 0 or 1)][delay.ypos][(j==3 and 1 or 0)]
           end
         end
       else
         for i=1,61 do
           for j=0,3 do
-            delay.previous_light[i][j] = 0
+            delay.memory[i][j] = 0
           end
         end
       end
@@ -185,6 +191,7 @@ function laser.update()
     end
   end
   
+  ::skip_update::
   frame = math.floor(game_time*LASER_FREQUENCY)%#TEXTURE_LASER+1
   if LaserFrameUpdate[frame] then laser.drawFrame(frame) end
   canvas_LL = LaserFrame[frame]
@@ -476,11 +483,28 @@ function laser.checkDelayUpdate()
     local delay = ObjectReferences[TYPE_DELAY][i]
     if delay then
       for j=0,3 do
-        if delay.previous_light[(delay.index-delay.delay-1)%61+1][j] ~= delay.previous_light[(delay.index-delay.delay-2)%61+1][j] then return true end
+        if delay.memory[(delay.index-delay.delay-1)%61+1][j] ~= delay.memory[(delay.index-delay.delay-2)%61+1][j] then return true end
       end
     end
   end
   return false
+end
+
+function laser.halt(bool)
+  if type(bool) == "boolean" then
+    halt = bool
+  else
+    halt = not halt
+  end
+end
+
+function laser.isHalted()
+  return halt
+end
+
+function laser.step()
+  halt = true
+  step = true
 end
 
 return laser

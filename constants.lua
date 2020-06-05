@@ -1,7 +1,5 @@
 -- GENERAL CONSTANTS --
 DEVELOPER_MODE = true
-TEXTURE_BASE_SIZE = 32
-TEXTURE_OFFSET = TEXTURE_BASE_SIZE/2
 BACKGROUND_VARIANTS = 1
 NUM_OVERLAY_TEXTURES = 15
 NUM_CONNECTED_TEXTURE_TILES = 2
@@ -13,6 +11,8 @@ FONT_BASE = love.graphics.getFont()
 DEFAULT_SCREEN_WIDTH = 720
 DEFAULT_SCREEN_HEIGHT = 480
 LASER_FREQUENCY = 8
+TEXTURE_BASE_SIZE = 32
+TEXTURE_OFFSET = TEXTURE_BASE_SIZE/2
 TEXTURE_LASER = {
                   love.graphics.newImage("Textures/laser_1.png"),
                   love.graphics.newImage("Textures/laser_2.png"),
@@ -36,27 +36,6 @@ MASK_LASER = {
 TEXTURE_SIDEINPUT = love.graphics.newImage("Textures/logic_input.png")
 TEXTURE_SIDEOUTPUT = love.graphics.newImage("Textures/logic_output.png")
 TEXTURE_SIDEACTIVATE = love.graphics.newImage("Textures/receiver_activate.png")
-TRACK = {
-          love.audio.newSource("Audio/Memory Bank/AIRGLOW - 01 Memory Bank.mp3","stream"),
-          love.audio.newSource("Audio/Memory Bank/AIRGLOW - 02 Cepheid Disk.mp3","stream"),
-          love.audio.newSource("Audio/Memory Bank/AIRGLOW - 03 Electrifying Landscape.mp3","stream"),
-          love.audio.newSource("Audio/Memory Bank/AIRGLOW - 04 Blueshift.mp3","stream"),
-          love.audio.newSource("Audio/Memory Bank/AIRGLOW - 05 Far Apart.mp3","stream"),
-          love.audio.newSource("Audio/Memory Bank/AIRGLOW - 06 Lisa.mp3","stream"),
-          love.audio.newSource("Audio/Memory Bank/AIRGLOW - 07 New Touch.mp3","stream"),
-          love.audio.newSource("Audio/Memory Bank/AIRGLOW - 08 Spliff & Wesson.mp3","stream"),
-          love.audio.newSource("Audio/Memory Bank/AIRGLOW - 09 Innermission.mp3","stream"),
-          love.audio.newSource("Audio/Memory Bank/AIRGLOW - 10 System Shutdown.mp3","stream")
-        }
-TRACK_NAME = {"Memory Bank","Cepheid Disk","Electrifying Landscape","Blueshift","Far Apart","Lisa","New Touch","Spliff & Wesson","Innermission","System Shutdown"}
-TRACK_ARTIST = {"AIRGLOW","AIRGLOW","AIRGLOW","AIRGLOW","AIRGLOW","AIRGLOW","AIRGLOW","AIRGLOW","AIRGLOW","AIRGLOW"}
-DEFAULT_VOLUME = 0.5
-DEFAULT_MUFFLE = 0.15
-for i=1,#TRACK do
-  TRACK[i]:setLooping(true)
-  TRACK[i]:setVolume(DEFAULT_VOLUME)
-end
-
 
 MASK_EFFECT = love.graphics.newShader[[
    vec4 effect (vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords) {

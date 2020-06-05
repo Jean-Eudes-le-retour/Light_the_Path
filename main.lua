@@ -13,6 +13,7 @@ local grid = require("grid")
 local tiles = require("tiles")
 local game = require("game")
 local ui_elements = require("ui_elements")
+local audio = require("audio")
 local debugUtils = require("debugUtils")
 
 --Important variables in main
@@ -100,7 +101,7 @@ function love.update(dt)
     for i=1,ui_elements.getMenuId() do
       blocked = blocked or (Menus[i] and Menus[i].isBlocking)
     end
-    if not blocked then game.audio.muffle() ui_elements.victory() end
+    if not blocked then audio.muffle() ui_elements.victory() end
   end
   drawbox_x, drawbox_y, texture_scale = grid.getDrawboxInfo()
   grid_pos_x, grid_pos_y = grid.getCursorPosition(true)
@@ -184,12 +185,12 @@ function load_level(level_id)
   drawbox_x, drawbox_y, texture_scale = grid.getDrawboxInfo()
   if not level.track_id then
     if type(level.track_id) == "nil" then
-      game.audio.fadein(math.ceil(math.random()*#TRACK),level.volume,1)
+      audio.play(math.ceil(math.random()*#TRACK),{loop = true})
     else
-      game.audio.fadeout(1)
+      audio.fade()
     end
   else
-    game.audio.fadein(level.track_id,level.volume,1)
+    audio.play(level.track_id,{loop = true})
   end
   if not level.update then level.update = DEFAULT_LEVEL_UPDATE end
 end
