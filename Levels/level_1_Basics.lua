@@ -47,8 +47,8 @@ function level.load()
 -- ADD UI ELEMENTS -- use menu.create() type functions, not yet defined.
 	m = ui_elements.create(UI_DIALOG)
 	m.text = {
-  {{0.5,0.5,0.5},"Let's give you a quick crash course on how this laboratory works!"},
-  {{0.5,0.5,0.5},"To get started, try to position the ",{1,0,0},"RED",{0.5,0.5,0.5}," mirror such that light gets diverted into the ",{1,0,0},"RED",{0.5,0.5,0.5}," receiver up top. Then turn on the ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," laser with ",{0,0,0},"RIGHT CLICK",{0.5,0.5,0.5},". Note that you can rotate certain objects with your ",{0,0,0},"SCROLL WHEEL",{0.5,0.5,0.5}," when hovering over them."}}
+  {{0.5,0.5,0.5},"Let's talk about dichroic mirrors!"},
+  {{0.5,0.5,0.5},"To get started, try to position the ",{1,0,0},"RED",{0.5,0.5,0.5}," mirror such that the incoming beam will get diverted into the ",{1,0,0},"RED",{0.5,0.5,0.5}," receiver up top. Then turn on the ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," laser with ",{0,0,0},"RIGHT CLICK",{0.5,0.5,0.5},"."}}
 	m.charname = {"Professeur Luminario", "Professeur Luminario"}
 	m.animation[1] = {}
 	m.animation[1][0] = {4,-1}
@@ -66,8 +66,8 @@ function level.update(dt) -- dt is time since last update in seconds
     m:close()
     level.complete = true
     m = ui_elements.create(UI_DIALOG)
-    m.text = {{{1,1,0},"A WINNER IS YOU!",{0.5,0.5,0.5}," You finished this level! PLZ gIvE ",{1,1,0},"5 stR",{0.5,0.5,0.5}," on aPp sTor"}}
-    m.charname = {"YAAY"}
+    m.text = {{{0.5,0.5,0.5},"We will experiment with other light mixes in upcoming levels."}}
+    m.charname = {"Professeur Luminario"}
     m.animation[1] = {}
     m.animation[1][0] = {4,-1}
     m.animation[1][1] = love.graphics.newImage("Textures/test1.png")

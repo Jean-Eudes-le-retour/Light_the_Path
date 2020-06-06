@@ -39,10 +39,10 @@ function level.load()
 -- ADD UI ELEMENTS -- use menu.create() type functions, not yet defined.
 	m = ui_elements.create(UI_DIALOG)
 	m.text = {
-  {{0.5,0.5,0.5},"Welcome to my laboratory! I will present to you all of my gadgets and gizmos that I use for my reseach and teach you how to use them."},
+  {{0.5,0.5,0.5},"Welcome to my laboratory! I will present to you all of my gadgets and gizmos that I use for my reseach and teach you how to use them. (Click here to continue...)"},
   {{0.5,0.5,0.5},"This is my optics workbench!\n...Ok it may look a bit bland but that's because it is empty. Still, you can see lighter squares; that's where you will be able to put objects and interact with them, and darker squares that represent walls that will block the laser beams."},
   {{0.5,0.5,0.5},"Let's add some basic pieces of equipement!"},
-  {{0.5,0.5,0.5},"This is a mirror. You can move it with your cursor by dragging it with the ",{0,0,0},"LEFT MOUSE",{0.5,0.5,0.5}," button held down.\n\nYou can also rotate it with the ",{0,0,0},"SCROLL WHEEL",{0.5,0.5,0.5},"."}, --4 tant qu'il y a toujours le miroir au milieu rien faire
+  {{0.5,0.5,0.5},"This is a mirror. You can move it with your cursor by dragging it with the ",{0,0,0},"LEFT MOUSE",{0.5,0.5,0.5}," button held down.\n\nYou can also rotate it with the ",{0,0,0},"SCROLL WHEEL",{0.5,0.5,0.5},".\nTry it now !\n\n(When you're finished, click here to continue...)"}, --4 
   {{0.5,0.5,0.5},"Sometimes it will be stuck in place but will still be able to spin. It will then look like it is on a metal disc:"}, --5 canRotate = false
   {{0.5,0.5,0.5},"And other times it will be stuck in place and won't be able to spin. That's when it is welded to a sheet of metal:"}, --6 canRotate = false canMove = false
   {{0.5,0.5,0.5},"Now let's have some fun ! Here is a laser source. You can turn it on by ",{0,0,0},"RIGHT CLICKING",{0.5,0.5,0.5}, " it.\nNotice how it is also welded to a metal sheet and therefore cannot be moved nor turned."} --7 wait for the player to turn on the laser
