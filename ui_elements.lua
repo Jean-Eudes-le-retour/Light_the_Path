@@ -111,7 +111,8 @@ local DEFAULT_MENU = {
   imagedata = false, -- if defined, test transparency
   
   update = function(m)
-    ui_elements.checkButtonUpdate(m) -- Only if the menu is handled like any other, i.e. buttons have a normal and pressed state dependent on mouse position [optionally hover state]
+--  Only if the menu is handled like any other, i.e. buttons have a normal and pressed state dependent on mouse position [optionally hover state]
+    ui_elements.checkButtonUpdate(m) 
   end,
 
 }
@@ -172,7 +173,7 @@ local DEFAULT_UI = {DEFAULT_MENU,DEFAULT_DIALOG,DEFAULT_TILE}
 Menus = {}
 
 
-------------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------
 -- On screen resize : menu:resize(), menu:draw() for all (use ui_elements.redraw()?)
 
 function Menu:new(t)
@@ -761,7 +762,12 @@ end
 function ui_elements.escapeMenu()
   audio.muffle(true)
   local m = ui_elements.create(UI_MENU)
-  m.buttons = {{onClick = function(m,b) audio.muffle(false) m:close() ui_elements.mainMenu() end, text = "Main Menu"},{onClick = function(m,b) m:close(true) ui_elements.levelSelect() table.insert(MenuCallStack,ui_elements.escapeMenu) end, text = "Level Select"},{onClick = function(m,b) m:close(true) ui_elements.videoOptions() table.insert(MenuCallStack,ui_elements.escapeMenu) end, text = "Video Options"},{onClick = function(m,b) m:close() end, text = "Return to Game"}}
+  m.buttons = {
+    {onClick = function(m,b) audio.muffle(false) m:close() ui_elements.mainMenu() end, text = "Main Menu"},
+    {onClick = function(m,b) m:close(true) ui_elements.levelSelect() table.insert(MenuCallStack,ui_elements.escapeMenu) end, text = "Level Select"},
+    {onClick = function(m,b) m:close(true) ui_elements.videoOptions() table.insert(MenuCallStack,ui_elements.escapeMenu) end, text = "Video Options"},
+    {onClick = function(m,b) m:close() end, text = "Return to Game"}
+  }
   m.texture[1] = TEXTURE_REG_BUTTON_NORMAL
   m.texture[2] = TEXTURE_REG_BUTTON_PRESSED
   m.texture[3] = TEXTURE_REG_BUTTON_NORMAL
@@ -782,7 +788,10 @@ function ui_elements.levelSelect()
   m.texture[2] = TEXTURE_REG_BUTTON_PRESSED
   m.texture[3] = TEXTURE_REG_BUTTON_NORMAL
   m.texture[5] = TEXTURE_REG_BUTTON_INVIS --INVISIBLE BUTTON 'text area'
-  m.buttons = {{xpos = 100, ypos = 24, texture_id = 5,text = "LEVEL SELECT", textcolor = COLOR_BLACK, noUpdate = true},{xpos = 100, ypos = 378, texture_id = 1, text = "Back", onClick = function(m,b) m:close() end}}
+  m.buttons = {
+    {xpos = 100, ypos = 24, texture_id = 5,text = "LEVEL SELECT", textcolor = COLOR_BLACK, noUpdate = true},
+    {xpos = 100, ypos = 378, texture_id = 1, text = "Back", onClick = function(m,b) m:close() end}
+  }
 
   function m:close(noInvoke)
     m.submenu:close(true)
@@ -835,13 +844,13 @@ function ui_elements.levelSelect()
   local b_x, b_y = 4,4
   for i=1,#Levels do
     m.submenu.buttons[i] = {
-                              xpos = b_x,
-                              ypos = b_y,
-                              lvlid = Levels[i].id,
-                              texture_id = 1,
-                              text = Levels[i].name or "Level "..tostring(Levels[i].id),
-                              onClick = function(m,b) ui_elements.resetCallStack() load_level(b.lvlid) m.parentmenu:close() end
-                            }
+      xpos = b_x,
+      ypos = b_y,
+      lvlid = Levels[i].id,
+      texture_id = 1,
+      text = Levels[i].name or "Level "..tostring(Levels[i].id),
+      onClick = function(m,b) ui_elements.resetCallStack() load_level(b.lvlid) m.parentmenu:close() end
+    }
     if b_x == 4 then
       b_x = 136
     else
@@ -871,7 +880,9 @@ end
 
 function ui_elements.videoOptions()
   local m = ui_elements.create(UI_MENU)
-  local BUTTON_OPTIONS_TEXT, BUTTON_OPTIONS_WINDOWTEXT, BUTTON_OPTIONS_SCREENMODE, BUTTON_OPTIONS_SCALETEXT, BUTTON_OPTIONS_SCALEMODE, BUTTON_OPTIONS_SCALE , BUTTONS_OPTIONS_RETURN, BUTTON_OPTIONS_SCALE_MINUS, BUTTON_OPTIONS_SCALE_PLUS = enum(9)
+  local BUTTON_OPTIONS_TEXT, BUTTON_OPTIONS_WINDOWTEXT, BUTTON_OPTIONS_SCREENMODE,
+        BUTTON_OPTIONS_SCALETEXT, BUTTON_OPTIONS_SCALEMODE, BUTTON_OPTIONS_SCALE,
+        BUTTONS_OPTIONS_RETURN, BUTTON_OPTIONS_SCALE_MINUS, BUTTON_OPTIONS_SCALE_PLUS = enum(9)
   m.buttons = {
     {text = "VIDEO OPTIONS", textcolor = COLOR_BLACK, texture_id = 5, noUpdate = true},
     {text = "Window Mode", textcolor = {0.3,0.3,0.3}, align = "left", texture_id = 5, noUpdate = true},
@@ -891,22 +902,22 @@ function ui_elements.videoOptions()
   m.texture[12] = TEXTURE_COMPL2SQ_BUTTON_PRESSED
   ui_elements.fitButtons(m)
   table.insert(m.buttons,{
-                            xpos = m.buttons[BUTTON_OPTIONS_SCALEMODE].xpos+62,
-                            ypos = m.buttons[BUTTON_OPTIONS_SCALEMODE].ypos,
-                            SQButton = true,
-                            text = "-",
-                            texture_id = 9,
-                            noUpdate = true,
-                            onClick = function(m,b) if not UI_automatic_scaling then ui_elements.changeUIScale(nil,true) end end
-                          })
+    xpos = m.buttons[BUTTON_OPTIONS_SCALEMODE].xpos+62,
+    ypos = m.buttons[BUTTON_OPTIONS_SCALEMODE].ypos,
+    SQButton = true,
+    text = "-",
+    texture_id = 9,
+    noUpdate = true,
+    onClick = function(m,b) if not UI_automatic_scaling then ui_elements.changeUIScale(nil,true) end end
+  })
   table.insert(m.buttons,{
-                            xpos = m.buttons[BUTTON_OPTIONS_SCALEMODE].xpos+96,
-                            ypos = m.buttons[BUTTON_OPTIONS_SCALEMODE].ypos,
-                            SQButton = true, text = "+",
-                            texture_id = 9,
-                            noUpdate = true,
-                            onClick = function(m,b) if not UI_automatic_scaling then ui_elements.changeUIScale() end end
-                          })
+    xpos = m.buttons[BUTTON_OPTIONS_SCALEMODE].xpos+96,
+    ypos = m.buttons[BUTTON_OPTIONS_SCALEMODE].ypos,
+    SQButton = true, text = "+",
+    texture_id = 9,
+    noUpdate = true,
+    onClick = function(m,b) if not UI_automatic_scaling then ui_elements.changeUIScale() end end
+  })
   ui_elements.updateButtonDimensions(m)
   m.window_position_mode = MENU_CENTER
   m.isBlocking = true
@@ -999,7 +1010,10 @@ function ui_elements.credits()
   m.texture[2] = TEXTURE_REG_BUTTON_PRESSED
   m.texture[3] = TEXTURE_REG_BUTTON_NORMAL
   m.texture[5] = TEXTURE_REG_BUTTON_INVIS
-  m.buttons = {{xpos = 100, ypos = 24, texture_id = 5,text = "CREDITS", textcolor = COLOR_BLACK, noUpdate = true},{xpos = 100, ypos = 378, texture_id = 1, text = "Back", onClick = function(m,b) m:close() end}}
+  m.buttons = {
+    {xpos = 100, ypos = 24, texture_id = 5,text = "CREDITS", textcolor = COLOR_BLACK, noUpdate = true},
+    {xpos = 100, ypos = 378, texture_id = 1, text = "Back", onClick = function(m,b) m:close() end}
+  }
 
   function m:close(noInvoke)
     m.submenu:close(true)
@@ -1056,6 +1070,8 @@ function ui_elements.credits()
 end
 
 function ui_elements.mainMenu(fromSubmenu)
+--THERE CAN BE ONLY ONE
+  for i=1, MenuId do if Menus[i] then Menus[i]:close() end end
   local m = ui_elements.create(UI_MENU)
   m.noEscape = true
   m.texture[1] = TEXTURE_REG_BUTTON_NORMAL
@@ -1121,7 +1137,18 @@ end
 
 function ui_elements.dialogTest()
   local m = ui_elements.create(UI_DIALOG)
-  m.text = {{{0.5,0.5,0.5},"Bonjour et bienvenue au projet gamification du groupe 9, ne vous preoccupez pas trop de ce qui se passe sur cette grille. Nous l'utilisons pour rapidement conduire des tests sur les fonctionalites du jeu. Histoire de nous simplifier la tache, l'ecran s'ouvre en 480p. Nous vous recommandons d'appuyer sur echap et rentrer dans les options pour afficher en plein ecran. Pour vous faire une meilleure idee du jeu, veuillez ouvrir le menu 'Level Select' et choisir 'Basics 2' (le seul niveau entierement interactif). Notez qu'il n'y a pas d'ecran de fin de niveau de programme. Notez egalement que le bouton 'Main Menu' ne permet actuellement que de relancer le jeu a son etat initial."}}
+  m.text = {
+    {{0.5,0.5,0.5},
+     "Bonjour et bienvenue au projet gamification du groupe 9, \z
+     ne vous preoccupez pas trop de ce qui se passe sur cette grille. Nous l'utilisons \z
+     pour rapidement conduire des tests sur les fonctionalites du jeu. Histoire de nous \z
+     simplifier la tache, l'ecran s'ouvre en 480p. Nous vous recommandons d'appuyer sur \z
+     echap et rentrer dans les options pour afficher en plein ecran. Pour vous faire une \z
+     meilleure idee du jeu, veuillez ouvrir le menu 'Level Select' et choisir 'Basics 2' \z
+     (le seul niveau entierement interactif). Notez qu'il n'y a pas d'ecran de fin de \z
+     niveau de programme. Notez egalement que le bouton 'Main Menu' ne permet actuellement \z
+     que de relancer le jeu a son etat initial."}
+  }
   m.charname = {"Groupe 9"}
   m.animation[1] = {}
   m.animation[1][0] = {4,-1}
@@ -1163,16 +1190,24 @@ function ui_elements.makeSelection(x,y)
         {xpos = 156, ypos = 138, texture_id = 1, onClick = function(m,b) sinfo.o.canChangeState = not sinfo.o.canChangeState end},
         {xpos = 156, ypos = 172, texture_id = 1, onClick = function(m,b) sinfo.o.canChangeColor = not sinfo.o.canChangeColor end},
         {xpos = 156, ypos = 206, texture_id = 1, onClick = function(m,b) sinfo.o.canRotate = not sinfo.o.canRotate UpdateBackgroundFG = true end},
-        {xpos = 156, ypos = 240, texture_id = 1, onClick = function(m,b) sinfo.o:delete() sinfo.o = nil sel_x, sel_y = false, false ui_elements.select(sinfo.sel_x, sinfo.sel_y) end},
+        {
+          xpos = 156, ypos = 240, texture_id = 1,
+          onClick = function(m,b)
+            sinfo.o:delete()
+            sinfo.o = nil
+            sel_x, sel_y = false, false
+            ui_elements.select(sinfo.sel_x, sinfo.sel_y)
+          end
+        },
         {xpos = 14, ypos = 240, texture_id = 1, onClick = function(m,b) sinfo.o.glass = not sinfo.o.glass UpdateObjectType[TYPE_GLASS] = true end},
-        {xpos = 104, ypos = 172, texture_id = 4, onClick = function(m,b) sinfo.o.color = COLOR_RED UpdateObjectType[sinfo.o.t] = true end},
-        {xpos = 116, ypos = 172, texture_id = 4, onClick = function(m,b) sinfo.o.color = COLOR_GREEN UpdateObjectType[sinfo.o.t] = true end},
-        {xpos = 128, ypos = 172, texture_id = 4, onClick = function(m,b) sinfo.o.color = COLOR_BLUE UpdateObjectType[sinfo.o.t] = true end},
-        {xpos = 140, ypos = 172, texture_id = 4, onClick = function(m,b) sinfo.o.color = COLOR_WHITE UpdateObjectType[sinfo.o.t] = true end},
-        {xpos = 104, ypos = 184, texture_id = 4, onClick = function(m,b) sinfo.o.color = COLOR_CYAN UpdateObjectType[sinfo.o.t] = true end},
-        {xpos = 116, ypos = 184, texture_id = 4, onClick = function(m,b) sinfo.o.color = COLOR_MAGENTA UpdateObjectType[sinfo.o.t] = true end},
-        {xpos = 128, ypos = 184, texture_id = 4, onClick = function(m,b) sinfo.o.color = COLOR_YELLOW UpdateObjectType[sinfo.o.t] = true end},
-        {xpos = 140, ypos = 184, texture_id = 4, onClick = function(m,b) sinfo.o.color = COLOR_BLACK UpdateObjectType[sinfo.o.t] = true end},
+        {xpos = 104, ypos = 172, texture_id = 4, onClick = function(m,b) sinfo.o:changeColor(COLOR_RED) end},
+        {xpos = 116, ypos = 172, texture_id = 4, onClick = function(m,b) sinfo.o:changeColor(COLOR_GREEN) end},
+        {xpos = 128, ypos = 172, texture_id = 4, onClick = function(m,b) sinfo.o:changeColor(COLOR_BLUE) end},
+        {xpos = 140, ypos = 172, texture_id = 4, onClick = function(m,b) sinfo.o:changeColor(COLOR_WHITE) end},
+        {xpos = 104, ypos = 184, texture_id = 4, onClick = function(m,b) sinfo.o:changeColor(COLOR_CYAN) end},
+        {xpos = 116, ypos = 184, texture_id = 4, onClick = function(m,b) sinfo.o:changeColor(COLOR_MAGENTA) end},
+        {xpos = 128, ypos = 184, texture_id = 4, onClick = function(m,b) sinfo.o:changeColor(COLOR_YELLOW) end},
+        {xpos = 140, ypos = 184, texture_id = 4, onClick = function(m,b) sinfo.o:changeColor(COLOR_BLACK) end},
         {xpos = 100, ypos = 140, texture_id = -1, width = 12, height = 20, onClick = function(m,b) sinfo.o:changeState(true) end},
         {xpos = 140, ypos = 140, texture_id = -1, width = 12, height = 20, onClick = function(m,b) sinfo.o:changeState() end}
       }
@@ -1184,16 +1219,25 @@ function ui_elements.makeSelection(x,y)
         {xpos = 156, ypos = 138, texture_id = 3, noUpdate = true},
         {xpos = 156, ypos = 172, texture_id = 3, noUpdate = true},
         {xpos = 156, ypos = 206, texture_id = 3, noUpdate = true},
-        {xpos = 156, ypos = 240, texture_id = (sinfo.o.playerMade and 1 or 3), noUpdate = (not sinfo.o.playerMade), onClick = (sinfo.o.playerMade and function(m,b) sinfo.o:delete() sinfo.o = nil sel_x, sel_y = false, false ui_elements.select(sinfo.sel_x, sinfo.sel_y) end)},
+        {
+          xpos = 156, ypos = 240, texture_id = (sinfo.o.playerMade and 1 or 3),
+          noUpdate = (not sinfo.o.playerMade),
+          onClick = (sinfo.o.playerMade and function(m,b)
+            sinfo.o:delete()
+            sinfo.o = nil
+            sel_x, sel_y = false, false
+            ui_elements.select(sinfo.sel_x, sinfo.sel_y)
+          end)
+        },
         {xpos = 14, ypos = 240, texture_id = 3, noUpdate = true},
-        {xpos = 104, ypos = 172, texture_id = (mc and 4 or 6), noUpdate = (not mc), onClick = (mc and function(m,b) sinfo.o.color = COLOR_RED UpdateObjectType[sinfo.o.t] = true end)},
-        {xpos = 116, ypos = 172, texture_id = (mc and 4 or 6), noUpdate = (not mc), onClick = (mc and function(m,b) sinfo.o.color = COLOR_GREEN UpdateObjectType[sinfo.o.t] = true end)},
-        {xpos = 128, ypos = 172, texture_id = (mc and 4 or 6), noUpdate = (not mc), onClick = (mc and function(m,b) sinfo.o.color = COLOR_BLUE UpdateObjectType[sinfo.o.t] = true end)},
-        {xpos = 140, ypos = 172, texture_id = (mc and 4 or 6), noUpdate = (not mc), onClick = (mc and function(m,b) sinfo.o.color = COLOR_WHITE UpdateObjectType[sinfo.o.t] = true end)},
-        {xpos = 104, ypos = 184, texture_id = (mc and 4 or 6), noUpdate = (not mc), onClick = (mc and function(m,b) sinfo.o.color = COLOR_CYAN UpdateObjectType[sinfo.o.t] = true end)},
-        {xpos = 116, ypos = 184, texture_id = (mc and 4 or 6), noUpdate = (not mc), onClick = (mc and function(m,b) sinfo.o.color = COLOR_MAGENTA UpdateObjectType[sinfo.o.t] = true end)},
-        {xpos = 128, ypos = 184, texture_id = (mc and 4 or 6), noUpdate = (not mc), onClick = (mc and function(m,b) sinfo.o.color = COLOR_YELLOW UpdateObjectType[sinfo.o.t] = true end)},
-        {xpos = 140, ypos = 184, texture_id = (mc and 4 or 6), noUpdate = (not mc), onClick = (mc and function(m,b) sinfo.o.color = COLOR_BLACK UpdateObjectType[sinfo.o.t] = true end)},
+        {xpos = 104, ypos = 172, texture_id = (mc and 4 or 6), noUpdate = (not mc), onClick = (mc and function(m,b) sinfo.o:changeColor(COLOR_RED) end)},
+        {xpos = 116, ypos = 172, texture_id = (mc and 4 or 6), noUpdate = (not mc), onClick = (mc and function(m,b) sinfo.o:changeColor(COLOR_GREEN) end)},
+        {xpos = 128, ypos = 172, texture_id = (mc and 4 or 6), noUpdate = (not mc), onClick = (mc and function(m,b) sinfo.o:changeColor(COLOR_BLUE) end)},
+        {xpos = 140, ypos = 172, texture_id = (mc and 4 or 6), noUpdate = (not mc), onClick = (mc and function(m,b) sinfo.o:changeColor(COLOR_WHITE) end)},
+        {xpos = 104, ypos = 184, texture_id = (mc and 4 or 6), noUpdate = (not mc), onClick = (mc and function(m,b) sinfo.o:changeColor(COLOR_CYAN) end)},
+        {xpos = 116, ypos = 184, texture_id = (mc and 4 or 6), noUpdate = (not mc), onClick = (mc and function(m,b) sinfo.o:changeColor(COLOR_MAGENTA) end)},
+        {xpos = 128, ypos = 184, texture_id = (mc and 4 or 6), noUpdate = (not mc), onClick = (mc and function(m,b) sinfo.o:changeColor(COLOR_YELLOW) end)},
+        {xpos = 140, ypos = 184, texture_id = (mc and 4 or 6), noUpdate = (not mc), onClick = (mc and function(m,b) sinfo.o:changeColor(COLOR_BLACK) end)},
         {xpos = 100, ypos = 140, texture_id = -1, width = 12, height = 20, onClick = (ms and function(m,b) sinfo.o:changeState(true) end)},
         {xpos = 140, ypos = 140, texture_id = -1, width = 12, height = 20, onClick = (ms and function(m,b) sinfo.o:changeState() end)}
       }

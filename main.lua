@@ -175,7 +175,7 @@ function load_level(level_id)
   end
   
   for i=1,ui_elements.getMenuId() do
-    if Menus[i] and Menus[i].t == UI_DIALOG then Menus[i]:close() end
+    if Menus[i] and (Menus[i].t == UI_DIALOG or Menus[i].isSelection) then Menus[i]:close() end
   end
   
   level = love.filesystem.load(path)()

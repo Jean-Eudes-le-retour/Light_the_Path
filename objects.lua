@@ -141,6 +141,16 @@ function Object:changeState(f_x,f_y)
   UpdateObjectType[self.t] = true
 end
 
+function Object:changeColor(color)
+  color = color or DEFAULT_OBJECT[self.t].color
+  color = band(color,15)
+  if color == 0 then color = DEFAULT_OBJECT[self.t].color end
+  if color ~= COLOR_BLACK then color = band(color,bnot(COLOR_BLACK)) end
+  self.color = color
+  UpdateObjectType[self.t] = true
+  return self
+end
+
 function Object:update()
   UpdateObjectType[self.t] = true
   if self.glass then UpdateObjectType[TYPE_GLASS] = true end
