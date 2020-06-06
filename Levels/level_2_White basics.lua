@@ -9,7 +9,7 @@ local level = {}
 level.complete = false
 level.x = 10
 level.y = 6
-level.name = "Basics 3"
+level.name = "White basics"
 
 local m = false
 local dialog_num = 1

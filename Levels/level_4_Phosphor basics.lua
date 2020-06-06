@@ -9,10 +9,11 @@ local level = {}
 level.complete = false
 level.x = 10
 level.y = 6
-level.name = "Phosphor Wheel"
+level.name = "Phosphor basics"
 
 local dialog_num = 1
 local flag = false
+local winCond = false
 
 -- OPTIONAL VARIABLES --
 level.drawbox_mode = nil
@@ -46,24 +47,28 @@ function level.load()
 -- ADD UI ELEMENTS -- use menu.create() type functions, not yet defined.
 	m = ui_elements.create(UI_DIALOG)
 	m.text = {
-    {{0.5,0.5,0.5},"Now we are going to look at phorphor wheels ! When a high energy beam hits them like a ",{0,0,1},"BLUE",{0.5,0.5,0.5}," light for example, a fluorescence phenomenon happens. That means that a lower energy light is produced. The color of the emitted beam depends on the composition of the phosphor: a Y2O2S:Eu3+ coating will result in a ",{1,0,0},"RED",{0.5,0.5,0.5}," color and a ZnO:Zn one in a ",{0,1,0},"GREEN",{0.5,0.5,0.5}," light[1].\n\n[1] Shionoya, Shigeo (1999). 'VI: Phosphors for cathode ray tubes'. Phosphor handbook. Boca Raton, Fla.: CRC Press. ISBN 978-0-8493-7560-6."},
+    {{0.5,0.5,0.5},"Now we are going to look at phorphor wheels ! But first let's briefly talk about the energy of visible light. The details can get quite complicated but in very short: We can see colors in a spectrum; ",{1,0,0},"RED",{0.5,0.5,0.5},", ",{1,1,0},"YELLOW",{0.5,0.5,0.5},", ",{0,1,0},"GREEN",{0.5,0.5,0.5},", ",{0,1,1},"CYAN",{0.5,0.5,0.5},", ",{0,0,1},"BLUE",{0.5,0.5,0.5},". The closer a color is to ",{0,0,1},"BLUE",{0.5,0.5,0.5},", the more energy it has."},
+	{{0.5,0.5,0.5},"Back to phosphor wheels! When a high energy beam hits them a fluorescence phenomenon happens. That means that a lower energy light is produced. In my laboratory the only light with enough energy to make this phenomenon happen is the ",{0,0,1},"BLUE",{0.5,0.5,0.5}," light."},
+	{{0.5,0.5,0.5}, "The color of the emitted beam depends on the composition of the phosphor: for example a Y2O2S:Eu3+ coating will result in a ",{1,0,0},"RED",{0.5,0.5,0.5}," color and a ZnO:Zn one in a ",{0,1,0},"GREEN",{0.5,0.5,0.5}," light[1].\n\n[1] Shionoya, Shigeo (1999). 'VI: Phosphors for cathode ray tubes'. Phosphor handbook. Boca Raton, Fla.: CRC Press. ISBN 978-0-8493-7560-6."},
 	{{0.5,0.5,0.5},"Here we have a ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," phosphor used in ",{1,1,1},"WHITE",{0.5,0.5,0.5}," LEDs. When it is shined with ",{0,0,1},"BLUE",{0.5,0.5,0.5}," light it produces ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," light. Try it now !"}}
-    m.charname = {"Professeur Luminario","Professeur Luminario"}
+    m.charname = {"Professeur Luminario","Professeur Luminario","Professeur Luminario","Professeur Luminario"}
 	m.animation[1] = {}
 	m.animation[1][0] = {4,-1}
 	m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
 	m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
 	m.animation[1][3] = m.animation[1][1]
 	m.animation[2] = m.animation[1]
+	m.animation[3] = m.animation[1]
+	m.animation[4] = m.animation[1]
 	m:resize()
 end
 
 function level.update(dt) -- dt is time since last update in seconds
 -- CHECK WIN CONDITION -- use grid functions to check object states, update level.complete accordingly
-  if grid.getState(9, 2)==2 then level.complete = true end
+  if winCond then level.complete = true end
 
 -- OPTIONAL INTERACTIVE LEVEL FUNCTIONS -- direct modifications of object states do not trigger and UpdateObjectType flag! (Needs to be done manually)
-  if grid.getState(3, 4)==2 and grid.getState(3, 2)==2 and grid.getColor(3, 2)==COLOR_BLUE and (grid.getRotation(3, 2)==0 or grid.getRotation(3, 2)==2)and dialog_num==1 then
+  if grid.getState(3, 4)==2 and grid.getState(3, 2)==2 and grid.getColor(3, 2)==COLOR_BLUE and (grid.getRotation(3, 2)==0 or grid.getRotation(3, 2)==2) and dialog_num==1 then
     m:close()
     dialog_num = dialog_num + 1
     m = ui_elements.create(UI_DIALOG)
@@ -82,7 +87,7 @@ function level.update(dt) -- dt is time since last update in seconds
     m.animation[3] = m.animation[1]
     m:resize()
   end 
-  if dialog_num==1 and m.page==2 then
+  if dialog_num==1 and m.page==4 then
     m.noSkip = true
     m.isBlocking = false
   end
@@ -93,6 +98,26 @@ function level.update(dt) -- dt is time since last update in seconds
     end
     m.noSkip = true
     m.isBlocking = false
+  end
+  if grid.getState(9, 2)==2 and dialog_num==2 then
+    m:close()
+    dialog_num = dialog_num + 1
+    m = ui_elements.create(UI_DIALOG)
+    m.text = {
+{{0.5,0.5,0.5},"That is pretty much how ",{1,1,1},"WHITE",{0.5,0.5,0.5}," LEDs are made."},
+{{0.5,0.5,0.5},"To be more accurate, they are made with a transmissive phosphor coating instead of a reflective one like here. That means that the light goes through the phosphor instead of bouncing from it."},
+{{0.5,0.5,0.5},"The coating is also made not to convert all of the ",{0,0,1},"BLUE",{0.5,0.5,0.5}," light into ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," light so that some ",{0,0,1},"BLUE",{0.5,0.5,0.5}," light can still come through. It can then blend directly with the ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," light into ",{1,1,1},"WHITE",{0.5,0.5,0.5}," light."},
+}
+    m.charname = {"Professeur Luminario","Professeur Luminario","Professeur Luminario"}
+    m.animation[1] = {}
+    m.animation[1][0] = {4,-1}
+    m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
+    m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
+    m.animation[1][3] = m.animation[1][1]
+    m.animation[2] = m.animation[1]
+    m.animation[3] = m.animation[1]
+    m:resize()
+	winCond = true
   end
 end
 

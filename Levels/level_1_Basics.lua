@@ -7,17 +7,19 @@ local level = {}
 
 -- IMPORTANT VARIABLES --
 level.complete = false
-level.x = 13
-level.y = 8
-level.name = "Dichroic Prism"
-
-local dialog_num = 1
-local flag = {}
+level.x = 9
+level.y = 6
+level.name = "Basics"
 
 -- OPTIONAL VARIABLES --
 level.drawbox_mode = nil
 level.x_val = nil
 level.y_val = nil
+
+local m = false
+local dialog_num = 1
+local flag1 = false
+local flag2 = false
 
 -- IMPORTANT FUNCTIONS --
 function level.load()
@@ -32,21 +34,39 @@ function level.load()
     grid.set(TYPE_WALL, i, level.y)
   end
   for i=1,level.y do
-    grid.set(TYPE_WALL, 1, i)
-    grid.set(TYPE_WALL, level.x, i)
+	grid.set(TYPE_WALL, 1, i)
+	grid.set(TYPE_WALL, level.x, i)
   end
-    grid.set(TYPE_RECEIVER, 7, 2, {rotation = 2, color = COLOR_WHITE})
+  grid.set(TYPE_RECEIVER, 5, 2, {rotation = 2, color = COLOR_RED})
+  grid.set(TYPE_RECEIVER, 8, 3, {rotation = 3, color = COLOR_GREEN})
   
-    grid.set(TYPE_MIRROR, 3, 5, {rotation = 1, color = COLOR_RED})
-    grid.set(TYPE_MIRROR, 4, 5, {rotation = 1, color = COLOR_BLUE})
+  grid.set(TYPE_MIRROR, 2, 2, {rotation = 1, color = COLOR_RED})
   
-    grid.set(TYPE_SOURCE, 2, 4, {rotation = 1, color = COLOR_RED})
-    grid.set(TYPE_SOURCE, 7, 6, {color = COLOR_GREEN})
-    grid.set(TYPE_SOURCE, 12, 5, {rotation = 3, color = COLOR_BLUE})
+  grid.set(TYPE_SOURCE, 2, 3, {rotation = 1, color = COLOR_YELLOW})
+
 -- ADD UI ELEMENTS -- use menu.create() type functions, not yet defined.
 	m = ui_elements.create(UI_DIALOG)
 	m.text = {
-    {{0.5,0.5,0.5},"We saw earlier that you could extract the three primary ",{1,0,0},"CO",{0,1,0},"LO",{0,0,1},"RS",{0.5,0.5,0.5}," from ",{1,1,1},"WHITE",{0.5,0.5,0.5},", but we can also do the reverse! Here we have a ",{1,0,0},"RED",{0.5,0.5,0.5},", a ",{0,1,0},"GREEN",{0.5,0.5,0.5}," and a ",{0,0,1},"BLUE",{0.5,0.5,0.5}," laser source. Using the dichroic mirrors, make all beams overlap each other."}}
+  {{0.5,0.5,0.5},"Let's talk about dichroic mirrors!"},
+  {{0.5,0.5,0.5},"To get started, try to position the ",{1,0,0},"RED",{0.5,0.5,0.5}," mirror such that the incoming beam will get diverted into the ",{1,0,0},"RED",{0.5,0.5,0.5}," receiver up top. Then turn on the ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," laser with ",{0,0,0},"RIGHT CLICK",{0.5,0.5,0.5},"."}}
+	m.charname = {"Professeur Luminario", "Professeur Luminario"}
+	m.animation[1] = {}
+	m.animation[1][0] = {4,-1}
+	m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
+	m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
+	m.animation[1][3] = m.animation[1][1]
+	m.animation[2] = m.animation[1]
+	m:resize()
+end
+
+function level.update(dt) -- dt is time since last update in seconds
+-- CHECK WIN CONDITION -- use grid functions to check object states, update level.complete accordingly
+
+  if grid.getState(5, 4)==2 and level.complete==false then
+    m:close()
+    level.complete = true
+    m = ui_elements.create(UI_DIALOG)
+    m.text = {{{0.5,0.5,0.5},"We will experiment with other light mixes in upcoming levels."}}
     m.charname = {"Professeur Luminario"}
     m.animation[1] = {}
     m.animation[1][0] = {4,-1}
@@ -54,111 +74,52 @@ function level.load()
     m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
     m.animation[1][3] = m.animation[1][1]
     m:resize()
-end
+  end
 
-function level.update(dt) -- dt is time since last update in seconds
-  if grid.getState(7, 2)==2 and dialog_num==1 then
+-- OPTIONAL INTERACTIVE LEVEL FUNCTIONS -- direct modifications of object states do not trigger and UpdateObjectType flag! (Needs to be done manually)
+   --when the laser splits and hits red and green, pause and then change the color of the source to cyan and the color of the mirror to blue but do not rotate the mirror
+  if dialog_num==1 and m.page==2 then
+    m.noSkip = true
+    m.isBlocking = false
+  end
+  if grid.getState(5, 2)==2 and dialog_num==1 then
     m:close()
     dialog_num = dialog_num + 1
     m = ui_elements.create(UI_DIALOG)
     m.text = {
-{{0.5,0.5,0.5},"You just made a dichroic prism ! It is used in almost all projectors, I'll show you why in just a moment."},
-{{0.5,0.5,0.5},"Instead of always using two elements, people have engineered it into a single element. In my laboratory it looks like this:"},
-{{0.5,0.5,0.5},"By blocking the different channels we can create different colors: ",{1,0,0},"RED"},
-{{1,1,0},"YELLOW"},
-{{0,1,0},"GREEN"},
-{{0,1,1},"CYAN"},
-{{0,0,1},"BLUE"},
-{{1,0,1},"MAGENTA"},
-{{0.5,0.5,0.5},"And technically ",{0,0,0},"BLACK",{0.5,0.5,0.5},", the absence of color"},
-{{0.5,0.5,0.5},"This is how all colors are created inside projectors. The details on how the beams are blocked and how to make darker shades of color, notably brown are missing from my laboratory. I think I left them at home, but if you are interested you can always search for 'digital micromirror devices' on the interwebs or whatever."},
-    }
-    m.charname = {"Professeur Luminario","Professeur Luminario","Professeur Luminario","Professeur Luminario","Professeur Luminario","Professeur Luminario","Professeur Luminario","Professeur Luminario","Professeur Luminario","Professeur Luminario"}
+{{0.5,0.5,0.5},"Good! As you can see, a dichroic mirror reflects only part of the incoming laser. Here, the ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," laser, which is a combination of ",{1,0,0},"RED",{0.5,0.5,0.5}," and ",{0,1,0},"GREEN",{0.5,0.5,0.5},", sees its ",{1,0,0},"RED",{0.5,0.5,0.5}," part get diverted while the ",{0,1,0},"GREEN",{0.5,0.5,0.5}," part goes through.\n\nLet's now see what happens with a ",{0,1,1},"CYAN",{0.5,0.5,0.5}," source!"},
+{{0.5,0.5,0.5},"Can you see how the ",{0,1,1},"CYAN",{0.5,0.5,0.5}," laser can go through the ",{1,0,0},"RED",{0.5,0.5,0.5}," dichroic mirror? It is because ",{0,1,1},"CYAN",{0.5,0.5,0.5}," is a superposition of ",{0,0,1},"BLUE",{0.5,0.5,0.5}," and ",{0,1,0},"GREEN",{0.5,0.5,0.5},", so it has no ",{1,0,0},"RED",{0.5,0.5,0.5}," constituent to be reflected!"},
+{{0.5,0.5,0.5},"Now try to power all of the receivers again."}
+                     }
+    m.charname = {"Professeur Luminario","Professeur Luminario","Professeur Luminario"}
     m.animation[1] = {}
     m.animation[1][0] = {4,-1}
     m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
     m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
     m.animation[1][3] = m.animation[1][1]
-	for i=2,10 do
-		m.animation[i] = m.animation[1]
-	end
-	m:resize()
+	m.animation[2] = m.animation[1]
+	m.animation[3] = m.animation[1]
+    m:resize()
   end
-  if dialog_num==1 then
-    m.noSkip = true
-    m.isBlocking = false
-  end
+  
   if dialog_num==2 and m.page==2 then
-    if not flag[1] then
-      flag[1] = true
-      grid.delete(12,5)
-      grid.delete(7,5)
-      grid.set(TYPE_LOGIC, 7, 4,{state = LOGIC_OR}):setSides("out","in","in","in")
-      grid.set(TYPE_SOURCE, 12, 4, {rotation = 3, state = 2, color = COLOR_BLUE})
+    if not flag1 then
+      flag1 = true
+      grid.delete(5, 2)
+      grid.set(TYPE_SOURCE, 2, 3, {state = 2, rotation = 1, color = COLOR_CYAN})
     end
   end
+  
   if dialog_num==2 and m.page==3 then
-    if not flag[2] then
-      flag[2] = true
-      grid.set(TYPE_WALL,8,4)
-      grid.set(TYPE_WALL,7,5)
-      grid.delete(6,4)
+    if not flag2 then
+      flag2 = true
+      grid.set(TYPE_MIRROR, 2, 4, {rotation = 1, color = COLOR_BLUE})
+      grid.set(TYPE_RECEIVER, 5, 4, {color = COLOR_BLUE})
+      m.noSkip = true
+      m.isBlocking = false
     end
   end
-  if dialog_num==2 and m.page==4 then
-    if not flag[3] then
-      flag[3] = true
-      grid.set(TYPE_WALL,8,4)
-      grid.delete(6,4)
-      grid.delete(7,5)
-    end
-  end
-  if dialog_num==2 and m.page==5 then
-    if not flag[4] then
-      flag[4] = true
-      grid.set(TYPE_WALL,6,4)
-      grid.set(TYPE_WALL,8,4)
-      grid.delete(7,5)
-    end
-  end
-  if dialog_num==2 and m.page==6 then
-    if not flag[5] then
-      flag[5] = true
-      grid.set(TYPE_WALL,6,4)
-      grid.delete(8,4)
-      grid.delete(7,5)
-    end
-  end
-  if dialog_num==2 and m.page==7 then
-    if not flag[6] then
-      flag[6] = true
-      grid.set(TYPE_WALL,6,4)
-      grid.set(TYPE_WALL,7,5)
-      grid.delete(8,4)
-    end
-  end
-  if dialog_num==2 and m.page==8 then
-    if not flag[7] then
-      flag[7] = true
-      grid.set(TYPE_WALL,7,5)
-      grid.delete(6,4)
-      grid.delete(8,4)
-    end
-  end
-  if dialog_num==2 and m.page==9 then
-    if not flag[8] then
-      flag[8] = true
-      grid.set(TYPE_WALL,8,4)
-      grid.set(TYPE_WALL,6,4)
-      grid.set(TYPE_WALL,7,5)
-    end
-  end
-  if dialog_num==2 and m.page==10 then
-    if not flag[9] then
-      flag[9] = true
-      level.complete = true
-    end
-  end
+
 end
 
 return level

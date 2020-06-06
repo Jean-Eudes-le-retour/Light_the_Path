@@ -9,7 +9,7 @@ local level = {}
 level.complete = false
 level.x = 9
 level.y = 6
-level.name = "Basics 2"
+level.name = "Tutorial"
 
 -- OPTIONAL VARIABLES --
 level.drawbox_mode = nil
@@ -18,8 +18,7 @@ level.y_val = nil
 
 local m = false
 local dialog_num = 1
-local flag1 = false
-local flag2 = false
+local flag = {}
 
 -- IMPORTANT FUNCTIONS --
 function level.load()
@@ -37,37 +36,39 @@ function level.load()
 	grid.set(TYPE_WALL, 1, i)
 	grid.set(TYPE_WALL, level.x, i)
   end
-  grid.set(TYPE_RECEIVER, 5, 2, {rotation = 2, color = COLOR_RED})
-  grid.set(TYPE_RECEIVER, 8, 3, {rotation = 3, color = COLOR_GREEN})
-  
-  grid.set(TYPE_MIRROR, 2, 2, {rotation = 1, color = COLOR_RED})
-  
-  grid.set(TYPE_SOURCE, 2, 3, {rotation = 1, color = COLOR_YELLOW})
-
 -- ADD UI ELEMENTS -- use menu.create() type functions, not yet defined.
 	m = ui_elements.create(UI_DIALOG)
 	m.text = {
-  {{0.5,0.5,0.5},"Let's give you a quick crash course on how this laboratory works!"},
-  {{0.5,0.5,0.5},"To get started, try to position the ",{1,0,0},"RED",{0.5,0.5,0.5}," mirror such that light gets diverted into the ",{1,0,0},"RED",{0.5,0.5,0.5}," receiver up top. Then turn on the ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," laser with ",{0,0,0},"RIGHT CLICK",{0.5,0.5,0.5},". Note that you can rotate certain objects with your ",{0,0,0},"SCROLL WHEEL",{0.5,0.5,0.5}," when hovering over them."}}
-	m.charname = {"Professeur Luminario", "Professeur Luminario"}
+  {{0.5,0.5,0.5},"Welcome to my laboratory! I will present to you all of my gadgets and gizmos that I use for my reseach and teach you how to use them. (Click here to continue...)"},
+  {{0.5,0.5,0.5},"This is my optics workbench!\n...Ok it may look a bit bland but that's because it is empty. Still, you can see lighter squares; that's where you will be able to put objects and interact with them, and darker squares that represent walls that will block the laser beams."},
+  {{0.5,0.5,0.5},"Let's add some basic piece of equipement!"},
+  {{0.5,0.5,0.5},"This is a mirror. You can move it with your cursor by dragging it with the ",{0,0,0},"LEFT MOUSE",{0.5,0.5,0.5}," button held down.\n\nYou can also rotate it with the ",{0,0,0},"SCROLL WHEEL",{0.5,0.5,0.5},".\nTry it now !\n\n(When you're finished, click here to continue...)"}, --4 
+  {{0.5,0.5,0.5},"Sometimes it will be stuck in place but will still be able to spin. It will then look like it is on a metal disc:"}, --5 canRotate = false
+  {{0.5,0.5,0.5},"And other times it will be stuck in place and won't be able to spin. That's when it is welded to a sheet of metal:"}, --6 canRotate = false canMove = false
+  {{0.5,0.5,0.5},"Now let's have some fun ! Here is a laser source. You can turn it on by ",{0,0,0},"RIGHT CLICKING",{0.5,0.5,0.5}, " it.\nNotice how it is also welded to a metal sheet and therefore cannot be moved nor turned."} --7 wait for the player to turn on the laser
+  }
+	m.charname = {"Professeur Luminario"}
 	m.animation[1] = {}
 	m.animation[1][0] = {4,-1}
 	m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
 	m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
 	m.animation[1][3] = m.animation[1][1]
-	m.animation[2] = m.animation[1]
+	for i=2,9 do
+		m.animation[i] = m.animation[1]
+		m.charname[i] = "Professeur Luminario"
+	end
 	m:resize()
 end
 
 function level.update(dt) -- dt is time since last update in seconds
 -- CHECK WIN CONDITION -- use grid functions to check object states, update level.complete accordingly
 
-  if grid.getState(5, 4)==2 and level.complete==false then
+  if grid.getState(5, 2)==2 and level.complete==false then
     m:close()
     level.complete = true
     m = ui_elements.create(UI_DIALOG)
-    m.text = {{{1,1,0},"A WINNER IS YOU!",{0.5,0.5,0.5}," You finished this level! PLZ gIvE ",{1,1,0},"5 stR",{0.5,0.5,0.5}," on aPp sTor"}}
-    m.charname = {"YAAY"}
+    m.text = {{{1,1,0},"You finished your first level!",{0.5,0.5,0.5},"\nI will start to talk about more specialised tools in the next few levels."}}
+    m.charname = {"Professeur Luminario"}
     m.animation[1] = {}
     m.animation[1][0] = {4,-1}
     m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
@@ -78,45 +79,65 @@ function level.update(dt) -- dt is time since last update in seconds
 
 -- OPTIONAL INTERACTIVE LEVEL FUNCTIONS -- direct modifications of object states do not trigger and UpdateObjectType flag! (Needs to be done manually)
    --when the laser splits and hits red and green, pause and then change the color of the source to cyan and the color of the mirror to blue but do not rotate the mirror
-  if dialog_num==1 and m.page==2 then
-    m.noSkip = true
-    m.isBlocking = false
+  if dialog_num==1 and m.page==4 then
+    if not flag[1] then
+      flag[1] = true
+      grid.set(TYPE_MIRROR, 5, 3)
+	  m.isBlocking = false
+    end
   end
-  if grid.getState(5, 2)==2 and dialog_num==1 then
+  if dialog_num==1 and m.page==5 then
+    if not flag[2] then
+		flag[2] = true
+		for i=2,8 do
+		  grid.delete(i, 2)
+		  grid.delete(i, 3)
+		  grid.delete(i, 4)
+		end
+		grid.set(TYPE_MIRROR, 5, 3, {state=2,canMove=false})
+		m.isBlocking = false
+    end
+  end
+  if dialog_num==1 and m.page==6 then
+    if not flag[3] then
+      flag[3] = true
+      grid.set(TYPE_MIRROR, 5, 3, {state=2,canMove=false, canRotate=false})
+	  m.isBlocking = false
+    end
+  end
+  if dialog_num==1 and m.page==7 then
+    if not flag[4] then
+      flag[4] = true
+      grid.set(TYPE_SOURCE, 2, 3, {rotation=1,color=COLOR_CYAN})
+	  m.isBlocking = false
+	  m.noSkip = true
+    end
+  end
+  if dialog_num==1 and grid.getState(2,3)==2 then
+	dialog_num=dialog_num+1
     m:close()
-    dialog_num = dialog_num + 1
     m = ui_elements.create(UI_DIALOG)
     m.text = {
-{{0.5,0.5,0.5},"Good! As you can see, a dichroic mirror reflects only part of the incoming laser. Here, the ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," laser, which is a combination of ",{1,0,0},"RED",{0.5,0.5,0.5}," and ",{0,1,0},"GREEN",{0.5,0.5,0.5},", sees its ",{1,0,0},"RED",{0.5,0.5,0.5}," part get diverted while the ",{0,1,0},"GREEN",{0.5,0.5,0.5}," part goes through.\n\nLet's now see what happens with a ",{0,1,1},"CYAN",{0.5,0.5,0.5}," source!"},
-{{0.5,0.5,0.5},"Can you see how the ",{0,1,1},"CYAN",{0.5,0.5,0.5}," laser can go through the ",{1,0,0},"RED",{0.5,0.5,0.5}," dichroic mirror? It is because ",{0,1,1},"CYAN",{0.5,0.5,0.5}," is a superposition of ",{0,0,1},"BLUE",{0.5,0.5,0.5}," and ",{0,1,0},"GREEN",{0.5,0.5,0.5},", so it has no ",{1,0,0},"RED",{0.5,0.5,0.5}," constituent to be reflected!"},
-{{0.5,0.5,0.5},"Now try to power all of the receivers again."}
-                     }
-    m.charname = {"Professeur Luminario","Professeur Luminario","Professeur Luminario"}
+	{{0.5,0.5,0.5},"...Shiny..."},
+	{{0.5,0.5,0.5},"Now this laser beam has to go somewhere ! Let's introduce the receiver. It will turn on when correcty colored light hits it. Most of the time you will need to turn all of the receiver on to finish the challenges.\nTry it out !"} --9 wait for receiver to turn on
+}
+    m.charname = {"Professeur Luminario","Professeur Luminario"}
     m.animation[1] = {}
     m.animation[1][0] = {4,-1}
     m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
     m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
     m.animation[1][3] = m.animation[1][1]
-	m.animation[2] = m.animation[1]
-	m.animation[3] = m.animation[1]
+    m.animation[2] = m.animation[1]
     m:resize()
   end
-  
   if dialog_num==2 and m.page==2 then
-    if not flag1 then
-      flag1 = true
-      grid.delete(5, 2)
-      grid.set(TYPE_SOURCE, 2, 3, {state = 2, rotation = 1, color = COLOR_CYAN})
-    end
-  end
-  
-  if dialog_num==2 and m.page==3 then
-    if not flag2 then
-      flag2 = true
-      grid.set(TYPE_MIRROR, 2, 4, {rotation = 1, color = COLOR_BLUE})
-      grid.set(TYPE_RECEIVER, 5, 4, {color = COLOR_BLUE})
-      m.noSkip = true
-      m.isBlocking = false
+    if not flag[5] then
+      flag[5] = true
+		grid.set(TYPE_MIRROR, 2, 2)
+		grid.set(TYPE_RECEIVER, 5, 2, {rotation=2, color=COLOR_CYAN})
+		grid.delete(5, 3)
+	  m.isBlocking = false
+	  m.noSkip = true
     end
   end
 
