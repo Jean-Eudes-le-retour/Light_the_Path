@@ -41,7 +41,7 @@ function level.load()
 	m.text = {
   {{0.5,0.5,0.5},"Welcome to my laboratory! I will present to you all of my gadgets and gizmos that I use for my reseach and teach you how to use them. (Click here to continue...)"},
   {{0.5,0.5,0.5},"This is my optics workbench!\n...Ok it may look a bit bland but that's because it is empty. Still, you can see lighter squares; that's where you will be able to put objects and interact with them, and darker squares that represent walls that will block the laser beams."},
-  {{0.5,0.5,0.5},"Let's add some basic pieces of equipement!"},
+  {{0.5,0.5,0.5},"Let's add some basic piece of equipement!"},
   {{0.5,0.5,0.5},"This is a mirror. You can move it with your cursor by dragging it with the ",{0,0,0},"LEFT MOUSE",{0.5,0.5,0.5}," button held down.\n\nYou can also rotate it with the ",{0,0,0},"SCROLL WHEEL",{0.5,0.5,0.5},".\nTry it now !\n\n(When you're finished, click here to continue...)"}, --4 
   {{0.5,0.5,0.5},"Sometimes it will be stuck in place but will still be able to spin. It will then look like it is on a metal disc:"}, --5 canRotate = false
   {{0.5,0.5,0.5},"And other times it will be stuck in place and won't be able to spin. That's when it is welded to a sheet of metal:"}, --6 canRotate = false canMove = false
@@ -119,7 +119,7 @@ function level.update(dt) -- dt is time since last update in seconds
     m = ui_elements.create(UI_DIALOG)
     m.text = {
 	{{0.5,0.5,0.5},"...Shiny..."},
-	{{0.5,0.5,0.5},"Now this laser beam has to go somewhere ! Let's introduce the receiver. It will turn on when correcty colored light hit it. Most of the time you will need to turn all of the receiver on to finish the challenges.\nTry it out !"} --9 wait for receiver to turn on
+	{{0.5,0.5,0.5},"Now this laser beam has to go somewhere ! Let's introduce the receiver. It will turn on when correcty colored light hits it. Most of the time you will need to turn all of the receiver on to finish the challenges.\nTry it out !"} --9 wait for receiver to turn on
 }
     m.charname = {"Professeur Luminario","Professeur Luminario"}
     m.animation[1] = {}
