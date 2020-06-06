@@ -35,7 +35,6 @@ function game.update(dt)
   grid.updateCursorPosition()
   game.updateUI(dt)
   audio.update(dt)
-  game.tileActivation(TYPE_RECEIVER)
   laser.update()
   tiles.update()
   -- all other tile updates and the such.
@@ -47,9 +46,15 @@ function game.updateUI(dt)
   local texture_scale = grid.getTextureScale()
   local UI_scale = ui_elements.getUIScale()
   local MenuId = ui_elements.getMenuId()
-  for i=MenuId,1,-1 do
-    if Menus[i] then Menus[i].update(Menus[i]) end
+  
+  for i=MenuId,1,-1 do if Menus[i] then Menus[i].update(Menus[i]) end end
+
+  if audio.getMuffle() then
+    local muffling = false
+    for i=1,MenuId do muffling = muffling or (Menus[i] and Menus[i].t ~= UI_DIALOG and Menus[i].isBlocking) end
+    if not muffling then audio.muffle(false) end
   end
+
   love.graphics.setCanvas(canvas_UI)
   love.graphics.clear()
   love.graphics.setBlendMode("alpha","premultiplied")
@@ -199,29 +204,6 @@ function game.onPress( key, scancode, isrepeat)
     if not blocked then laser.step() end
   end
 
-end
-
-function game.tileActivation(t)
-  for i=1,objects.getId(t) do
-    local receiver = ObjectReferences[t][i]
-    if receiver and receiver.side and receiver.old_state ~= receiver.state and Grid[receiver.xpos] and Grid[receiver.xpos][receiver.ypos] then
-      receiver.old_state = receiver.state
-      for j=0,3 do
-        if receiver.side[j] == "activate" then
-          local true_r = (j+receiver.rotation)%4
-          local x_act, y_act = receiver.xpos, receiver.ypos
-          if true_r%2 == 0 then
-            y_act = y_act + (true_r == 0 and -1 or 1)
-          else
-            x_act = x_act + (true_r == 3 and -1 or 1)
-          end
-          if Grid[x_act] and Grid[x_act][y_act] then
-            Grid[x_act][y_act]:activate(receiver.state == 1)
-          end
-        end
-      end
-    end
-  end
 end
 
 return game

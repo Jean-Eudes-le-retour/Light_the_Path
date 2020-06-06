@@ -45,6 +45,7 @@ function audio.update(dt)
         c_track.track:seek(0)
         c_track.track:setVolume(0)
         c_track.track:play()
+        if muffle then audio.muffle(true) end
       end
     else
       c_track.track:setVolume(volume_c*volume_music)
@@ -77,6 +78,7 @@ function audio.play(track, options)
     c_track.track:seek(0)
     c_track.track:setVolume(0)
     c_track.track:play()
+    if muffle then audio.muffle(true) end
   end
 
   return track
@@ -139,20 +141,18 @@ function audio.muteSFX(mute)
   audio.setSFXVolume(mute_sfx and 0 or volume_sfx)
 end
 
-function audio.muffle()
+function audio.muffle(bool)
   if not c_track then return end
-  muffle = true
-  c_track.track:setFilter({
-  type = 'lowpass',
-  volume = VOLUME_MUFFLE,
-  highgain = .05,
-})
-end
-
-function audio.unmuffle()
-  if not c_track then return end
-  muffle = false
-  c_track.track:setFilter()
+  muffle = bool and true or false
+  if muffle then 
+    c_track.track:setFilter({
+      type = 'lowpass',
+      volume = VOLUME_MUFFLE,
+      highgain = .05,
+    })
+  else
+    c_track.track:setFilter()
+  end
 end
 
 function audio.getMuffle()

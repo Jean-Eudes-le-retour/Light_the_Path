@@ -79,12 +79,12 @@ function love.load()
   grid.set(TYPE_RECEIVER,17,8,{rotation = 3, color = COLOR_WHITE, glass = true}):setSides(nil,nil,"activate",nil)
   grid.set(TYPE_SOURCE,18,8,{rotation = 2, color = COLOR_WHITE, glass = true})
   grid.set(TYPE_MIRROR,16,9,{state = 2, rotation = 1, color = COLOR_CYAN, glass = true})
-  grid.set(TYPE_DELAY,17,9,{state = 2, glass = true})
+  grid.set(TYPE_DELAY,17,9,{delay = 2, glass = true})
   grid.set(TYPE_LOGIC,16,8,{state = LOGIC_NOT, color = COLOR_WHITE, glass = true}):setSides(nil,"out","in")
   grid.set(TYPE_LOGIC,18,9,{state = LOGIC_AND, color = COLOR_BLACK, glass = true}):setSides("in","out",nil,"in")
   grid.set(TYPE_RECEIVER,19,9,{rotation = 3, color = COLOR_RED, glass  =true})
   grid.set(TYPE_GLASS,19,8)
-  grid.fit(TYPE_DELAY,nil,nil,{state = 60})
+  grid.fit(TYPE_DELAY,nil,nil,{delay = 60})
   for i=1,50 do
     grid.fit(TYPE_DELAY,nil,nil,{delay = 5})
   end
@@ -101,7 +101,7 @@ function love.update(dt)
     for i=1,ui_elements.getMenuId() do
       blocked = blocked or (Menus[i] and Menus[i].isBlocking)
     end
-    if not blocked then audio.muffle() ui_elements.victory() end
+    if not blocked then audio.muffle(true) ui_elements.victory() end
   end
   drawbox_x, drawbox_y, texture_scale = grid.getDrawboxInfo()
   grid_pos_x, grid_pos_y = grid.getCursorPosition(true)

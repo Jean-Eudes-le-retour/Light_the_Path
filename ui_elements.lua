@@ -357,10 +357,6 @@ function Menu:close(noInvoke)
     while not Menus[MenuId] and MenuId > 0 do MenuId = MenuId-1 end
   end
 
-  local blocked = false
-  for i=1,MenuId do blocked = blocked or (Menus[i] and Menus[i].t ~= UI_DIALOG and Menus[i].isBlocking) end
-  if not blocked then audio.unmuffle() end
-
   Menus[self.id] = nil
   if not noInvoke and #MenuCallStack ~= 0 then
     MenuCallStack[#MenuCallStack](true)
@@ -370,8 +366,6 @@ end
 
 function Menu:resize()
   if self.t == UI_MENU then
-    if self.isBlocking and not audio.getMuffle() then audio.muffle() end
-
     local window_x, window_y = love.graphics.getDimensions()
     local pmode = self.window_position_mode
     if self.texture[0] then
@@ -765,8 +759,9 @@ end
 --IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII--
 
 function ui_elements.escapeMenu()
+  audio.muffle(true)
   local m = ui_elements.create(UI_MENU)
-  m.buttons = {{onClick = function(m,b) m:close() ui_elements.mainMenu() end, text = "Main Menu"},{onClick = function(m,b) m:close(true) ui_elements.levelSelect() table.insert(MenuCallStack,ui_elements.escapeMenu) end, text = "Level Select"},{onClick = function(m,b) m:close(true) ui_elements.videoOptions() table.insert(MenuCallStack,ui_elements.escapeMenu) end, text = "Video Options"},{onClick = function(m,b) m:close() end, text = "Return to Game"}}
+  m.buttons = {{onClick = function(m,b) audio.muffle(false) m:close() ui_elements.mainMenu() end, text = "Main Menu"},{onClick = function(m,b) m:close(true) ui_elements.levelSelect() table.insert(MenuCallStack,ui_elements.escapeMenu) end, text = "Level Select"},{onClick = function(m,b) m:close(true) ui_elements.videoOptions() table.insert(MenuCallStack,ui_elements.escapeMenu) end, text = "Video Options"},{onClick = function(m,b) m:close() end, text = "Return to Game"}}
   m.texture[1] = TEXTURE_REG_BUTTON_NORMAL
   m.texture[2] = TEXTURE_REG_BUTTON_PRESSED
   m.texture[3] = TEXTURE_REG_BUTTON_NORMAL
