@@ -63,7 +63,7 @@ function level.update(dt) -- dt is time since last update in seconds
     m = ui_elements.create(UI_DIALOG)
     m.text = {
 {{0.5,0.5,0.5},"You just made a dichroic prism ! It is used in almost all projectors, I'll show you why in just a moment."},
-{{0.5,0.5,0.5},"Instead of always using two elements, people have engineered it in a single element. In my laboratory it looks like this:"},
+{{0.5,0.5,0.5},"Instead of always using two elements, people have engineered it into a single element. In my laboratory it looks like this:"},
 {{0.5,0.5,0.5},"By blocking the different channels we can create different colors: ",{1,0,0},"RED"},
 {{1,1,0},"YELLOW"},
 {{0,1,0},"GREEN"},
@@ -71,14 +71,15 @@ function level.update(dt) -- dt is time since last update in seconds
 {{0,0,1},"BLUE"},
 {{1,0,1},"MAGENTA"},
 {{0.5,0.5,0.5},"And technically ",{0,0,0},"BLACK",{0.5,0.5,0.5},", the absence of color"},
+{{0.5,0.5,0.5},"This is how all colors are created inside projectors. The details on how the beams are blocked and how to make darker shades of color, notably brown are missing from my laboratory. I think I left them at home, but if you are interested you can always search for 'digital micromirror devices' on the interwebs or whatever."},
     }
-    m.charname = {"Professeur Luminario","Professeur Luminario","Professeur Luminario","Professeur Luminario","Professeur Luminario","Professeur Luminario","Professeur Luminario","Professeur Luminario","Professeur Luminario"}
+    m.charname = {"Professeur Luminario","Professeur Luminario","Professeur Luminario","Professeur Luminario","Professeur Luminario","Professeur Luminario","Professeur Luminario","Professeur Luminario","Professeur Luminario","Professeur Luminario"}
     m.animation[1] = {}
     m.animation[1][0] = {4,-1}
     m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
     m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
     m.animation[1][3] = m.animation[1][1]
-	for i=2,9 do
+	for i=2,10 do
 		m.animation[i] = m.animation[1]
 	end
 	m:resize()
@@ -150,6 +151,11 @@ function level.update(dt) -- dt is time since last update in seconds
       grid.set(TYPE_WALL,8,4)
       grid.set(TYPE_WALL,6,4)
       grid.set(TYPE_WALL,7,5)
+    end
+  end
+  if dialog_num==2 and m.page==10 then
+    if not flag[9] then
+      flag[9] = true
       level.complete = true
     end
   end

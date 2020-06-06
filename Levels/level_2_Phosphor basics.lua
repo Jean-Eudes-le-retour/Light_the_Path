@@ -13,6 +13,7 @@ level.name = "Phosphor Wheel"
 
 local dialog_num = 1
 local flag = false
+local winCond = false
 
 -- OPTIONAL VARIABLES --
 level.drawbox_mode = nil
@@ -60,10 +61,10 @@ end
 
 function level.update(dt) -- dt is time since last update in seconds
 -- CHECK WIN CONDITION -- use grid functions to check object states, update level.complete accordingly
-  if grid.getState(9, 2)==2 then level.complete = true end
+  if winCond then level.complete = true end
 
 -- OPTIONAL INTERACTIVE LEVEL FUNCTIONS -- direct modifications of object states do not trigger and UpdateObjectType flag! (Needs to be done manually)
-  if grid.getState(3, 4)==2 and grid.getState(3, 2)==2 and grid.getColor(3, 2)==COLOR_BLUE and (grid.getRotation(3, 2)==0 or grid.getRotation(3, 2)==2)and dialog_num==1 then
+  if grid.getState(3, 4)==2 and grid.getState(3, 2)==2 and grid.getColor(3, 2)==COLOR_BLUE and (grid.getRotation(3, 2)==0 or grid.getRotation(3, 2)==2) and dialog_num==1 then
     m:close()
     dialog_num = dialog_num + 1
     m = ui_elements.create(UI_DIALOG)
@@ -93,6 +94,26 @@ function level.update(dt) -- dt is time since last update in seconds
     end
     m.noSkip = true
     m.isBlocking = false
+  end
+  if grid.getState(9, 2)==2 and dialog_num==2 then
+    m:close()
+    dialog_num = dialog_num + 1
+    m = ui_elements.create(UI_DIALOG)
+    m.text = {
+{{0.5,0.5,0.5},"That is pretty much how ",{1,1,1},"WHITE",{0.5,0.5,0.5}," LEDs are made."},
+{{0.5,0.5,0.5},"To be more accurate, they are made with a transmissive phosphor coating instead of a reflective one like here. That means that the light goes through the phosphor instead of bouncing from it."},
+{{0.5,0.5,0.5},"The coating is also made not to convert all of the ",{0,0,1},"BLUE",{0.5,0.5,0.5}," light into ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," light so that some ",{0,0,1},"BLUE",{0.5,0.5,0.5}," light can still come through. It can then blend directly with the ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," light into ",{1,1,1},"WHITE",{0.5,0.5,0.5}," light."},
+}
+    m.charname = {"Professeur Luminario","Professeur Luminario","Professeur Luminario"}
+    m.animation[1] = {}
+    m.animation[1][0] = {4,-1}
+    m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
+    m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
+    m.animation[1][3] = m.animation[1][1]
+    m.animation[2] = m.animation[1]
+    m.animation[3] = m.animation[1]
+    m:resize()
+	winCond = true
   end
 end
 
