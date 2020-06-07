@@ -8,7 +8,7 @@ local level = {}
 level.complete = false
 level.x = 30
 level.y = 15
-level.name = "Puzzle 4"
+level.name = "Puzzle 5"
 
 -- OPTIONAL VARIABLES --
 level.drawbox_mode = nil
@@ -22,65 +22,70 @@ function level.load()
   
 -- PREPARE LEVEL -- use grid.set(...) or grid.fit(...)
 --grid.fit(t,xpos,ypos,state,rotation,color,canMove,canRotate,canChangeColor,glassState)
-  for i=1,13 do
+  for i=1,29 do
     grid.set(TYPE_WALL, i, 1)
-    grid.set(TYPE_WALL, i+18, 1)
-    grid.set(TYPE_WALL, i, 2)
-    grid.set(TYPE_WALL, i+18, 2)
-    grid.set(TYPE_WALL, i, 3)
-    grid.set(TYPE_WALL, i+18, 3)
+  end
+  for i=1,level.y do
+    grid.set(TYPE_WALL, 1, i)
+  end
+  for i=2,12 do
+    grid.set(TYPE_WALL, i+3, 4)
+  end
+  for i=17,level.x do
     grid.set(TYPE_WALL, i, 4)
-    grid.set(TYPE_WALL, i+18, 4)
   end
-  for i=11,15 do
-    grid.set(TYPE_WALL, i, 5)
-    grid.set(TYPE_WALL, i+6, 5)
-    grid.set(TYPE_WALL, i, 6)
-    grid.set(TYPE_WALL, i+6, 6)
+  
+  for i=2,7 do
     grid.set(TYPE_WALL, i, 8)
-    grid.set(TYPE_WALL, i+6, 8)
-    grid.set(TYPE_WALL, i, 9)
-    grid.set(TYPE_WALL, i+6,9)
-    grid.set(TYPE_WALL, i, 11)
-    grid.set(TYPE_WALL, i+6, 11)
-    grid.set(TYPE_WALL, i, 12)
-    grid.set(TYPE_WALL, i+6,12)
   end
-  for i=11,21 do
-    grid.set(TYPE_WALL, i, level.y-1)
+  for i=5,7 do
+    grid.set(TYPE_WALL, i, 5)
+  end
+  for i=9,level.x do
+    grid.set(TYPE_WALL, i, 5)
+  end
+  for i=9,level.x-3 do
+    grid.set(TYPE_WALL, i, 8)
+  end
+  for i=4,level.x do
+    grid.set(TYPE_WALL, i, 12)
+  end
+  for i=4,level.x-1 do
     grid.set(TYPE_WALL, i, level.y)
   end
-  for i=1,15 do
-    grid.set(TYPE_WALL, i, 10)
-    grid.set(TYPE_WALL, i+16,10)
+  for i=2,level.x-4 do
+    grid.set(TYPE_WALL, i, 9)
   end
-  grid.set(TYPE_SOURCE, level.x, 7, {rotation =  3, color =  COLOR_CYAN})
-  grid.set(TYPE_SOURCE, 1, 12, {rotation =  1,  color =  COLOR_MAGENTA})
-  grid.set(TYPE_SOURCE, 3, 9, {rotation =  0,  color =  COLOR_YELLOW})
-  grid.set(TYPE_SOURCE, level.x, level.y-1 , {rotation =  3, color =  COLOR_BLUE})
-  grid.set(TYPE_RECEIVER, 16, 1, {rotation =  2, color =  COLOR_WHITE})
-  grid.set(TYPE_RECEIVER, 6, 9, {rotation =  0, color =  COLOR_RED})
-  grid.set(TYPE_RECEIVER, 23, 9, {rotation =  0, color =  COLOR_GREEN})
-  grid.set(TYPE_RECEIVER, 8, level.y, {rotation = 0, color =  COLOR_BLUE})
-  grid.set(TYPE_RECEIVER, 23, 11, {rotation =  2, color =  COLOR_YELLOW})
-  grid.set(TYPE_PWHEEL, 15, 1, {state =  2, rotation = 0, color =  COLOR_YELLOW, canMove = true, canRotate = true})
-  grid.set(TYPE_MIRROR, 1, level.y , {rotation = 1})
-  grid.set(TYPE_MIRROR, 26, 11, {rotation = 1})
-  grid.set(TYPE_LOGIC, 1, 6,{state = LOGIC_OR, canMove = true, canRotate = false}):setSides("out","in","in","in")
-  grid.set(TYPE_LOGIC, 2, 6,{state = LOGIC_OR, canMove = true, canRotate = false}):setSides("out","in","in","in")
-  grid.set(TYPE_MIRROR, 26, 6, {state =  1, color =  COLOR_RED})
-  grid.set(TYPE_MIRROR, 17,2 , {state =  1, color =  COLOR_RED})
-  grid.set(TYPE_MIRROR, 2, level.y, {state =  1, color =  COLOR_GREEN})
-  grid.set(TYPE_MIRROR, 17,3 , {state =  1, color =  COLOR_YELLOW})
-  grid.set(TYPE_MIRROR, 1, level.y-1, {state =  1, color =  COLOR_CYAN})
-  grid.set(TYPE_MIRROR, level.x, 11, {rotation = 1})
+  grid.set(TYPE_WALL, level.x, 8)
+  grid.set(TYPE_WALL, level.x, 9)
+  grid.set(TYPE_WALL, level.x, 10)
+  grid.set(TYPE_SOURCE, level.x,1, {rotation =  2, color =  COLOR_CYAN})
+  grid.set(TYPE_SOURCE, 16, 4, {rotation =4, color =  COLOR_RED})
+  grid.set(TYPE_SOURCE, 8, 8, {rotation = 4 ,color =  COLOR_YELLOW})
+  grid.set(TYPE_SOURCE, 30, 11, {rotation =  3, color =  COLOR_CYAN})
+  grid.set(TYPE_SOURCE, level.x, level.y, {rotation =4, color =COLOR_MAGENTA})
+  grid.set(TYPE_RECEIVER, 8, 5, {rotation =  2, color =  COLOR_WHITE})
+  grid.set(TYPE_RECEIVER, 27, 9, {rotation =  1, color =  COLOR_WHITE})
+  grid.set(TYPE_RECEIVER, 2, 15,{rotation = 4, color =  COLOR_WHITE})
+  for i=12,24 do
+    grid.set(TYPE_MIRROR, i, 3, {rotation = 1})
+  end
+  grid.set(TYPE_MIRROR, 5, 3, {state =  1, color =  COLOR_MAGENTA})
+  grid.set(TYPE_MIRROR, 6, 3, {state =  1, color =  COLOR_MAGENTA})
+  grid.set(TYPE_MIRROR, 7, 3, {state =  1, color =  COLOR_CYAN})
+  grid.set(TYPE_MIRROR, 8, 3, {state =  1, color =  COLOR_CYAN})
+  grid.set(TYPE_MIRROR, 9, 3, {state =  1, color =  COLOR_YELLOW})
+  grid.set(TYPE_MIRROR, 10, 3, {state =  1, color =  COLOR_BLUE})
+  grid.set(TYPE_MIRROR, 11, 3, {state =  1, color =  COLOR_RED})
+  grid.set(TYPE_MIRROR, 12, 3, {state =  1, color =  COLOR_GREEN})
+    
   
 -- ADD UI ELEMENTS -- use menu.create() type functions, not yet defined.
 end
 
 function level.update(dt) -- dt is time since last update in seconds
 -- CHECK WIN CONDITION -- use grid functions to check object states, update level.complete accordingly
-  if grid.getState(16, 1)==2 and grid.getState(6, 9)==2 and grid.getState(23, 9)==2 and grid.getState(8, level.y)==2 and grid.getState(23, 11)==2 then level.complete = true end
+  if grid.getState(8, 5)==2 and grid.getState(27, 9)==2 and grid.getState(2, 15)==2 then level.complete = true end
 
 -- OPTIONAL INTERACTIVE LEVEL FUNCTIONS -- direct modifications of object states do not trigger and UpdateObjectType flag! (Needs to be done manually)
 

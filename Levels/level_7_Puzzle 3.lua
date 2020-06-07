@@ -47,8 +47,8 @@ function level.load()
   grid.set(TYPE_MIRROR, 2, 3, {state =  1, color =  COLOR_BLUE})
   grid.set(TYPE_MIRROR, 3, 3, {state =  1, color =  COLOR_CYAN})
   grid.set(TYPE_MIRROR, 4, 3, {state =  1, color =  COLOR_YELLOW})
-  grid.set(TYPE_LOGIC, 1, 4,{state = LOGIC_OR, canMove = true, canRotate = true}):setSides("in","in","in","out")
-  grid.set(TYPE_LOGIC, 2, 4,{state = LOGIC_OR, canMove = true, canRotate = true}):setSides("in","in","in","out")
+  grid.set(TYPE_LOGIC, 1, 4,{state = LOGIC_OR, canMove = true, canRotate = false}):setSides("out","out","in","in")
+  grid.set(TYPE_LOGIC, 2, 4,{state = LOGIC_OR, canMove = true, canRotate = false}):setSides("out","in","out","in")
 -- ADD UI ELEMENTS -- use menu.create() type functions, not yet defined.
 end
 
