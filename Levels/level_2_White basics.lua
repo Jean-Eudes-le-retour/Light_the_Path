@@ -54,7 +54,7 @@ function level.load()
 	m = ui_elements.create(UI_DIALOG)
 	m.text = {
     {{0.5,0.5,0.5},"Now let's play around with ",{1,1,1},"WHITE",{0.5,0.5,0.5}," light !\nIt is composed of ",{1,0,0},"RED",{0.5,0.5,0.5},", ",{0,1,0},"GREEN",{0.5,0.5,0.5}," and ",{0,0,1},"BLUE",{0.5,0.5,0.5}," light."},
-    {{0.5,0.5,0.5},"Just like before, try to activate the ",{0,1,0},"GREEN",{0.5,0.5,0.5}," reciever."}}
+    {{0.5,0.5,0.5},"Just like before, try to activate the ",{0,1,0},"GREEN",{0.5,0.5,0.5}," receiver."}}
     m.charname = {"Professeur Luminario", "Professeur Luminario"}
 	m.animation[1] = {}
 	m.animation[1][0] = {4,-1}
@@ -106,7 +106,7 @@ function level.update(dt) -- dt is time since last update in seconds
     m = ui_elements.create(UI_DIALOG)
     m.text = {
 {{0.5,0.5,0.5},"Now that the ",{0,1,0},"GREEN",{0.5,0.5,0.5}," part of the ",{1,1,1},"WHITE",{0.5,0.5,0.5}," light is deflected, there is only the ",{1,0,0},"RED",{0.5,0.5,0.5}," and ",{0,0,1},"BLUE",{0.5,0.5,0.5}," components left. Combined, that gives ",{1,0,1},"MAGENTA",{0.5,0.5,0.5},"."},
-{{0.5,0.5,0.5},"Try to illuminate the ",{0,0,1},"BLUE",{0.5,0.5,0.5}," reciever with the available mirrors!"},
+{{0.5,0.5,0.5},"Try to illuminate the ",{0,0,1},"BLUE",{0.5,0.5,0.5}," receiver with the available mirrors!"},
     }
     m.charname = {"Professeur Luminario","Professeur Luminario","Professeur Luminario"}
     m.animation[1] = {}
