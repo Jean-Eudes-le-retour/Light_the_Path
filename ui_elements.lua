@@ -1046,23 +1046,18 @@ function ui_elements.audioOptions()
   m.update = function(m)
     for i=1,#m.buttons do
       if m.buttons[i].isHeld then
-        if m.buttons[i].pressed then
-          if love.mouse.isDown(1) then
-            local r_mouse_x = love.mouse.getPosition()
-            local id = m.buttons[i].ctrl_id
-            r_mouse_x = math.floor((r_mouse_x - m.xpos)/UI_scale - 54.5)
-            if r_mouse_x < 0 then r_mouse_x = 0 end
-            if r_mouse_x > 200 then r_mouse_x = 200 end
-            m.buttons[i].xpos = 52 + r_mouse_x
-            m.setVolume[id](r_mouse_x/200)
-            m.buttons[i].texture_id = 10
-          else
-            m.buttons[i].pressed = false
-            m.buttons[i].xpos = 52 + math.floor(m.volume[m.buttons[i].ctrl_id]()*200)
-            m.buttons[i].texture_id = 9
-          end
+        if m.buttons[i].pressed and love.mouse.isDown(1) then
+          local r_mouse_x = love.mouse.getPosition()
+          local id = m.buttons[i].ctrl_id
+          r_mouse_x = math.floor((r_mouse_x - m.xpos)/UI_scale - 54.5)
+          if r_mouse_x < 0 then r_mouse_x = 0 end
+          if r_mouse_x > 200 then r_mouse_x = 200 end
+          m.buttons[i].xpos = 50 + r_mouse_x
+          m.setVolume[id](r_mouse_x/200)
+          m.buttons[i].texture_id = 10
         else
-          m.buttons[i].xpos = 52 + math.floor(m.volume[m.buttons[i].ctrl_id]()*200)
+          m.buttons[i].pressed = false
+          m.buttons[i].xpos = 50 + math.floor(m.volume[m.buttons[i].ctrl_id]()*200)
           m.buttons[i].texture_id = 9
         end
 
