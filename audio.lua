@@ -95,21 +95,21 @@ end
 
 function audio.setMasterVolume(volume)
   volume = volume or 1
-  if volume > 1 or volume < 0 then volume = 1 end
+  volume = (volume > 1 and 1) or (volume < 0 and 0) or volume
   volume_master = volume
   love.audio.setVolume(mute_master and 0 or volume_master)
 end
 
 function audio.setMusicVolume(volume)
   volume = volume or 1
-  if volume > 1 or volume < 0 then volume = 1 end
+  volume = (volume > 1 and 1) or (volume < 0 and 0) or volume
   volume_music = volume
   if c_track then c_track.track:setVolume(mute_music and 0 or volume_c*volume_music) end
 end
 
 function audio.setSFXVolume(volume)
   volume = volume or 1
-  if volume > 1 or volume < 0 then volume = 1 end
+  volume = (volume > 1 and 1) or (volume < 0 and 0) or volume
   volume_sfx = volume
   -- Make sure whatever "playsound" function takes into account the muting
 end
@@ -127,9 +127,9 @@ function audio.muteMusic(mute)
   if type(mute) == "boolean" then
     mute_music = mute
   else
-    mute_music = not mute_master
+    mute_music = not mute_music
   end
-  audio.setMusicVolume(mute_music and 0 or volume_music)
+  audio.setMusicVolume(volume_music)
 end
 
 function audio.muteSFX(mute)
@@ -138,7 +138,7 @@ function audio.muteSFX(mute)
   else
     mute_sfx = not mute_sfx
   end
-  audio.setSFXVolume(mute_sfx and 0 or volume_sfx)
+  audio.setSFXVolume(volume_sfx)
 end
 
 function audio.muffle(bool)
@@ -165,6 +165,30 @@ function audio.setVolumeStep(step)
   else
     volume_step = DEFAULT_VOLUME_STEP
   end
+end
+
+function audio.getMasterVolume()
+  return volume_master
+end
+
+function audio.getMusicVolume()
+  return volume_music
+end
+
+function audio.getSFXVolume()
+  return volume_sfx
+end
+
+function audio.getMasterMute()
+  return mute_master
+end
+
+function audio.getMusicMute()
+  return mute_music
+end
+
+function audio.getSFXMute()
+  return mute_sfx
 end
 
 return audio

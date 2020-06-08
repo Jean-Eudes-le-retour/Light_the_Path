@@ -58,9 +58,21 @@ local TEXTURE_MINISQ_BUTTON_GREYED = love.graphics.newImage("Textures/minisq_but
 local TEXTURE_MINISQ_PRESS_NORMAL = love.graphics.newImage("Textures/minisq_press_1.png")
 local TEXTURE_MINISQ_PRESS_PRESSED = love.graphics.newImage("Textures/minisq_press_2.png")
 local TEXTURE_MINISQ_PRESS_GREYED = love.graphics.newImage("Textures/minisq_press_4.png")
+local TEXTURE_ARROWR_NORMAL = love.graphics.newImage("Textures/arrowR_1.png")
+local TEXTURE_ARROWR_PRESSED = love.graphics.newImage("Textures/arrowR_2.png")
+local TEXTURE_ARROWR_GREYED = love.graphics.newImage("Textures/arrowR_4.png")
+local TEXTURE_ARROWL_NORMAL = love.graphics.newImage("Textures/arrowL_1.png")
+local TEXTURE_ARROWL_PRESSED = love.graphics.newImage("Textures/arrowL_2.png")
+local TEXTURE_ARROWL_GREYED = love.graphics.newImage("Textures/arrowL_4.png")
+local TEXTURE_SLIDER_NORMAL = love.graphics.newImage("Textures/slider_1.png")
+local TEXTURE_SLIDER_PRESSED = love.graphics.newImage("Textures/slider_2.png")
+local TEXTURE_SLIDER_GREYED = love.graphics.newImage("Textures/slider_4.png")
+
 local TEXTURE_THUMB_CHECK = love.graphics.newImage("Textures/thumbnail_check.png")
 local TEXTURE_THUMB_LOCK = love.graphics.newImage("Textures/thumbnail_lock.png")
 local TEXTURE_THUMB_NOLOCK = love.graphics.newImage("Textures/thumbnail_locknot.png")
+local TEXTURE_THUMB_SOUND = love.graphics.newImage("Textures/thumbnail_sound.png")
+local TEXTURE_THUMB_NOSOUND = love.graphics.newImage("Textures/thumbnail_soundnot.png")
 local TEXTURE_THUMB_GLASS = love.graphics.newImage("Textures/thumbnail_glass.png")
 local TEXTURE_THUMB_NOGLASS = love.graphics.newImage("Textures/thumbnail_glassnot.png")
 local TEXTURE_THUMB_TRASH = love.graphics.newImage("Textures/thumbnail_trash.png")
@@ -85,6 +97,7 @@ local TEXTURE_THUMB = {
 local TEXTURE_DIALOG_SIDE = love.graphics.newImage("Textures/dialog_side.png")
 local TEXTURE_DIALOG_NAMEBAR = love.graphics.newImage("Textures/dialog_namebar.png")
 local TEXTURE_DIALOG_NAMEBAR_EDGE = love.graphics.newImage("Textures/dialog_namebar_edge.png")
+local TEXTURE_SLIDERBAR = love.graphics.newImage("Textures/sliderbar.png")
 local TEXTURE_SELECTION_BOX = love.graphics.newImage("Textures/selection.png")
 
 
@@ -766,6 +779,7 @@ function ui_elements.escapeMenu()
     {onClick = function(m,b) audio.muffle(false) m:close() ui_elements.mainMenu() end, text = "Main Menu"},
     {onClick = function(m,b) m:close(true) ui_elements.levelSelect() table.insert(MenuCallStack,ui_elements.escapeMenu) end, text = "Level Select"},
     {onClick = function(m,b) m:close(true) ui_elements.videoOptions() table.insert(MenuCallStack,ui_elements.escapeMenu) end, text = "Video Options"},
+    {onClick = function(m,b) m:close(true) ui_elements.audioOptions() table.insert(MenuCallStack,ui_elements.escapeMenu) end, text = "Audio Options"},
     {onClick = function(m,b) m:close() end, text = "Return to Game"}
   }
   m.texture[1] = TEXTURE_REG_BUTTON_NORMAL
@@ -990,15 +1004,92 @@ function ui_elements.audioOptions()
   local m = ui_elements.create(UI_MENU)
   m.texture[1] = TEXTURE_REG_BUTTON_NORMAL
   m.texture[2] = TEXTURE_REG_BUTTON_PRESSED
-  m.texture[3] = TEXTURE_REG_BUTTON_NORMAL
-  m.texture[5] = TEXTURE_REG_BUTTON_INVIS
-  
+  m.texture[3] = TEXTURE_MINISQ_BUTTON_NORMAL
+  m.texture[4] = TEXTURE_MINISQ_BUTTON_PRESSED
+  m.texture[5] = TEXTURE_ARROWR_NORMAL
+  m.texture[6] = TEXTURE_ARROWR_PRESSED
+  m.texture[7] = TEXTURE_ARROWL_NORMAL
+  m.texture[8] = TEXTURE_ARROWL_PRESSED
+  m.texture[9] = TEXTURE_SLIDER_NORMAL
+  m.texture[10] = TEXTURE_SLIDER_PRESSED
+  m.texture[11] = TEXTURE_REG_BUTTON_INVIS
+
   m.buttons = {
-    {text = "AUDIO OPTIONS", textcolor = COLOR_BLACK, texture_id = 5, noUpdate = true},
-    {text = "Nothing yet!!!", texture_id = 5, noUpdate = true},
-    {text = "Back", onClick = function(m,b) m:close() end}
+    {texture_id = 11, xpos = 88, ypos = 32, text = "AUDIO OPTIONS", textcolor = COLOR_BLACK, noUpdate = true},
+    {texture_id = 11, xpos = 32, ypos = 70, text = "Master Volume", textcolor = {0.3,0.3,0.3}, align = "left", noUpdate = true},
+    {texture_id = 3, xpos = 32, ypos = 108, onClick = function(m,b) audio.muteMaster() end, ctrl_id = 1},
+    {texture_id = 11, xpos = 32, ypos = 138, text = "Music Volume", textcolor = {0.3,0.3,0.3}, align = "left", noUpdate = true},
+    {texture_id = 3, xpos = 32, ypos = 176, onClick = function(m,b) audio.muteMusic() end, ctrl_id = 2},
+    {texture_id = 11, xpos = 32, ypos = 206, text = "SFX Volume", textcolor = {0.3,0.3,0.3}, align = "left", noUpdate = true},
+    {texture_id = 3, xpos = 32, ypos = 244, onClick = function(m,b) audio.muteSFX() end, ctrl_id = 3},
+    {texture_id = 1, xpos = 88, ypos = 274, text = "Back", onClick = function(m,b) m:close() end}
   }
-  ui_elements.fitButtons(m)
+  m.texture[0] = ui_elements.getNewMenuBackground(306,338)
+  love.graphics.setCanvas(m.texture[0])
+  love.graphics.draw(TEXTURE_SLIDERBAR, 52, 115)
+  love.graphics.draw(TEXTURE_SLIDERBAR, 52, 183)
+  love.graphics.draw(TEXTURE_SLIDERBAR, 52, 251)
+  love.graphics.setCanvas()
+  m.volume = {audio.getMasterVolume, audio.getMusicVolume, audio.getSFXVolume}
+  m.setVolume = {audio.setMasterVolume, audio.setMusicVolume, audio.setSFXVolume}
+  m.mute = {audio.getMasterMute, audio.getMusicMute, audio.getSFXMute}
+  for i=1,3 do
+    m.buttons[i*2].ypos = m.buttons[i*2].ypos + 8
+    local y = m.buttons[1+i*2].ypos + 2
+    m.buttons[1+i*2].xpos = 238
+    m.buttons[1+i*2].ypos = y - 30
+    table.insert(m.buttons, {texture_id = 9, ctrl_id = i, xpos = 52 + math.floor(m.volume[i]()*2 + 0.5), ypos = y, isHeld = true})
+    table.insert(m.buttons, {texture_id = 7, ctrl_id = i, xpos = DEFAULT_H_DEADZONE, ypos = y, onClick = function(m,b) m.setVolume[b.ctrl_id](m.volume[b.ctrl_id]() - 0.1) end})
+    table.insert(m.buttons, {texture_id = 5, ctrl_id = i, xpos = 262, ypos = y, onClick = function(m,b) m.setVolume[b.ctrl_id](m.volume[b.ctrl_id]() + 0.1) end})
+  end
+  
+  m.update = function(m)
+    for i=1,#m.buttons do
+      if m.buttons[i].isHeld then
+        if m.buttons[i].pressed then
+          if love.mouse.isDown(1) then
+            local r_mouse_x = love.mouse.getPosition()
+            local id = m.buttons[i].ctrl_id
+            r_mouse_x = math.floor((r_mouse_x - m.xpos)/UI_scale - 51.5)
+            if r_mouse_x < 0 then r_mouse_x = 0 end
+            if r_mouse_x > 200 then r_mouse_x = 200 end
+            m.buttons[i].xpos = 52 + r_mouse_x
+            m.setVolume[id](r_mouse_x/200)
+            m.buttons[i].texture_id = 10
+          else
+            m.buttons[i].pressed = false
+            m.buttons[i].xpos = 52 + math.floor(m.volume[m.buttons[i].ctrl_id]()*200)
+            m.buttons[i].texture_id = 9
+          end
+        else
+          m.buttons[i].xpos = 52 + math.floor(m.volume[m.buttons[i].ctrl_id]()*200)
+        end
+
+      elseif not m.buttons[i].noUpdate then
+        local offset = 2*math.floor((m.buttons[i].texture_id-1)/2)
+        if m:isInButton(i) then m.buttons[i].cursorPresent = true
+        else m.buttons[i].cursorPresent = false end
+
+        if m.buttons[i].cursorPresent then
+          if not m.buttons[i].pressed then m.buttons[i].texture_id = offset + 1
+          else m.buttons[i].texture_id = offset + 2 end
+        else 
+          m.buttons[i].pressed = false
+          m.buttons[i].texture_id = offset + 1
+        end
+      end
+    end
+    m:draw()
+    love.graphics.setCanvas(m.canvas)
+    for i=1,3 do
+      local b = m.buttons[1+2*i]
+      local mute = m.mute[b.ctrl_id]()
+      love.graphics.draw(mute and TEXTURE_THUMB_NOSOUND or TEXTURE_THUMB_SOUND, b.xpos, b.ypos)
+    end
+    love.graphics.setCanvas()
+  end
+  
+  ui_elements.updateButtonDimensions(m)
   m:resize()
  return m
 end
