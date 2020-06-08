@@ -53,9 +53,9 @@ function level.load()
 -- ADD UI ELEMENTS -- use menu.create() type functions, not yet defined.
 	m = ui_elements.create(UI_DIALOG)
 	m.text = {
-    {{0.5,0.5,0.5},"Now let's play around with ",{1,1,1},"WHITE",{0.5,0.5,0.5}," light !\nIt is composed of ",{1,0,0},"RED",{0.5,0.5,0.5},", ",{0,1,0},"GREEN",{0.5,0.5,0.5}," and ",{0,0,1},"BLUE",{0.5,0.5,0.5}," light."},
+    {{0.5,0.5,0.5},"Now let's play around with ",{1,1,1},"WHITE",{0.5,0.5,0.5}," light!\nIt is composed of ",{1,0,0},"RED",{0.5,0.5,0.5},", ",{0,1,0},"GREEN",{0.5,0.5,0.5}," and ",{0,0,1},"BLUE",{0.5,0.5,0.5}," light."},
     {{0.5,0.5,0.5},"Just like before, try to activate the ",{0,1,0},"GREEN",{0.5,0.5,0.5}," receiver."}}
-    m.charname = {"Professeur Luminario", "Professeur Luminario"}
+    m.charname = {"Professor Luminario", "Professor Luminario"}
 	m.animation[1] = {}
 	m.animation[1][0] = {4,-1}
 	m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
@@ -108,7 +108,7 @@ function level.update(dt) -- dt is time since last update in seconds
 {{0.5,0.5,0.5},"Now that the ",{0,1,0},"GREEN",{0.5,0.5,0.5}," part of the ",{1,1,1},"WHITE",{0.5,0.5,0.5}," light is deflected, there is only the ",{1,0,0},"RED",{0.5,0.5,0.5}," and ",{0,0,1},"BLUE",{0.5,0.5,0.5}," components left. Combined, that gives ",{1,0,1},"MAGENTA",{0.5,0.5,0.5},"."},
 {{0.5,0.5,0.5},"Try to illuminate the ",{0,0,1},"BLUE",{0.5,0.5,0.5}," receiver with the available mirrors!"},
     }
-    m.charname = {"Professeur Luminario","Professeur Luminario","Professeur Luminario"}
+    m.charname = {"Professor Luminario","Professor Luminario","Professor Luminario"}
     m.animation[1] = {}
     m.animation[1][0] = {4,-1}
     m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
@@ -123,11 +123,11 @@ function level.update(dt) -- dt is time since last update in seconds
     alt1 = true
     m = ui_elements.create(UI_DIALOG)
     m.text = {
-{{0.5,0.5,0.5},"Interesting, the ",{0,1,0},"GREEN",{0.5,0.5,0.5}," receiver turns on when ",{0,1,1},"CYAN",{0.5,0.5,0.5}," light hits it !"},
+{{0.5,0.5,0.5},"Interesting, the ",{0,1,0},"GREEN",{0.5,0.5,0.5}," receiver turns on when ",{0,1,1},"CYAN",{0.5,0.5,0.5}," light hits it!"},
 {{0.5,0.5,0.5},"..."},
-{{0.5,0.5,0.5},"Oh wait, that's because the ",{0,1,0},"GREEN",{0.5,0.5,0.5}," part of ",{0,1,1},"CYAN",{0.5,0.5,0.5}," is detected !\nWe are going to need the ",{0,1,1},"CYAN",{0.5,0.5,0.5}," mirror later, change it with the ",{0,1,0},"GREEN",{0.5,0.5,0.5}," one for now."},
+{{0.5,0.5,0.5},"Oh wait, that's because the ",{0,1,0},"GREEN",{0.5,0.5,0.5}," part of ",{0,1,1},"CYAN",{0.5,0.5,0.5}," is detected!\nWe are going to need the ",{0,1,1},"CYAN",{0.5,0.5,0.5}," mirror later, repalce it with the ",{0,1,0},"GREEN",{0.5,0.5,0.5}," one for now."},
     }
-    m.charname = {"Professeur Luminario","Professeur Luminario","Professeur Luminario"}
+    m.charname = {"Professor Luminario","Professor Luminario","Professor Luminario"}
     m.animation[1] = {}
     m.animation[1][0] = {4,-1}
     m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
@@ -143,11 +143,11 @@ function level.update(dt) -- dt is time since last update in seconds
     alt2 = true
     m = ui_elements.create(UI_DIALOG)
     m.text = {
-{{0.5,0.5,0.5},"Interesting, the ",{0,1,0},"GREEN",{0.5,0.5,0.5}," receiver turns on when ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," light hits it !"},
+{{0.5,0.5,0.5},"Interesting, the ",{0,1,0},"GREEN",{0.5,0.5,0.5}," receiver turns on when ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," light hits it!"},
 {{0.5,0.5,0.5},"..."},
-{{0.5,0.5,0.5},"Oh wait, that's because the ",{0,1,0},"GREEN",{0.5,0.5,0.5}," part of ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," is detected !\nWe are going to need the ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," mirror later, change it with the ",{0,1,0},"GREEN",{0.5,0.5,0.5}," one for now."},
+{{0.5,0.5,0.5},"Oh wait, that's because the ",{0,1,0},"GREEN",{0.5,0.5,0.5}," part of ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," is detected!\nWe are going to need the ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," mirror later, replace it with the ",{0,1,0},"GREEN",{0.5,0.5,0.5}," one for now."},
     }
-    m.charname = {"Professeur Luminario","Professeur Luminario","Professeur Luminario"}
+    m.charname = {"Professor Luminario","Professor Luminario","Professor Luminario"}
     m.animation[1] = {}
     m.animation[1][0] = {4,-1}
     m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
@@ -164,9 +164,9 @@ function level.update(dt) -- dt is time since last update in seconds
     m = ui_elements.create(UI_DIALOG)
     m.text = {
 {{0.5,0.5,0.5},"Can you see how the ",{0,0,1},"BLUE",{0.5,0.5,0.5}," constituent gets reflected even though the mirror is ",{0,1,1},"CYAN",{0.5,0.5,0.5},"? That's because ",{0,1,1},"CYAN",{0.5,0.5,0.5}," is made of ",{0,1,0},"GREEN",{0.5,0.5,0.5}," and ",{0,0,1},"BLUE",{0.5,0.5,0.5}," and because there is no ",{0,1,0},"GREEN",{0.5,0.5,0.5}," in the ",{1,0,1},"MAGENTA",{0.5,0.5,0.5}," beam, there's only the ",{0,0,1},"BLUE",{0.5,0.5,0.5}," part that gets reflected."},
-{{0.5,0.5,0.5},"Finally, shine the ",{1,0,0},"RED",{0.5,0.5,0.5}," receiver!\nDon't forget that in this laboratory ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," light is made of ",{1,0,0},"RED",{0.5,0.5,0.5}," and ",{0,1,0},"GREEN",{0.5,0.5,0.5},"."},
+{{0.5,0.5,0.5},"Finally, illuminate the ",{1,0,0},"RED",{0.5,0.5,0.5}," receiver!\nDon't forget that in this laboratory ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," light is made of ",{1,0,0},"RED",{0.5,0.5,0.5}," and ",{0,1,0},"GREEN",{0.5,0.5,0.5},"."},
     }
-    m.charname = {"Professeur Luminario","Professeur Luminario","Professeur Luminario"}
+    m.charname = {"Professor Luminario","Professor Luminario","Professor Luminario"}
     m.animation[1] = {}
     m.animation[1][0] = {4,-1}
     m.animation[1][1] = love.graphics.newImage("Textures/test1.png")

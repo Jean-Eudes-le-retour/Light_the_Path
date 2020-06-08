@@ -47,7 +47,7 @@ function level.load()
 	m = ui_elements.create(UI_DIALOG)
 	m.text = {
     {{0.5,0.5,0.5},"We saw earlier that you could extract the three primary ",{1,0,0},"CO",{0,1,0},"LO",{0,0,1},"RS",{0.5,0.5,0.5}," from ",{1,1,1},"WHITE",{0.5,0.5,0.5},", but we can also do the reverse! Here we have a ",{1,0,0},"RED",{0.5,0.5,0.5},", a ",{0,1,0},"GREEN",{0.5,0.5,0.5}," and a ",{0,0,1},"BLUE",{0.5,0.5,0.5}," laser source. Using the dichroic mirrors, make all beams overlap each other."}}
-    m.charname = {"Professeur Luminario"}
+    m.charname = {"Professor Luminario"}
     m.animation[1] = {}
     m.animation[1][0] = {4,-1}
     m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
@@ -62,18 +62,18 @@ function level.update(dt) -- dt is time since last update in seconds
     dialog_num = dialog_num + 1
     m = ui_elements.create(UI_DIALOG)
     m.text = {
-{{0.5,0.5,0.5},"You just made a dichroic prism ! It is used in almost all projectors, I'll show you why in just a moment."},
-{{0.5,0.5,0.5},"Instead of always using two elements, people have engineered it into a single element. In my laboratory it looks like this:"},
-{{0.5,0.5,0.5},"By blocking the different channels we can create different colors: ",{1,0,0},"RED"},
-{{1,1,0},"YELLOW"},
-{{0,1,0},"GREEN"},
-{{0,1,1},"CYAN"},
-{{0,0,1},"BLUE"},
-{{1,0,1},"MAGENTA"},
-{{0.5,0.5,0.5},"And technically ",{0,0,0},"BLACK",{0.5,0.5,0.5},", the absence of color"},
+{{0.5,0.5,0.5},"You just made a dichroic prism! It is used in almost all projectors, I'll show you why in just a moment."},
+{{0.5,0.5,0.5},"Instead of always using two elements, people have engineered it into a single element. In my laboratory it looks like this."},
+{{0.5,0.5,0.5},"By blocking the different channels we can create different colors: ",{1,0,0},"RED",{0.5,0.5,0.5}," ..."},
+{{0.5,0.5,0.5},"... ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," ..."},
+{{0.5,0.5,0.5},"... ",{0,1,0},"GREEN",{0.5,0.5,0.5}," ..."},
+{{0.5,0.5,0.5},"... ",{0,1,1},"CYAN",{0.5,0.5,0.5}," ..."},
+{{0.5,0.5,0.5},"... ",{0,0,1},"BLUE",{0.5,0.5,0.5}," ..."},
+{{0.5,0.5,0.5},"... ",{1,0,1},"MAGENTA",{0.5,0.5,0.5}," ..."},
+{{0.5,0.5,0.5},"... And technically ",{0,0,0},"BLACK",{0.5,0.5,0.5},", the absence of color."},
 {{0.5,0.5,0.5},"This is how all colors are created inside projectors. The details on how the beams are blocked and how to make darker shades of color, notably brown are missing from my laboratory. I think I left them at home, but if you are interested you can always search for 'digital micromirror devices' on the interwebs or whatever."},
     }
-    m.charname = {"Professeur Luminario","Professeur Luminario","Professeur Luminario","Professeur Luminario","Professeur Luminario","Professeur Luminario","Professeur Luminario","Professeur Luminario","Professeur Luminario","Professeur Luminario"}
+    m.charname = {"Professor Luminario","Professor Luminario","Professor Luminario","Professor Luminario","Professor Luminario","Professor Luminario","Professor Luminario","Professor Luminario","Professor Luminario","Professor Luminario"}
     m.animation[1] = {}
     m.animation[1][0] = {4,-1}
     m.animation[1][1] = love.graphics.newImage("Textures/test1.png")

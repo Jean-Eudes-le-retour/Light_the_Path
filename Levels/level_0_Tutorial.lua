@@ -39,15 +39,15 @@ function level.load()
 -- ADD UI ELEMENTS -- use menu.create() type functions, not yet defined.
 	m = ui_elements.create(UI_DIALOG)
 	m.text = {
-  {{0.5,0.5,0.5},"Welcome to my laboratory! I will present to you all of my gadgets and gizmos that I use for my reseach and teach you how to use them. (Click here to continue...)"},
-  {{0.5,0.5,0.5},"This is my optics workbench!\n...Ok it may look a bit bland but that's because it is empty. Still, you can see lighter squares; that's where you will be able to put objects and interact with them, and darker squares that represent walls that will block the laser beams."},
-  {{0.5,0.5,0.5},"Let's add some basic piece of equipement!"},
-  {{0.5,0.5,0.5},"This is a mirror. You can move it with your cursor by dragging it with the ",{0,0,0},"LEFT MOUSE",{0.5,0.5,0.5}," button held down.\n\nYou can also rotate it with the ",{0,0,0},"SCROLL WHEEL",{0.5,0.5,0.5},".\nTry it now !\n\n(When you're finished, click here to continue...)"}, --4 
-  {{0.5,0.5,0.5},"Sometimes it will be stuck in place but will still be able to spin. It will then look like it is on a metal disc:"}, --5 canRotate = false
-  {{0.5,0.5,0.5},"And other times it will be stuck in place and won't be able to spin. That's when it is welded to a sheet of metal:"}, --6 canRotate = false canMove = false
-  {{0.5,0.5,0.5},"Now let's have some fun ! Here is a laser source. You can turn it on by ",{0,0,0},"RIGHT CLICKING",{0.5,0.5,0.5}, " it.\nNotice how it is also welded to a metal sheet and therefore cannot be moved nor turned."} --7 wait for the player to turn on the laser
+  {{0.5,0.5,0.5},"Welcome to my laboratory! I will present to you all the gadgets and gizmos I use for my reseach and teach you how to use them.\n\n(Click here to continue...)"},
+  {{0.5,0.5,0.5},"This is my optics workbench!\n... Ok it may look a bit bland but that's because it's empty. Still, you can see lighter square spaces arranged in a grid; that's where you will be able to place objects and interact with them. The grid here is surrounded with walls that will block the laser beams and prevent you from placing anything in their stead."},
+  {{0.5,0.5,0.5},"Let's add some basic piece of equipment!"},
+  {{0.5,0.5,0.5},"This is a mirror. You can move it with your cursor by dragging it with the ",{0,0,0},"LEFT MOUSE",{0.5,0.5,0.5}," button held down.\n\nYou can also rotate it with the ",{0,0,0},"SCROLL WHEEL",{0.5,0.5,0.5},".\nTry it now!\n\n(When you're finished, click here to continue...)"}, --4 
+  {{0.5,0.5,0.5},"Sometimes, objects will be stuck in place but will still be able to spin. It will then look like it is on a metal disk."}, --5 canRotate = false
+  {{0.5,0.5,0.5},"And other times, objects will be stuck in place and won't be able to spin. That's when they are welded to a sheet of metal."}, --6 canRotate = false canMove = false
+  {{0.5,0.5,0.5},"Now let's have some fun! Here is a laser source. You can turn it on by ",{0,0,0},"RIGHT CLICKING",{0.5,0.5,0.5}, " it.\nNotice how it is also welded to a metal sheet and therefore cannot be moved nor turned."} --7 wait for the player to turn on the laser
   }
-	m.charname = {"Professeur Luminario"}
+	m.charname = {"Professor Luminario"}
 	m.animation[1] = {}
 	m.animation[1][0] = {4,-1}
 	m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
@@ -55,7 +55,7 @@ function level.load()
 	m.animation[1][3] = m.animation[1][1]
 	for i=2,9 do
 		m.animation[i] = m.animation[1]
-		m.charname[i] = "Professeur Luminario"
+		m.charname[i] = "Professor Luminario"
 	end
 	m:resize()
 end
@@ -68,7 +68,7 @@ function level.update(dt) -- dt is time since last update in seconds
     level.complete = true
     m = ui_elements.create(UI_DIALOG)
     m.text = {{{1,1,0},"You finished your first level!",{0.5,0.5,0.5},"\nI will start to talk about more specialised tools in the next few levels."}}
-    m.charname = {"Professeur Luminario"}
+    m.charname = {"Professor Luminario"}
     m.animation[1] = {}
     m.animation[1][0] = {4,-1}
     m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
@@ -83,7 +83,7 @@ function level.update(dt) -- dt is time since last update in seconds
     if not flag[1] then
       flag[1] = true
       grid.set(TYPE_MIRROR, 5, 3)
-	  m.isBlocking = false
+      m.isBlocking = false
     end
   end
   if dialog_num==1 and m.page==5 then
@@ -118,10 +118,10 @@ function level.update(dt) -- dt is time since last update in seconds
     m:close()
     m = ui_elements.create(UI_DIALOG)
     m.text = {
-	{{0.5,0.5,0.5},"...Shiny..."},
-	{{0.5,0.5,0.5},"Now this laser beam has to go somewhere ! Let's introduce the receiver. It will turn on when correcty colored light hits it. Most of the time you will need to turn all of the receiver on to finish the challenges.\nTry it out !"} --9 wait for receiver to turn on
+	{{0.5,0.5,0.5},"... Shiny..."},
+	{{0.5,0.5,0.5},"Now this laser beam has to go somewhere! Let's introduce the receiver. It will turn on when correcty colored light hits it. Most of the time you will need to turn all of the receiver on to finish the challenges.\nTry it out!"} --9 wait for receiver to turn on
 }
-    m.charname = {"Professeur Luminario","Professeur Luminario"}
+    m.charname = {"Professor Luminario","Professor Luminario"}
     m.animation[1] = {}
     m.animation[1][0] = {4,-1}
     m.animation[1][1] = love.graphics.newImage("Textures/test1.png")

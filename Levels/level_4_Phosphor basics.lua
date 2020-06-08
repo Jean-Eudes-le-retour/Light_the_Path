@@ -47,11 +47,11 @@ function level.load()
 -- ADD UI ELEMENTS -- use menu.create() type functions, not yet defined.
 	m = ui_elements.create(UI_DIALOG)
 	m.text = {
-    {{0.5,0.5,0.5},"Now we are going to look at phorphor wheels ! But first let's briefly talk about the energy of visible light. The details can get quite complicated but in very short: We can see colors in a spectrum; ",{1,0,0},"RED",{0.5,0.5,0.5},", ",{1,1,0},"YELLOW",{0.5,0.5,0.5},", ",{0,1,0},"GREEN",{0.5,0.5,0.5},", ",{0,1,1},"CYAN",{0.5,0.5,0.5},", ",{0,0,1},"BLUE",{0.5,0.5,0.5},". The closer a color is to ",{0,0,1},"BLUE",{0.5,0.5,0.5},", the more energy it has."},
-	{{0.5,0.5,0.5},"Back to phosphor wheels! When a high energy beam hits them a fluorescence phenomenon happens. That means that a lower energy light is produced. In my laboratory the only light with enough energy to make this phenomenon happen is the ",{0,0,1},"BLUE",{0.5,0.5,0.5}," light."},
-	{{0.5,0.5,0.5}, "The color of the emitted beam depends on the composition of the phosphor: for example a Y2O2S:Eu3+ coating will result in a ",{1,0,0},"RED",{0.5,0.5,0.5}," color and a ZnO:Zn one in a ",{0,1,0},"GREEN",{0.5,0.5,0.5}," light[1].\n\n[1] Shionoya, Shigeo (1999). 'VI: Phosphors for cathode ray tubes'. Phosphor handbook. Boca Raton, Fla.: CRC Press. ISBN 978-0-8493-7560-6."},
-	{{0.5,0.5,0.5},"Here we have a ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," phosphor wheel used in ",{1,1,1},"WHITE",{0.5,0.5,0.5}," LEDs. When it is illuminated with ",{0,0,1},"BLUE",{0.5,0.5,0.5}," light it produces ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," light. Try it now !"}}
-    m.charname = {"Professeur Luminario","Professeur Luminario","Professeur Luminario","Professeur Luminario"}
+    {{0.5,0.5,0.5},"Now we are going to look at phosphor wheels! But first let's briefly talk about the energy of visible light. The details can get quite complicated but in very short: We can see colors in a spectrum; ",{1,0,0},"RED",{0.5,0.5,0.5},", ",{1,1,0},"YELLOW",{0.5,0.5,0.5},", ",{0,1,0},"GREEN",{0.5,0.5,0.5},", ",{0,1,1},"CYAN",{0.5,0.5,0.5},", ",{0,0,1},"BLUE",{0.5,0.5,0.5},". The closer a color is to ",{0,0,1},"BLUE",{0.5,0.5,0.5},", the more energy it has."},
+	{{0.5,0.5,0.5},"Back to phosphor wheels! When a high energy beam hits them, a fluorescence phenomenon happens. That means that a lower energy light is produced. In my laboratory the only light with enough energy to make this phenomenon happen is ",{0,0,1},"BLUE",{0.5,0.5,0.5}," light."},
+	{{0.5,0.5,0.5}, "The color of the emitted beam depends on the composition of the phosphor: for example a Y2O2S:Eu3+ coating will result in a ",{1,0,0},"RED",{0.5,0.5,0.5}," color and a ZnO:Zn one in a ",{0,1,0},"GREEN",{0.5,0.5,0.5}," light [1].\n\n[1] Shionoya, Shigeo (1999). 'VI: Phosphors for cathode ray tubes'. Phosphor handbook. Boca Raton, Fla.: CRC Press. ISBN 978-0-8493-7560-6."},
+	{{0.5,0.5,0.5},"Here we have a ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," phosphor wheel, commonly used in ",{1,1,1},"WHITE",{0.5,0.5,0.5}," LEDs. When it is illuminated with ",{0,0,1},"BLUE",{0.5,0.5,0.5}," light, it produces ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," light.\n\nTry it out now!"}}
+    m.charname = {"Professor Luminario","Professor Luminario","Professor Luminario","Professor Luminario"}
 	m.animation[1] = {}
 	m.animation[1][0] = {4,-1}
 	m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
@@ -73,11 +73,11 @@ function level.update(dt) -- dt is time since last update in seconds
     dialog_num = dialog_num + 1
     m = ui_elements.create(UI_DIALOG)
     m.text = {
-{{0.5,0.5,0.5},"Here the ",{0,0,1},"BLUE",{0.5,0.5,0.5}," dichroic mirror is very useful, it directs the ",{0,0,1},"BLUE",{0.5,0.5,0.5}," beam to the phosphor wheel and then when ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," light is produced it lets it go through."},
-{{0.5,0.5,0.5},"Lets make ",{1,1,1},"WHITE",{0.5,0.5,0.5}," light with ",{0,0,1},"BLUE",{0.5,0.5,0.5}," sources only !"},
-{{0.5,0.5,0.5},"Here is another ",{0,0,1},"BLUE",{0.5,0.5,0.5}," source, turn on the ",{1,1,1},"WHITE",{0.5,0.5,0.5}," receiver !"}
+{{0.5,0.5,0.5},"Here the ",{0,0,1},"BLUE",{0.5,0.5,0.5}," dichroic mirror is very useful, it directs the ",{0,0,1},"BLUE",{0.5,0.5,0.5}," beam to the phosphor wheel and then when ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," light is produced and reflected back, it lets it go through."},
+{{0.5,0.5,0.5},"Lets make ",{1,1,1},"WHITE",{0.5,0.5,0.5}," light with ",{0,0,1},"BLUE",{0.5,0.5,0.5}," sources only!"},
+{{0.5,0.5,0.5},"Here is another ",{0,0,1},"BLUE",{0.5,0.5,0.5}," source, turn on the ",{1,1,1},"WHITE",{0.5,0.5,0.5}," receiver!"}
                      }
-    m.charname = {"Professeur Luminario","Professeur Luminario","Professeur Luminario"}
+    m.charname = {"Professor Luminario","Professor Luminario","Professor Luminario"}
     m.animation[1] = {}
     m.animation[1][0] = {4,-1}
     m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
@@ -105,10 +105,10 @@ function level.update(dt) -- dt is time since last update in seconds
     m = ui_elements.create(UI_DIALOG)
     m.text = {
 {{0.5,0.5,0.5},"That is pretty much how ",{1,1,1},"WHITE",{0.5,0.5,0.5}," LEDs are made."},
-{{0.5,0.5,0.5},"To be more accurate, they are made with a transmissive phosphor coating instead of a reflective one like here. That means that the light goes through the phosphor instead of bouncing from it."},
-{{0.5,0.5,0.5},"The coating is also made not to convert all of the ",{0,0,1},"BLUE",{0.5,0.5,0.5}," light into ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," light so that some ",{0,0,1},"BLUE",{0.5,0.5,0.5}," light can still come through. It can then blend directly with the ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," light into ",{1,1,1},"WHITE",{0.5,0.5,0.5}," light."},
+{{0.5,0.5,0.5},"To be more accurate, they are made with a transmissive phosphor coating instead of a reflective one like ours. That means that the light goes through the phosphor instead of bouncing from it."},
+{{0.5,0.5,0.5},"The coating is also made not to convert all of the ",{0,0,1},"BLUE",{0.5,0.5,0.5}," light into ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," light so that some ",{0,0,1},"BLUE",{0.5,0.5,0.5}," light can still go through. It can then blend directly with the ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," light into ",{1,1,1},"WHITE",{0.5,0.5,0.5}," light."},
 }
-    m.charname = {"Professeur Luminario","Professeur Luminario","Professeur Luminario"}
+    m.charname = {"Professor Luminario","Professor Luminario","Professor Luminario"}
     m.animation[1] = {}
     m.animation[1][0] = {4,-1}
     m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
