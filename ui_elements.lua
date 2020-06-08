@@ -776,7 +776,7 @@ function ui_elements.escapeMenu()
   audio.muffle(true)
   local m = ui_elements.create(UI_MENU)
   m.buttons = {
-    {onClick = function(m,b) audio.muffle(false) m:close() ui_elements.mainMenu() end, text = "Main Menu"},
+    {onClick = function(m,b) m:close() ui_elements.mainMenu() end, text = "Main Menu"},
     {onClick = function(m,b) m:close(true) ui_elements.levelSelect() table.insert(MenuCallStack,ui_elements.escapeMenu) end, text = "Level Select"},
     {onClick = function(m,b) m:close(true) ui_elements.videoOptions() table.insert(MenuCallStack,ui_elements.escapeMenu) end, text = "Video Options"},
     {onClick = function(m,b) m:close(true) ui_elements.audioOptions() table.insert(MenuCallStack,ui_elements.escapeMenu) end, text = "Audio Options"},
@@ -1160,6 +1160,7 @@ function ui_elements.mainMenu(fromSubmenu)
 --THERE CAN BE ONLY ONE
   for i=1, MenuId do if Menus[i] then Menus[i]:close() end end
   local m = ui_elements.create(UI_MENU)
+  audio.muffle(false)
   m.noEscape = true
   m.texture[1] = TEXTURE_REG_BUTTON_NORMAL
   m.texture[2] = TEXTURE_REG_BUTTON_PRESSED

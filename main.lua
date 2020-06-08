@@ -11,6 +11,7 @@ require("constants")
 local objects = require("objects")
 local grid = require("grid")
 local tiles = require("tiles")
+local laser = require("laser")
 local game = require("game")
 local ui_elements = require("ui_elements")
 local audio = require("audio")
@@ -178,6 +179,7 @@ function load_level(level_id)
     if Menus[i] and (Menus[i].t == UI_DIALOG or Menus[i].isSelection) then Menus[i]:close() end
   end
   
+  laser.halt(false)
   level = love.filesystem.load(path)()
   level.load()
   level.level_id = level_id
