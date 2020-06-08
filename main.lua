@@ -90,7 +90,6 @@ function love.load()
   end
   
   ui_elements.dialogTest()
-  ui_elements.getNewMenuBackground(336,324):newImageData():encode("png","menuBG")
 end
 
 function love.update(dt)

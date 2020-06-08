@@ -1050,7 +1050,7 @@ function ui_elements.audioOptions()
           if love.mouse.isDown(1) then
             local r_mouse_x = love.mouse.getPosition()
             local id = m.buttons[i].ctrl_id
-            r_mouse_x = math.floor((r_mouse_x - m.xpos)/UI_scale - 51.5)
+            r_mouse_x = math.floor((r_mouse_x - m.xpos)/UI_scale - 54.5)
             if r_mouse_x < 0 then r_mouse_x = 0 end
             if r_mouse_x > 200 then r_mouse_x = 200 end
             m.buttons[i].xpos = 52 + r_mouse_x
@@ -1063,6 +1063,7 @@ function ui_elements.audioOptions()
           end
         else
           m.buttons[i].xpos = 52 + math.floor(m.volume[m.buttons[i].ctrl_id]()*200)
+          m.buttons[i].texture_id = 9
         end
 
       elseif not m.buttons[i].noUpdate then
