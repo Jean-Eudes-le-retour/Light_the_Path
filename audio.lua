@@ -12,6 +12,7 @@ local mute_master = false
 local mute_music = false
 local mute_sfx = false
 local muffle = false
+local speech = false
 local VOLUME_MUFFLE = DEFAULT_MUFFLE
 local volume_step = DEFAULT_VOLUME_STEP
 
@@ -43,6 +44,12 @@ function audio.update(dt)
     if volume_c > 1 then volume_c = 1 end
     volume_step = DEFAULT_VOLUME_STEP
     c_track.track:setVolume(volume_c*volume_music)
+  end
+  if speech then
+    speech = false
+    if not SFX[SFX_TYPE]:isPlaying() then
+      SFX[SFX_TYPE]:play()
+    end
   end
 end
 
@@ -77,6 +84,10 @@ function audio.playSound(sound_id)
   if SFX[sound_id]:isPlaying() then SFX[sound_id]:stop() end
   SFX[sound_id]:setVolume(volume_sfx)
   SFX[sound_id]:play()
+end
+
+function audio.makeSpeech()
+  speech = true
 end
 
 function audio.fade(step)

@@ -10,6 +10,7 @@ level.x = 48
 level.y = 27
 level.name = "Main Menu"
 
+level.noUI = true
 level.track_id = 8 -- random if not set
 
 local x_offset, y_offset = 0, 0

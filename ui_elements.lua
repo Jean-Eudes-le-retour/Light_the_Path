@@ -69,6 +69,10 @@ local TEXTURE_SLIDER_NORMAL = love.graphics.newImage("Textures/slider_1.png")
 local TEXTURE_SLIDER_PRESSED = love.graphics.newImage("Textures/slider_2.png")
 local TEXTURE_SLIDER_GREYED = love.graphics.newImage("Textures/slider_4.png")
 
+local TEXTURE_THUMB_MOVE = love.graphics.newImage("Textures/thumbnail_move.png")
+local TEXTURE_THUMB_SELECT = love.graphics.newImage("Textures/thumbnail_select.png")
+local TEXTURE_THUMB_DELETE = love.graphics.newImage("Textures/thumbnail_delete.png")
+local TEXTURE_THUMB_PLACE = love.graphics.newImage("Textures/thumbnail_place.png")
 local TEXTURE_THUMB_CHECK = love.graphics.newImage("Textures/thumbnail_check.png")
 local TEXTURE_THUMB_LOCK = love.graphics.newImage("Textures/thumbnail_lock.png")
 local TEXTURE_THUMB_NOLOCK = love.graphics.newImage("Textures/thumbnail_locknot.png")
@@ -190,7 +194,7 @@ Menus = {}
 --------------------------------------------------------------------------------------------------------------------------
 -- On screen resize : menu:resize(), menu:draw() for all (use ui_elements.redraw()?)
 
-function Menu:new(t)
+function Menu:new(t,id)
   local m = {}
   setmetatable(m, self)
   self.__index = self
@@ -214,12 +218,18 @@ function Menu:new(t)
     m.noSkip = DEFAULT_UI[t].noSkip
   end
   
-  while MenuId > 0 and not Menus[MenuId] do MenuId = MenuId-1 end
-  MenuId = MenuId+1
-  m.id = MenuId
+  if id then
+    m.id = id
+    Menus[id] = m
+  else
+    while MenuId > 0 and not Menus[MenuId] do MenuId = MenuId-1 end
+    MenuId = MenuId+1
+    m.id = MenuId
+    Menus[MenuId] = m
+  end
   m.uniqueId = uniqueId
   uniqueId = uniqueId+1
-  Menus[MenuId] = m
+
   return m
 end
 
@@ -370,6 +380,7 @@ function Menu:close(noInvoke)
   if self.id == MenuId then
     MenuId = MenuId-1
     while not Menus[MenuId] and MenuId > 0 do MenuId = MenuId-1 end
+    if MenuId < 0 then MenuId = 0 end
   end
 
   Menus[self.id] = nil
@@ -528,9 +539,9 @@ function ui_elements.getDialogBox(width,height,ts_path,bg_color)
   return canvas
 end
 
-function ui_elements.create(t)
+function ui_elements.create(t,id)
 --[[UI test for non-base types]]
-  return Menu:new(t)
+  return Menu:new(t,id)
 end
 
 -- Called in love.resize()
@@ -640,6 +651,7 @@ function ui_elements.updateDialog(m)
     end
     if characters_to_print >= 0 then m.finished = true end
     characters_to_print = string.len(m.text[page][text_stop_id])+characters_to_print
+    audio.makeSpeech()
 
     for i=1,text_stop_id-1 do
       text_to_print[i] = m.text[page][i]
@@ -693,11 +705,13 @@ end
 
 function ui_elements.clickDialog(m)
   if m.finished and not m.noSkip then
+    audio.playSound(SFX_TICK)
     m.finished = false
     m.game_time_start = game_time
     m.page = m.page + 1
     if m.page > #m.text then m:close() end
   else
+    if not m.finished then audio.playSound(SFX_TICK) end
     m.finished = true
   end
 end
@@ -757,7 +771,7 @@ end
 
 function ui_elements.select(x,y)
   local grid_x, grid_y = grid.getDimensions()
-  for i=1,MenuId do
+  for i=0,MenuId do
     if Menus[i] and Menus[i].isSelection then Menus[i]:close() end
   end
   
@@ -1209,7 +1223,7 @@ function ui_elements.victory()
   m.texture[3] = TEXTURE_REG_BUTTON_NORMAL
   m.texture[5] = TEXTURE_REG_BUTTON_INVIS
 
-  level_id = (level and level.level_id) or -1
+  level_id = (level and level.level_id) or "nil"
   level_name = (level and level.name) or "Unnamed"
   
   m.buttons = {
@@ -1251,7 +1265,7 @@ end
 function ui_elements.makeSelection(x,y)
   sel_x, sel_y = x, y
   print("Selected "..tostring(x).." "..tostring(y))
-  local sbox = ui_elements.create(UI_TILE)
+  local sbox = ui_elements.create(UI_TILE,0)
   sbox.isSelection = true
   sbox.x = x
   sbox.y = y
@@ -1340,7 +1354,7 @@ function ui_elements.makeSelection(x,y)
     sinfo.update = function(m)
       if not m.o or not Grid[sel_x] or Grid[sel_x][sel_y] ~= m.o then
         sel_x, sel_y = false, false
-        for i=1, MenuId do
+        for i=0, MenuId do
           if Menus[i] and Menus[i].isSelection then
             Menus[i]:close()
           end
@@ -1477,6 +1491,89 @@ function ui_elements.makeSelection(x,y)
     end
     splace:resize()
   end
+end
+
+function ui_elements.makeLevelMenu()
+  for i=1,MenuId do
+    if Menus[i] and Menus[i].isLevelMenu then Menus[i]:close() end
+  end
+  if level and level.noUI then return end
+
+  local m = ui_elements.create(UI_MENU)
+  m.window_position_mode = MENU_TL
+  m.isBlocking = false
+  m.isLevelMenu = true
+  m.sel_t = TYPE_WALL
+  local lvl_id = level and tostring(level.level_id) or "NaN"
+  local lvl_name = level and level.name or "Unnamed"
+  local lvl_info = "Level "..tostring(lvl_id).." - "..lvl_name
+  local tw = FONT_DEFAULT:getWidth(lvl_info)
+  m.bpos = tw + 4
+  m.texture[0] = love.graphics.newCanvas(tw + 166, 32)
+  love.graphics.setCanvas(m.texture[0])
+  love.graphics.setColor(0.8,0.8,0.8,1)
+  love.graphics.rectangle("fill", 0, 0, tw + 162, 28)
+  love.graphics.setColor(0.4,0.4,0.4,1)
+  love.graphics.rectangle("fill", 0, 28, tw + 162, 30)
+  love.graphics.rectangle("fill", tw + 162, 0, tw + 164, 28)
+  love.graphics.points(tw + 161, 27, tw + 161, 28, tw + 162, 27,  tw + 162, 28)
+  love.graphics.setColor(0.2,0.2,0.2,1)
+  love.graphics.rectangle("fill", 0, 30, tw + 164, 32)
+  love.graphics.rectangle("fill", tw + 164, 0, tw + 166, 30)
+  love.graphics.points(tw + 163, 29, tw + 163, 30, tw + 164, 29, tw + 164, 30)
+  love.graphics.setColor(1,1,1,1)
+  love.graphics.draw(TEXTURE_MINISQ_BUTTON_NORMAL, tw + 122, 2)
+  love.graphics.setFont(FONT_DEFAULT)
+  love.graphics.print(lvl_info, 2, 8)
+  love.graphics.setFont(FONT_BASE)
+  love.graphics.setCanvas()
+  
+  m.texture[1] = TEXTURE_MINISQ_BUTTON_NORMAL
+  m.texture[2] = TEXTURE_MINISQ_BUTTON_PRESSED
+  m.texture[3] = TEXTURE_ARROWL_NORMAL
+  m.texture[4] = TEXTURE_ARROWL_PRESSED
+  m.texture[5] = TEXTURE_ARROWR_NORMAL
+  m.texture[6] = TEXTURE_ARROWR_PRESSED
+  m.texture[7] = TEXTURE_MINISQ_BUTTON_GREYED
+  
+  local mod = (DEVELOPER_MODE or level and level.canModify)
+  m.buttons = {
+    {xpos = tw + 4, ypos = 2, texture_id = 1, onClick = function(m,b) cursor_mode = CURSOR_MOVE end},
+    {xpos = tw + 30, ypos = 2, texture_id = 1, onClick = function(m,b) cursor_mode = CURSOR_SELECT end},
+    {xpos = tw + 56, ypos = 2, texture_id = mod and 1 or 7, noUpdate = not mod, onClick = mod and function(m,b) cursor_mode = CURSOR_DELETE end},
+    {xpos = tw + 82, ypos = 2, texture_id = mod and 1 or 7, noUpdate = not mod, onClick = mod and function(m,b) cursor_mode = CURSOR_PLACE end},
+    {xpos = tw + 108, ypos = 4, texture_id = 4, onClick = function(m,b) m.sel_t = (m.sel_t - 2)%#TYPES + 1 end},
+    {xpos = tw + 148, ypos = 4, texture_id = 6, onClick = function(m,b) m.sel_t = (m.sel_t)%#TYPES + 1 end}
+  }
+  m.update = function(m)
+    for i=1,#m.buttons do
+      if not m.buttons[i].noUpdate then
+        local offset = 2*math.floor((m.buttons[i].texture_id-1)/2)
+        if m:isInButton(i) and m.buttons[i].pressed then
+          m.buttons[i].texture_id = offset + 2
+        else
+          m.buttons[i].pressed = false
+          m.buttons[i].texture_id = offset + 1
+        end
+      end
+    end
+    m.buttons[cursor_mode].texture_id = 2
+    m:draw()
+    love.graphics.setCanvas(m.canvas)
+    love.graphics.draw(TEXTURE_THUMB_MOVE, m.bpos, 2)
+    love.graphics.draw(TEXTURE_THUMB_SELECT, m.bpos+26, 2)
+    love.graphics.draw(TEXTURE_THUMB_DELETE, m.bpos+52, 2)
+    love.graphics.draw(TEXTURE_THUMB_PLACE, m.bpos+78, 2)
+    love.graphics.draw(TEXTURE_THUMB[m.sel_t], m.bpos+118, 2)
+    love.graphics.setCanvas()
+  end
+  
+  m.onScroll = function(m, x, y)
+    m.sel_t = (m.sel_t - 1 - y) % #TYPES + 1
+  end
+  ui_elements.updateButtonDimensions(m)
+  m:resize()
+  return m
 end
 
 return ui_elements

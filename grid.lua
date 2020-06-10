@@ -241,5 +241,9 @@ function grid.getTilePosition(grid_pos_x, grid_pos_y)
   return true_drawbox_pos_x+(grid_pos_x-1)*tile_size, true_drawbox_pos_y+(grid_pos_y-1)*tile_size
 end
 
+function grid.isInGrid(x,y)
+  return (x>0) and (x<=grid_size_x) and (y>0) and (y<=grid_size_y)
+end
+
 
 return grid

@@ -107,11 +107,12 @@ SFX = {
         love.audio.newSource("Audio/SFX/button_press.ogg","static"),
         love.audio.newSource("Audio/SFX/button_release.ogg","static"),
         love.audio.newSource("Audio/SFX/lock_open.ogg","static"),
-        love.audio.newSource("Audio/SFX/tick.ogg","static")
+        love.audio.newSource("Audio/SFX/tick.ogg","static"),
+        love.audio.newSource("Audio/SFX/type.ogg","static")
       }
 
 NUM_SFX = #SFX
-SFX_DRAG_STONE, SFX_DRAG_GLASS, SFX_PLACE_STONE, SFX_PLACE_GLASS, SFX_LASER_ON, SFX_LASER_OFF, SFX_BUTTON_PRESS, SFX_BUTTON_RELEASE, SFX_LOCK, SFX_TICK = enum(NUM_SFX)
+SFX_DRAG_STONE, SFX_DRAG_GLASS, SFX_PLACE_STONE, SFX_PLACE_GLASS, SFX_LASER_ON, SFX_LASER_OFF, SFX_BUTTON_PRESS, SFX_BUTTON_RELEASE, SFX_LOCK, SFX_TICK, SFX_TYPE = enum(NUM_SFX)
 
 -- ENUM CONSTANTS --
 NUM_TYPES = 8

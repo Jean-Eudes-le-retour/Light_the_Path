@@ -9,7 +9,6 @@ local audio = require("audio")
 -- HIGH LEVEL GAME FUNCTIONS, ideally functions that provide user with UI and defines behaviour when player takes certain actions
 local game = {}
 
-local cursor_mode = 1
 local o_hand = false
 local o_displacement_x, o_displacement_y = 0,0
 local sel_x, sel_y =  false, false
@@ -47,7 +46,7 @@ function game.updateUI(dt)
   local UI_scale = ui_elements.getUIScale()
   local MenuId = ui_elements.getMenuId()
   
-  for i=MenuId,1,-1 do if Menus[i] then Menus[i].update(Menus[i]) end end
+  for i=MenuId,0,-1 do if Menus[i] then Menus[i].update(Menus[i]) end end
 
   if audio.getMuffle() then
     local muffling = false
@@ -58,7 +57,7 @@ function game.updateUI(dt)
   love.graphics.setCanvas(canvas_UI)
   love.graphics.clear()
   love.graphics.setBlendMode("alpha","premultiplied")
-  for i=1,MenuId do
+  for i=0,MenuId do
     if Menus[i] and Menus[i].canvas then
       love.graphics.draw(Menus[i].canvas,Menus[i].xpos,Menus[i].ypos,nil,(Menus[i].t == UI_TILE) and texture_scale or UI_scale)
     end
@@ -115,7 +114,7 @@ function game.onClick( x, y, button, istouch, presses )
   
   if (Grid[xpos] and Grid[xpos][ypos]) then
     if button == 1 then 
-      if cursor_mode == CURSOR_MOVE then
+      if cursor_mode == CURSOR_MOVE or cursor_mode == CURSOR_PLACE then
         if (not DEVELOPER_MODE) and (Grid[xpos][ypos].glass or not Grid[xpos][ypos].canMove) then return false end
         local tile_size = grid.getTileSize()
         o_hand = Grid[xpos][ypos]
@@ -125,10 +124,23 @@ function game.onClick( x, y, button, istouch, presses )
         if rotation > 1 then ypos = ypos+1 end
         grid.delete(nil,nil,o_hand,true)
         o_displacement_x, o_displacement_y = math.ceil((xpos-f_xpos-1)*tile_size), math.ceil((ypos-f_ypos-1)*tile_size)
+      elseif cursor_mode == CURSOR_DELETE then
+        if DEVELOPER_MODE or Grid[xpos][ypos].playerMade then Grid[xpos][ypos]:delete() end
       end
     elseif button == 2 then
       if (not DEVELOPER_MODE) and (Grid[xpos][ypos].glass or not Grid[xpos][ypos].canChangeState) then return false end
       Grid[xpos][ypos]:changeState(f_xpos, f_ypos)
+    end
+  elseif grid.isInGrid(xpos,ypos) then
+    if cursor_mode == CURSOR_PLACE then
+      for i=1,MenuId do
+        if Menus[i] and Menus[i].isLevelMenu then
+          local o = grid.fit(Menus[i].sel_t, xpos, ypos, {canMove = true, canRotate = true, canChangeState = true, canChangeColor = true})
+          o.playerMade = true
+          audio.playSound(2 + objects.getSFXOffset(o.t))
+          break
+        end
+      end
     end
   end
   -- IF OTHERS UNDEFINED FOR NOW
@@ -168,7 +180,6 @@ function game.onRelease( x, y, button, istouch, presses )
   local MenuId = ui_elements.getMenuId()
   for i=MenuId,1,-1 do
     if Menus[i] and Menus[i]:isInMenu() then
-      local uniqueId = Menus[i].uniqueId
       if Menus[i].buttons then
         for j=1,#Menus[i].buttons do
           if Menus[i]:isInButton(j) and Menus[i].buttons[j].pressed then

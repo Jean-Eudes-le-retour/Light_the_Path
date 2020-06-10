@@ -21,6 +21,7 @@ local debugUtils = require("debugUtils")
 local drawbox_x, drawbox_y, texture_scale = 0, 0, 0
 game_time = 0
 level = false
+cursor_mode = CURSOR_MOVE
 
 --Developer info variables
 local grid_dim_x, grid_dim_y = 0, 0
@@ -90,6 +91,7 @@ function love.load()
     grid.fit(TYPE_DELAY,nil,nil,{delay = 5})
   end
   
+  ui_elements.makeLevelMenu()
   ui_elements.dialogTest()
 end
 
@@ -175,7 +177,7 @@ function load_level(level_id)
     return false
   end
   
-  for i=1,ui_elements.getMenuId() do
+  for i=0,ui_elements.getMenuId() do
     if Menus[i] and (Menus[i].t == UI_DIALOG or Menus[i].isSelection) then Menus[i]:close() end
   end
   
@@ -195,4 +197,7 @@ function load_level(level_id)
     audio.play(level.track_id,{loop = true})
   end
   if not level.update then level.update = DEFAULT_LEVEL_UPDATE end
+  cursor_mode = CURSOR_MOVE
+  local m = ui_elements.makeLevelMenu()
+  print(m.id)
 end
