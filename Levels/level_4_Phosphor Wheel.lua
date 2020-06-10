@@ -9,7 +9,7 @@ local level = {}
 level.complete = false
 level.x = 10
 level.y = 6
-level.name = "Phosphor basics"
+level.name = "Phosphor Wheel"
 
 local dialog_num = 1
 local flag = false

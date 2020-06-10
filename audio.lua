@@ -1,16 +1,4 @@
--- TRACKS --
-TRACK = {
-          {track = love.audio.newSource("Audio/Memory Bank/AIRGLOW - 01 Memory Bank.mp3","stream"), name = "Memory Bank", artist = "AIRGLOW"},
-          {track = love.audio.newSource("Audio/Memory Bank/AIRGLOW - 02 Cepheid Disk.mp3","stream"), name = "Cepheid Disk", artist = "AIRGLOW"},
-          {track = love.audio.newSource("Audio/Memory Bank/AIRGLOW - 03 Electrifying Landscape.mp3","stream"), name = "Electrifying Landscape", artist = "AIRGLOW"},
-          {track = love.audio.newSource("Audio/Memory Bank/AIRGLOW - 04 Blueshift.mp3","stream"), name = "Blueshift", artist = "AIRGLOW"},
-          {track = love.audio.newSource("Audio/Memory Bank/AIRGLOW - 05 Far Apart.mp3","stream"), name = "Far Apart", artist = "AIRGLOW"},
-          {track = love.audio.newSource("Audio/Memory Bank/AIRGLOW - 06 Lisa.mp3","stream"), name = "Lisa", artist = "AIRGLOW"},
-          {track = love.audio.newSource("Audio/Memory Bank/AIRGLOW - 07 New Touch.mp3","stream"), name = "New Touch", artist = "AIRGLOW"},
-          {track = love.audio.newSource("Audio/Memory Bank/AIRGLOW - 08 Spliff & Wesson.mp3","stream"), name = "Spliff & Wesson", artist = "AIRGLOW"},
-          {track = love.audio.newSource("Audio/Memory Bank/AIRGLOW - 09 Innermission.mp3","stream"), name = "Innermission", artist = "AIRGLOW"},
-          {track = love.audio.newSource("Audio/Memory Bank/AIRGLOW - 10 System Shutdown.mp3","stream"), name = "System Shutdown", artist = "AIRGLOW"}
-        }
+
 local DEFAULT_MUFFLE = 0.4
 local DEFAULT_VOLUME_STEP = 0.3
 
@@ -82,6 +70,13 @@ function audio.play(track, options)
   end
 
   return track
+end
+
+function audio.playSound(sound_id)
+  if sound_id > NUM_SFX or sound_id < 1 or mute_sfx then return end
+  if SFX[sound_id]:isPlaying() then SFX[sound_id]:stop() end
+  SFX[sound_id]:setVolume(volume_sfx)
+  SFX[sound_id]:play()
 end
 
 function audio.fade(step)

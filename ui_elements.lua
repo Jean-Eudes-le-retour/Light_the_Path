@@ -1,5 +1,6 @@
 local grid = require("grid")
 local audio = require("audio")
+local objects = require("objects")
 local bit = require("bit")
 local bnot, band, bor, bxor, rshift, lshift = bit.bnot, bit.band, bit.bor, bit.bxor, bit.rshift, bit.lshift
 
@@ -1436,6 +1437,7 @@ function ui_elements.makeSelection(x,y)
     splace.buttons[2].onClick = function(m,b)
       local o = grid.fit(m.ot, m.sel_x, m.sel_y, {canMove = true, canRotate = true, canChangeState = true, canChangeColor = true})
       o.playerMade = true
+      audio.playSound(2 + objects.getSFXOffset(o.t))
       sel_x, sel_y = false, false
       ui_elements.select(m.sel_x, m.sel_y)
       return

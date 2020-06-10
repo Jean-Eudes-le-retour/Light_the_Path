@@ -1,3 +1,30 @@
+-- FUNCTIONS --
+
+function file_exists(name)
+   if love.filesystem.getInfo(name) then return true
+   else return false end
+end
+
+function enum(n,i)
+  i = i or 1
+  if n > i then
+    return i, enum(n,i+1)
+  end
+  return n
+end
+
+function duplicateTable(Tab)
+  local NewTab = {}
+  for i=1,#Tab do
+    if type(Tab[i]) == "table" then
+      NewTab[i] = duplicateTable(Tab[i])
+    else
+      NewTab[i] = Tab[i]
+    end
+  end
+  return NewTab
+end
+
 -- GENERAL CONSTANTS --
 DEVELOPER_MODE = true
 BACKGROUND_VARIANTS = 1
@@ -56,30 +83,35 @@ MASK_EFFECT2 = love.graphics.newShader[[
    }
 ]]
 
-function file_exists(name)
-   if love.filesystem.getInfo(name) then return true
-   else return false end
-end
+-- TRACKS --
 
-function enum(n,i)
-  i = i or 1
-  if n > i then
-    return i, enum(n,i+1)
-  end
-  return n
-end
+TRACK = {
+          {track = love.audio.newSource("Audio/Memory Bank/AIRGLOW - 01 Memory Bank.mp3","stream"), name = "Memory Bank", artist = "AIRGLOW"},
+          {track = love.audio.newSource("Audio/Memory Bank/AIRGLOW - 02 Cepheid Disk.mp3","stream"), name = "Cepheid Disk", artist = "AIRGLOW"},
+          {track = love.audio.newSource("Audio/Memory Bank/AIRGLOW - 03 Electrifying Landscape.mp3","stream"), name = "Electrifying Landscape", artist = "AIRGLOW"},
+          {track = love.audio.newSource("Audio/Memory Bank/AIRGLOW - 04 Blueshift.mp3","stream"), name = "Blueshift", artist = "AIRGLOW"},
+          {track = love.audio.newSource("Audio/Memory Bank/AIRGLOW - 05 Far Apart.mp3","stream"), name = "Far Apart", artist = "AIRGLOW"},
+          {track = love.audio.newSource("Audio/Memory Bank/AIRGLOW - 06 Lisa.mp3","stream"), name = "Lisa", artist = "AIRGLOW"},
+          {track = love.audio.newSource("Audio/Memory Bank/AIRGLOW - 07 New Touch.mp3","stream"), name = "New Touch", artist = "AIRGLOW"},
+          {track = love.audio.newSource("Audio/Memory Bank/AIRGLOW - 08 Spliff & Wesson.mp3","stream"), name = "Spliff & Wesson", artist = "AIRGLOW"},
+          {track = love.audio.newSource("Audio/Memory Bank/AIRGLOW - 09 Innermission.mp3","stream"), name = "Innermission", artist = "AIRGLOW"},
+          {track = love.audio.newSource("Audio/Memory Bank/AIRGLOW - 10 System Shutdown.mp3","stream"), name = "System Shutdown", artist = "AIRGLOW"}
+        }
+SFX = {
+        love.audio.newSource("Audio/SFX/stone_drag.ogg","static"),
+        love.audio.newSource("Audio/SFX/stone_place.ogg","static"),
+        love.audio.newSource("Audio/SFX/glass_drag.ogg","static"),
+        love.audio.newSource("Audio/SFX/glass_place.ogg","static"),
+        love.audio.newSource("Audio/SFX/power_on.ogg","static"),
+        love.audio.newSource("Audio/SFX/power_off.ogg","static"),
+        love.audio.newSource("Audio/SFX/button_press.ogg","static"),
+        love.audio.newSource("Audio/SFX/button_release.ogg","static"),
+        love.audio.newSource("Audio/SFX/lock_open.ogg","static"),
+        love.audio.newSource("Audio/SFX/tick.ogg","static")
+      }
 
-function duplicateTable(Tab)
-  local NewTab = {}
-  for i=1,#Tab do
-    if type(Tab[i]) == "table" then
-      NewTab[i] = duplicateTable(Tab[i])
-    else
-      NewTab[i] = Tab[i]
-    end
-  end
-  return NewTab
-end
+NUM_SFX = #SFX
+SFX_DRAG_STONE, SFX_DRAG_GLASS, SFX_PLACE_STONE, SFX_PLACE_GLASS, SFX_LASER_ON, SFX_LASER_OFF, SFX_BUTTON_PRESS, SFX_BUTTON_RELEASE, SFX_LOCK, SFX_TICK = enum(NUM_SFX)
 
 -- ENUM CONSTANTS --
 NUM_TYPES = 8

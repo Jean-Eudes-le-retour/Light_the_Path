@@ -1,3 +1,4 @@
+local audio = require("audio")
 local bit = require("bit")
 local bnot, band, bor, bxor, rshift, lshift = bit.bnot, bit.band, bit.bor, bit.bxor, bit.rshift, bit.lshift
 
@@ -7,14 +8,14 @@ local objects = {}
 -- This is why items such as mirrors have 2 states: one for horizontal/vertical mirrors and one for diagonal mirrors. pwheel on the other hand can only take one state (but 2 rotations!)
 -- It is worth noting that color will also influence the drawn image (though never the texture itself)
 local Object =          {t = 0,     id = 0, xpos = nil, ypos = nil, state = 1, rotation = 0, color = COLOR_WHITE, canMove = false, canRotate = false, canChangeColor = false, glass = false}
-local DEFAULT_WALL =    {t =     TYPE_WALL, state = 13, color =  COLOR_WHITE, canMove = false, canRotate = false, canChangeColor = false, glass = false, hasMask = false, rotateByEights = false, canChangeState = false}
-local DEFAULT_GLASS =   {t =    TYPE_GLASS, state =  1, color =  COLOR_WHITE, canMove = false, canRotate = false, canChangeColor = false, glass =     0, hasMask = false, rotateByEights = false, canChangeState = false}
-local DEFAULT_SOURCE =  {t =   TYPE_SOURCE, state =  1, color =  COLOR_WHITE, canMove = false, canRotate = false, canChangeColor = false, glass = false, hasMask =  true, rotateByEights = false, canChangeState =  true}
-local DEFAULT_RECEIVER ={t = TYPE_RECEIVER, state =  1, color =  COLOR_BLACK, canMove = false, canRotate = false, canChangeColor = false, glass = false, hasMask =  true, rotateByEights = false, canChangeState = false}
-local DEFAULT_MIRROR =  {t =   TYPE_MIRROR, state =  1, color =  COLOR_WHITE, canMove =  true, canRotate =  true, canChangeColor = false, glass = false, hasMask =  true, rotateByEights =  true, canChangeState = false}
-local DEFAULT_PWHEEL =  {t =   TYPE_PWHEEL, state =  1, color =  COLOR_WHITE, canMove = false, canRotate = false, canChangeColor = false, glass = false, hasMask =  true, rotateByEights =  true, canChangeState = false}
-local DEFAULT_LOGIC =   {t =    TYPE_LOGIC, state =  1, color =  COLOR_BLACK, canMove = false, canRotate = false, canChangeColor = false, glass = false, hasMask =  true, rotateByEights = false, canChangeState = false}
-local DEFAULT_DELAY =   {t =    TYPE_DELAY, state =  1, color =  COLOR_BLACK, canMove = false, canRotate =  true, canChangeColor = false, glass = false, hasMask =  true, rotateByEights = false, canChangeState = false}
+local DEFAULT_WALL =    {t =     TYPE_WALL, state = 13, color =  COLOR_WHITE, canMove = false, canRotate = false, canChangeColor = false, glass = false, hasMask = false, rotateByEights = false, canChangeState = false, sound = 1}
+local DEFAULT_GLASS =   {t =    TYPE_GLASS, state =  1, color =  COLOR_WHITE, canMove = false, canRotate = false, canChangeColor = false, glass =     0, hasMask = false, rotateByEights = false, canChangeState = false, sound = 2}
+local DEFAULT_SOURCE =  {t =   TYPE_SOURCE, state =  1, color =  COLOR_WHITE, canMove = false, canRotate = false, canChangeColor = false, glass = false, hasMask =  true, rotateByEights = false, canChangeState =  true, sound = 1}
+local DEFAULT_RECEIVER ={t = TYPE_RECEIVER, state =  1, color =  COLOR_BLACK, canMove = false, canRotate = false, canChangeColor = false, glass = false, hasMask =  true, rotateByEights = false, canChangeState = false, sound = 1}
+local DEFAULT_MIRROR =  {t =   TYPE_MIRROR, state =  1, color =  COLOR_WHITE, canMove =  true, canRotate =  true, canChangeColor = false, glass = false, hasMask =  true, rotateByEights =  true, canChangeState = false, sound = 2}
+local DEFAULT_PWHEEL =  {t =   TYPE_PWHEEL, state =  1, color =  COLOR_WHITE, canMove = false, canRotate = false, canChangeColor = false, glass = false, hasMask =  true, rotateByEights =  true, canChangeState = false, sound = 1}
+local DEFAULT_LOGIC =   {t =    TYPE_LOGIC, state =  1, color =  COLOR_BLACK, canMove = false, canRotate = false, canChangeColor = false, glass = false, hasMask =  true, rotateByEights = false, canChangeState = false, sound = 1}
+local DEFAULT_DELAY =   {t =    TYPE_DELAY, state =  1, color =  COLOR_BLACK, canMove = false, canRotate =  true, canChangeColor = false, glass = false, hasMask =  true, rotateByEights = false, canChangeState = false, sound = 1}
 DEFAULT_OBJECT =  {DEFAULT_WALL,DEFAULT_GLASS,DEFAULT_SOURCE,DEFAULT_RECEIVER,DEFAULT_MIRROR,DEFAULT_PWHEEL,DEFAULT_LOGIC,DEFAULT_DELAY}
 TYPES =            {"wall","glass","source","receiver","mirror","pwheel","logic","delay" }
 NUM_STATES =       {     1,      1,       2,         2,       2,       2,      3,      6 }
@@ -98,6 +99,7 @@ function Object:rotate(invert)
     self.rotation = (self.rotation + (invert and -1 or 1))%4
   end
 
+  audio.playSound(SFX_TICK)
   UpdateObjectType[self.t] = true
 end
 
@@ -120,9 +122,19 @@ end
 
 function Object:changeState(f_x,f_y)
   if (self.t ~= TYPE_LOGIC and self.t ~= TYPE_RECEIVER) or not f_x or not f_y then
+    if self.t == TYPE_SOURCE then
+      if self.state == 1 then
+        audio.playSound(SFX_LASER_ON)
+      else
+        audio.playSound(SFX_LASER_OFF)
+      end
+    else
+      audio.playSound(SFX_TICK)
+    end
     f_x = (type(f_x) == "boolean") and f_x or false
     self.state = (self.state - (f_x and 2 or 0))%NUM_STATES[self.t]+1
   else
+    audio.playSound(SFX_LOCK)
     local q = getQuadrant(f_x,f_y)
     q = (q - self.rotation)%4
     if not self.side then self.side = {} end
@@ -196,6 +208,10 @@ end
 -- Will return the latest Id of the specified type
 function objects.getId(t)
   return Id[t] or 0
+end
+
+function objects.getSFXOffset(t)
+  return DEFAULT_OBJECT[t] and (DEFAULT_OBJECT[t].sound - 1)*2 or 0
 end
 
 

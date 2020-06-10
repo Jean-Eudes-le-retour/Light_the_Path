@@ -98,6 +98,7 @@ function game.onClick( x, y, button, istouch, presses )
             for j=1,#Menus[i].buttons do
               if Menus[i]:isInButton(j) then
                 Menus[i].buttons[j].pressed = true
+                -- if Menus[i].buttons[j].onClick then audio.playSound(SFX_BUTTON_PRESS) end
                 return true
               end
             end
@@ -118,6 +119,7 @@ function game.onClick( x, y, button, istouch, presses )
         if (not DEVELOPER_MODE) and (Grid[xpos][ypos].glass or not Grid[xpos][ypos].canMove) then return false end
         local tile_size = grid.getTileSize()
         o_hand = Grid[xpos][ypos]
+        audio.playSound(1 + objects.getSFXOffset(o_hand.t))
         local rotation = o_hand.rotation
         xpos = xpos + ((rotation == 1 or rotation == 2) and 1 or 0)
         if rotation > 1 then ypos = ypos+1 end
@@ -142,6 +144,7 @@ function game.onScroll(x, y)
       if Menus[i].isBlocking or Menus[i]:isInMenu() then
         if Menus[i].onScroll then
           Menus[i].onScroll(Menus[i],x,y)
+          audio.playSound(SFX_TICK)
           return true
         end
         return false
@@ -170,7 +173,10 @@ function game.onRelease( x, y, button, istouch, presses )
         for j=1,#Menus[i].buttons do
           if Menus[i]:isInButton(j) and Menus[i].buttons[j].pressed then
             Menus[i].buttons[j].pressed = false
-            if Menus[i].buttons[j].onClick then Menus[i].buttons[j].onClick(Menus[i],Menus[i].buttons[j]) end
+            if Menus[i].buttons[j].onClick then
+              Menus[i].buttons[j].onClick(Menus[i],Menus[i].buttons[j])
+              audio.playSound(SFX_BUTTON_RELEASE)
+            end
             return true
           end
         end

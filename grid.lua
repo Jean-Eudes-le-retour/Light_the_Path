@@ -1,5 +1,6 @@
 local debugUtils = require("debugUtils")
 local objects = require("objects")
+local audio = require("audio")
 
 -- THE MODULE MUST BE INITIALIZED; grid.init is grid.setDimensions
 local grid = {}
@@ -116,6 +117,7 @@ function grid.move(o,xpos,ypos,force)
         dest_o:changePosition(o.xpos,o.ypos)
         Grid[o.xpos][o.ypos] = dest_o
         dest_o:update()
+        audio.playSound(2 + objects.getSFXOffset(dest_o.t))
       end -- implicit else force = false
     else
       force = true
@@ -124,12 +126,14 @@ function grid.move(o,xpos,ypos,force)
       o:changePosition(xpos,ypos)
       Grid[xpos][ypos] = o
       o:update()
+      audio.playSound(2 + objects.getSFXOffset(o.t))
       return true
     end
   end
   print("Couldn't move the object")
   Grid[o.xpos][o.ypos] = o
   o:update()
+  audio.playSound(2 + objects.getSFXOffset(o.t))
   return false
 end
 
