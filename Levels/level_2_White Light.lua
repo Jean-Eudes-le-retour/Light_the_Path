@@ -67,7 +67,7 @@ end
 
 function level.update(dt) -- dt is time since last update in seconds
 -- CHECK WIN CONDITION -- use grid functions to check object states, update level.complete accordingly
-  if grid.getState(4, 2)==2 and grid.getState(6, 2)==2 and grid.getState(8, 2)==2 and dialog_num==3 then level.complete = true end
+  if grid.getState(4, 2)==2 and grid.check(4,2)==TYPE_RECEIVER and grid.getState(6, 2)==2 and grid.check(6,2)==TYPE_RECEIVER and grid.getState(8, 2)==2 and grid.check(8,2)==TYPE_RECEIVER and dialog_num==3 then level.complete = true end
 
 -- OPTIONAL INTERACTIVE LEVEL FUNCTIONS -- direct modifications of object states do not trigger and UpdateObjectType flag! (Needs to be done manually)
    --when the laser splits and hits red and green, pause and then change the color of the source to cyan and the color of the mirror to blue but do not rotate the mirror
@@ -100,7 +100,7 @@ function level.update(dt) -- dt is time since last update in seconds
     m.isBlocking = false
   end
   
-  if grid.getState(4, 2)==2 and dialog_num==1 and grid.getColor(4, 4)==COLOR_GREEN then
+  if grid.getState(4, 2)==2 and grid.check(4,2)==TYPE_RECEIVER and dialog_num==1 and grid.getColor(4, 4)==COLOR_GREEN then
     m:close()
     dialog_num = dialog_num + 1
     m = ui_elements.create(UI_DIALOG)
@@ -118,7 +118,7 @@ function level.update(dt) -- dt is time since last update in seconds
     m:resize()
   end
   
-  if grid.getState(4, 2)==2 and dialog_num==1 and grid.getColor(4, 4)==COLOR_CYAN and alt1 == false then
+  if grid.getState(4, 2)==2 and grid.check(4,2)==TYPE_RECEIVER and dialog_num==1 and grid.getColor(4, 4)==COLOR_CYAN and grid.check(4,4)==TYPE_RECEIVER and alt1 == false then
     m:close()
     alt1 = true
     m = ui_elements.create(UI_DIALOG)
@@ -138,7 +138,7 @@ function level.update(dt) -- dt is time since last update in seconds
     m:resize()
   end
   
-  if grid.getState(4, 2)==2 and dialog_num==1 and grid.getColor(4, 4)==COLOR_YELLOW and alt2 == false then
+  if grid.getState(4, 2)==2 and grid.check(4,2)==TYPE_RECEIVER and dialog_num==1 and grid.getColor(4, 4)==COLOR_YELLOW and grid.check(4,4)==TYPE_RECEIVER and alt2 == false then
     m:close()
     alt2 = true
     m = ui_elements.create(UI_DIALOG)
@@ -158,7 +158,7 @@ function level.update(dt) -- dt is time since last update in seconds
     m:resize()
   end
   
-  if grid.getState(4, 2)==2 and grid.getState(6, 2)==2 and dialog_num==2 then
+  if grid.getState(4, 2)==2 and grid.check(4,2)==TYPE_RECEIVER and grid.getState(6, 2)==2 and grid.check(6,2)==TYPE_RECEIVER and dialog_num==2 then
     m:close()
     dialog_num = dialog_num + 1
     m = ui_elements.create(UI_DIALOG)
