@@ -28,11 +28,10 @@ local grid_dim_x, grid_dim_y = 0, 0
 local grid_pos_x, grid_pos_y = 0, 0
 
 function love.load()
-  --[[ GO DIRECTLY TO MAIN MENU IF NOT IN DEVELOPER MODE
   if not DEVELOPER_MODE then
     drawbox_x, drawbox_y, texture_scale = game.init()
     return
-  end]]
+  end
 
   drawbox_x, drawbox_y, texture_scale = game.init(20,10) --remove variables for main menu
   level = {}

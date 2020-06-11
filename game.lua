@@ -132,7 +132,7 @@ function game.onClick( x, y, button, istouch, presses )
       Grid[xpos][ypos]:changeState(f_xpos, f_ypos)
     end
   elseif grid.isInGrid(xpos,ypos) then
-    if cursor_mode == CURSOR_PLACE then
+    if button == 1 and cursor_mode == CURSOR_PLACE then
       for i=1,MenuId do
         if Menus[i] and Menus[i].isLevelMenu then
           local o = grid.fit(Menus[i].sel_t, xpos, ypos, {canMove = true, canRotate = true, canChangeState = true, canChangeColor = true})

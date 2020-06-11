@@ -46,7 +46,7 @@ function level.load()
   grid.set(TYPE_RECEIVER, 7, 2, {rotation = 2, color = COLOR_RED})
   grid.set(TYPE_RECEIVER, 5, 7, {color = COLOR_GREEN})
   
-  grid.set(TYPE_MIRROR, 7, 5, {rotation = 1, state = 2, color = COLOR_YELLOW, canMove = false, canRotate = false})
+  grid.set(TYPE_MIRROR, 7, 5, {state = 2, color = COLOR_YELLOW, canMove = false, canRotate = false})
   
   grid.set(TYPE_PWHEEL, 10, 6, {rotation = 1, state = 2, color = COLOR_CYAN})
   

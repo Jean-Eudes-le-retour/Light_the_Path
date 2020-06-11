@@ -1430,7 +1430,7 @@ function ui_elements.makeSelection(x,y)
     end
 
     sinfo:resize()
-  else
+  elseif DEVELOPER_MODE or level.canModify then
     local splace = ui_elements.create(UI_MENU)
     splace.isSelection = true
     splace.isBlocking = false
@@ -1527,6 +1527,7 @@ function ui_elements.makeLevelMenu()
   love.graphics.print(lvl_info, 2, 8)
   love.graphics.setFont(FONT_BASE)
   love.graphics.setCanvas()
+  m.texture[0] = love.graphics.newImage(m.texture[0]:newImageData())
   
   m.texture[1] = TEXTURE_MINISQ_BUTTON_NORMAL
   m.texture[2] = TEXTURE_MINISQ_BUTTON_PRESSED

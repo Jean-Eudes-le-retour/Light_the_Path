@@ -137,7 +137,7 @@ function Object:changeState(f_x,f_y)
     audio.playSound(SFX_LOCK)
     local q = getQuadrant(f_x,f_y)
     q = (q - self.rotation)%4
-    if not self.side then self.side = {} end
+    if not self.side then self:setSides() end
     if not self.side[q] then
       if self.t == TYPE_RECEIVER then
         if q~=0 then self.side[q] = "activate" end
@@ -178,6 +178,8 @@ end
 
 function Object:setSides(s0,s1,s2,s3)
   self.side = {}
+--Prevent initial update
+  if self.t == TYPE_RECEIVER then self.old_state = self.state end
   self.side[0],self.side[1],self.side[2],self.side[3] = s0,s1,s2,s3
   UpdateObjectType[self.t] = true
   return self
