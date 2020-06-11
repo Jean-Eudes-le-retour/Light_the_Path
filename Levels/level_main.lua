@@ -13,7 +13,7 @@ level.name = "Main Menu"
 level.noUI = true
 level.track_id = 8 -- random if not set
 
-local x_offset, y_offset = 0, 0
+local x_offset, y_offset = -4, 0
 local drawbox_x, drawbox_y = 0, 0
 local pan_x, pan_y = -1, -1
 local texture_scale = 1
