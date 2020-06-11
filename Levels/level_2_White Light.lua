@@ -125,7 +125,7 @@ function level.update(dt) -- dt is time since last update in seconds
     m.text = {
 {{0.5,0.5,0.5},"Interesting, the ",{0,1,0},"GREEN",{0.5,0.5,0.5}," receiver turns on when ",{0,1,1},"CYAN",{0.5,0.5,0.5}," light hits it!"},
 {{0.5,0.5,0.5},"..."},
-{{0.5,0.5,0.5},"Oh wait, that's because the ",{0,1,0},"GREEN",{0.5,0.5,0.5}," part of ",{0,1,1},"CYAN",{0.5,0.5,0.5}," is detected!\nWe are going to need the ",{0,1,1},"CYAN",{0.5,0.5,0.5}," mirror later, repalce it with the ",{0,1,0},"GREEN",{0.5,0.5,0.5}," one for now."},
+{{0.5,0.5,0.5},"Oh wait, that's because the ",{0,1,0},"GREEN",{0.5,0.5,0.5}," part of ",{0,1,1},"CYAN",{0.5,0.5,0.5}," is detected!\nWe are going to need the ",{0,1,1},"CYAN",{0.5,0.5,0.5}," mirror later, replace it with the ",{0,1,0},"GREEN",{0.5,0.5,0.5}," one for now."},
     }
     m.charname = {"Professor Luminario","Professor Luminario","Professor Luminario"}
     m.animation[1] = {}

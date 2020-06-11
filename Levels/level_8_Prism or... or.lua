@@ -66,7 +66,7 @@ function level.load()
   beams into one."},
   {{0.5,0.5,0.5},"I don't usually unlock this functionality, so most of the OR gates you'll find lying around will be locked to the given amount of outputs and inputs. \z
   However, the ones back in the storage room aren't, and I'll gladly lend some to you right now to move forward with your experiments! Simply ",{0,0,0},"RIGHT CLICK",{0.5,0.5,0.5},
-  " on the side you wish to modify to cycle throught the port's direction!\n\nNow get back to work!"},
+  " on the side you wish to modify to cycle throught the port's direction!\n\nNow get back to work!"}
   }
 	m.charname = {"Professor Luminario","Professor Luminario","Professor Luminario","Professor Luminario"}
 	m.animation[1] = {}
