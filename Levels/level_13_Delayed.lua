@@ -94,6 +94,8 @@ function level.update(dt) -- dt is time since last update in seconds
         table.insert(m.text,{{0.5,0.5,0.5},"Something wasn't quite right here. Back to the drawing board!"})
         m.noSkip = false
         ui_elements.clickDialog(m)
+        c = COLOR_WHITE
+        s:changeColor(c)
         if s.state == 2 then s:changeState() end
         flag[5] = false
       elseif c == COLOR_RED and r.state == 2 then
@@ -116,6 +118,7 @@ function level.update(dt) -- dt is time since last update in seconds
           table.insert(m.text,{{0.5,0.5,0.5},"Not sure how long red light should take to be detected but we don't have all day!"})
           m.noSkip = false
           ui_elements.clickDialog(m)
+          c = COLOR_WHITE
           if s.state == 2 then s:changeState() end
           flag[5] = false
         end
