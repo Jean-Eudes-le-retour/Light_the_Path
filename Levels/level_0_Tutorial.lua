@@ -63,7 +63,7 @@ end
 function level.update(dt) -- dt is time since last update in seconds
 -- CHECK WIN CONDITION -- use grid functions to check object states, update level.complete accordingly
 
-  if grid.getState(5, 2)==2 and level.complete==false then
+  if grid.getState(5, 2)==2 and level.complete==false and grid.check(5,2)==TYPE_RECEIVER then
     m:close()
     level.complete = true
     m = ui_elements.create(UI_DIALOG)

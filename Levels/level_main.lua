@@ -13,7 +13,7 @@ level.name = "Main Menu"
 level.noUI = true
 level.track_id = 8 -- random if not set
 
-local x_offset, y_offset = 0, 0
+local x_offset, y_offset = -4, 0
 local drawbox_x, drawbox_y = 0, 0
 local pan_x, pan_y = -1, -1
 local texture_scale = 1
@@ -76,8 +76,8 @@ function level.load()
 	grid.set(TYPE_LOGIC,36,6,{state = LOGIC_OR}):setSides("in","out","out",nil)
 	grid.set(TYPE_LOGIC,30,14,{state = LOGIC_OR}):setSides("out","in",nil,"in")
 	
-	grid.set(TYPE_RECEIVER, 36, 9, {color=COLOR_WHITE}):setSides(nil,nil,"activate",nil)
-	grid.set(TYPE_RECEIVER, 39, 12, {rotation=3, color=COLOR_YELLOW}):setSides(nil,"activate",nil,nil)
+	grid.set(TYPE_RECEIVER, 36, 9, {color=COLOR_RED})
+	grid.set(TYPE_RECEIVER, 39, 12, {rotation=3, color=COLOR_YELLOW}):setSides(nil,nil,"activate",nil)
 	
 	wait = game_time
 end
