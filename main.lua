@@ -198,6 +198,5 @@ function load_level(level_id)
   end
   if not level.update then level.update = DEFAULT_LEVEL_UPDATE end
   cursor_mode = CURSOR_MOVE
-  local m = ui_elements.makeLevelMenu()
-  print(m.id)
+  ui_elements.makeLevelMenu()
 end

@@ -66,7 +66,7 @@ function level.update(dt) -- dt is time since last update in seconds
     m:close()
     level.complete = true
     m = ui_elements.create(UI_DIALOG)
-    m.text = {{{0.5,0.5,0.5},"I think you're getting the gist of it! We will experiment with other light mixes in upcoming levels."}}
+    m.text = {{{0.5,0.5,0.5},"I think you're getting the hang of it! We will experiment with other light mixes in upcoming levels."}}
     m.charname = {"Professor Luminario"}
     m.animation[1] = {}
     m.animation[1][0] = {4,-1}
