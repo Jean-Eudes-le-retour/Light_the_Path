@@ -9,7 +9,7 @@ local level = {}
 level.complete = false
 level.x = 17
 level.y = 10
-level.name = "Prism or... or"
+level.name = "Prism or... OR"
 level.track_id = 3
 
 -- OPTIONAL VARIABLES --

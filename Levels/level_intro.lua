@@ -28,7 +28,7 @@ function level.load()
   at work. But the thought that this weekly excursion could in turn fall into the routine as well was slowly creeping up on you. You were determined \z
   to avoid this at all cost. Besides, you were feeling adventurous today."},
   {{0.5,0.5,0.5},"\"I should take some time for myself...\"\n\nYes, you should."},
-  {{0.5,0.5,0.5},"\"Maybe I'll go deeper into the woods just this time! I might just discover some new spot to camp out at!\"\nI don't know why, but this \z
+  {{0.5,0.5,0.5},"\"Maybe I'll go deeper into the woods just this time! I might just discover some new spot to camp out at!\"\n\nI don't know why, but this \z
   is starting to sound suspiciously similar to the intro to some poorly written horror movie. That, or a game where plot really just came as an afterthough... \z
   Regardless. YOU GO, GUY!"},
   {{0.5,0.5,0.5},"As you make your way through the woods, you realize just how easy it is to try and keep things fresh in life. Before you knew it, you'd gotten \z

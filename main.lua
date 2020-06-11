@@ -169,6 +169,7 @@ function load_level(level_id)
       end
     end
   end
+  if not path then ui_elements.mainMenu() return end
   path = "Levels/"..path
   
   if not file_exists(path) then

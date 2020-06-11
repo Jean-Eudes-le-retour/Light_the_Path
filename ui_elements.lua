@@ -1137,17 +1137,44 @@ function ui_elements.credits()
   m.submenu.scrollOffset = 0
   m.submenu.texture[1] = m.texture[5]
   m.submenu.buttons = {
-    {text = "Music tracks from AIRGLOW's album:\nMemory Bank", align = "left"},
-    {text = "Check him out at\nhttps://soundcloud.com/airglowsounds", align = "left"},
-    {text = "SFX", align = "left"},
-    {text = "Programming", align = "left"},
-    {text = "Art", align = "left"},
-    {text = "", align = "left"}
+    {text = "Music tracks from AIRGLOW's album:"},
+    {text = "Memory Bank"},
+    {text = "Check him out at:"},
+    {text = "https://soundcloud.com/airglowsounds"},
+    {text = "SFX", textcolor = COLOR_BLACK},
+    {text = "Various sounds from:"},
+    {text = "https://www.fesliyanstudios.com"},
+    {text = "Direction", textcolor = COLOR_BLACK},
+    {text = "John Doe"},
+    {text = "Leo Duggan"},
+    {text = "Giorgio Eid"},
+    {text = "Guillaume Follet"},
+    {text = "Aziz"},
+    {text = "Programming", textcolor = COLOR_BLACK},
+    {text = "Guillaume Follet"},
+    {text = "Level Design", textcolor = COLOR_BLACK},
+    {text = "Leo Duggan"},
+    {text = "Guillaume Follet"},
+    {text = "Aziz"},
+    {text = "Art", textcolor = COLOR_BLACK},
+    {text = "Leo Duggan"},
+    {text = "Guillaume Follet"},
+    {text = "Report", textcolor = COLOR_BLACK},
+    {text = "John Doe"},
+    {text = "Giorgio Eid"},
+    {text = "Presentation", textcolor = COLOR_BLACK},
+    {text = "John Doe"},
+    {text = "Leo Duggan"},
+    {text = "Giorgio Eid"},
+    {text = "Guillaume Follet"},
+    {text = "Aziz"},
+    {text = "Group 9 - HUM 380 / EPFL", textcolor = COLOR_BLACK},
+    {text = "(C) LTP - 2020", textcolor = COLOR_BLACK}
   }
   
   local b_y = 4
   for i=1,#m.submenu.buttons do
-    m.submenu.buttons[i].xpos = 4
+    m.submenu.buttons[i].xpos = 70
     m.submenu.buttons[i].ypos = b_y
     b_y = b_y + 36
   end

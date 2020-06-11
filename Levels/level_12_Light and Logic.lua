@@ -18,6 +18,7 @@ level.x_val = -0.5
 level.y_val = nil
 
 local r
+local m
 
 -- IMPORTANT FUNCTIONS --
 function level.load()
