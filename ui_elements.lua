@@ -1184,7 +1184,7 @@ function ui_elements.mainMenu(fromSubmenu)
 
   m.buttons = {
     {texture_id = 6, noUpdate = true},
-    {text = "Play", onClick = function(m,b) m:close() load_level(0) end},
+    {text = "Play", onClick = function(m,b) m:close() load_level("intro") end},
     {
       text = "Level Select",
       onClick = function(m,b) m:close() table.insert(MenuCallStack,ui_elements.mainMenu) ui_elements.levelSelect() end

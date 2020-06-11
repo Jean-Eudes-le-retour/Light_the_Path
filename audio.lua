@@ -21,7 +21,7 @@ local audio = {}
 function audio.update(dt)
   if not c_track then
     fade = false
-    return
+    c_track = TRACK[1]
   elseif fade then
     volume_c = volume_c - volume_step*dt
     if volume_c < 0 then
@@ -30,6 +30,7 @@ function audio.update(dt)
       c_track.track:stop()
       c_track.track:setFilter()
       c_track = n_track
+      n_track = false
       if c_track then
         c_track.track:seek(0)
         c_track.track:setVolume(0)
@@ -92,6 +93,7 @@ end
 
 function audio.fade(step)
   audio.setVolumeStep(step)
+  n_track = false
   fade = true
 end
 
