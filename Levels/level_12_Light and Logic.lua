@@ -85,13 +85,8 @@ function level.load()
   {0.5,0.5,0.5},"\n\nQuod Erat Demonstratum."}
   }
 	m.charname = {}
-	m.animation[1] = {}
-	m.animation[1][0] = {4,-1}
-	m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
-	m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
-	m.animation[1][3] = m.animation[1][1]
   for i=1,9 do
-    m.animation[i] = m.animation[1]
+    m.animation[i] = ANIMATION_1
     m.charname[i] = "Professor Luminario"
   end
   m.isBlocking = true

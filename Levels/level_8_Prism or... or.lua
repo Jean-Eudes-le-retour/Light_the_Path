@@ -69,12 +69,7 @@ function level.load()
   " on the side you wish to modify to cycle throught the port's direction!\n\nNow get back to work!"}
   }
 	m.charname = {"Professor Luminario","Professor Luminario","Professor Luminario","Professor Luminario"}
-	m.animation[1] = {}
-	m.animation[1][0] = {4,-1}
-	m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
-	m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
-	m.animation[1][3] = m.animation[1][1]
-  for i=2,4 do m.animation[i] = m.animation[1] end
+  for i=1,4 do m.animation[i] = ANIMATION_1 end
   m.isBlocking = true
 	m:resize()
 end

@@ -63,6 +63,11 @@ MASK_LASER = {
 TEXTURE_SIDEINPUT = love.graphics.newImage("Textures/logic_input.png")
 TEXTURE_SIDEOUTPUT = love.graphics.newImage("Textures/logic_output.png")
 TEXTURE_SIDEACTIVATE = love.graphics.newImage("Textures/receiver_activate.png")
+ANIMATION_1 = {}
+ANIMATION_1[0] = {4,-1}
+ANIMATION_1[1] = love.graphics.newImage("Textures/PL1-1.png")
+ANIMATION_1[2] = love.graphics.newImage("Textures/PL1-2.png")
+ANIMATION_1[3] = ANIMATION_1[1]
 
 MASK_EFFECT = love.graphics.newShader[[
    vec4 effect (vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords) {

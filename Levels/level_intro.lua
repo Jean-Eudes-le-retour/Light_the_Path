@@ -65,15 +65,11 @@ function level.load()
   {" "}
   }
   m.charname = {}
-  m.animation[15] = {}
-  m.animation[15][0] = {4,-1}
-  m.animation[15][1] = love.graphics.newImage("Textures/test1.png")
-  m.animation[15][2] = love.graphics.newImage("Textures/test2.png")
-  m.animation[15][3] = m.animation[15][1]
+  m.animation[15] = ANIMATION_1
   for i=1,14 do m.charname[i] = "Narrator" end
   for i=15,19,2 do
     m.charname[i] = "?"
-    m.animation[i] = m.animation[15]
+    m.animation[i] = ANIMATION_1
   end
   for i=16,18,2 do
     m.charname[i] = "You"

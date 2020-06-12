@@ -52,14 +52,10 @@ function level.load()
 	{{0.5,0.5,0.5}, "The color of the emitted beam depends on the composition of the phosphor: for example a Y2O2S:Eu3+ coating will result in a ",{1,0,0},"RED",{0.5,0.5,0.5}," color and a ZnO:Zn one in a ",{0,1,0},"GREEN",{0.5,0.5,0.5}," light [1].\n\n[1] Shionoya, Shigeo (1999). 'VI: Phosphors for cathode ray tubes'. Phosphor handbook. Boca Raton, Fla.: CRC Press. ISBN 978-0-8493-7560-6."},
 	{{0.5,0.5,0.5},"Here we have a ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," phosphor wheel, commonly used in ",{1,1,1},"WHITE",{0.5,0.5,0.5}," LEDs. When it is illuminated with ",{0,0,1},"BLUE",{0.5,0.5,0.5}," light, it produces ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," light.\n\nTry it out now!"}}
     m.charname = {"Professor Luminario","Professor Luminario","Professor Luminario","Professor Luminario"}
-	m.animation[1] = {}
-	m.animation[1][0] = {4,-1}
-	m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
-	m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
-	m.animation[1][3] = m.animation[1][1]
-	m.animation[2] = m.animation[1]
-	m.animation[3] = m.animation[1]
-	m.animation[4] = m.animation[1]
+	m.animation[1] = ANIMATION_1
+	m.animation[2] = ANIMATION_1
+	m.animation[3] = ANIMATION_1
+	m.animation[4] = ANIMATION_1
 	m:resize()
 end
 
@@ -78,13 +74,9 @@ function level.update(dt) -- dt is time since last update in seconds
 {{0.5,0.5,0.5},"Here is another ",{0,0,1},"BLUE",{0.5,0.5,0.5}," source, turn on the ",{1,1,1},"WHITE",{0.5,0.5,0.5}," receiver!"}
                      }
     m.charname = {"Professor Luminario","Professor Luminario","Professor Luminario"}
-    m.animation[1] = {}
-    m.animation[1][0] = {4,-1}
-    m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
-    m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
-    m.animation[1][3] = m.animation[1][1]
-    m.animation[2] = m.animation[1]
-    m.animation[3] = m.animation[1]
+    m.animation[1] = ANIMATION_1
+    m.animation[2] = ANIMATION_1
+    m.animation[3] = ANIMATION_1
     m:resize()
   end 
   if dialog_num==1 and m.page==4 then
@@ -109,13 +101,9 @@ function level.update(dt) -- dt is time since last update in seconds
 {{0.5,0.5,0.5},"The coating is also made not to convert all of the ",{0,0,1},"BLUE",{0.5,0.5,0.5}," light into ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," light so that some ",{0,0,1},"BLUE",{0.5,0.5,0.5}," light can still go through. It can then blend directly with the ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," light into ",{1,1,1},"WHITE",{0.5,0.5,0.5}," light."},
 }
     m.charname = {"Professor Luminario","Professor Luminario","Professor Luminario"}
-    m.animation[1] = {}
-    m.animation[1][0] = {4,-1}
-    m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
-    m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
-    m.animation[1][3] = m.animation[1][1]
-    m.animation[2] = m.animation[1]
-    m.animation[3] = m.animation[1]
+    m.animation[1] = ANIMATION_1
+    m.animation[2] = ANIMATION_1
+    m.animation[3] = ANIMATION_1
     m:resize()
 	winCond = true
   end

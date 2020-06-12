@@ -50,12 +50,8 @@ function level.load()
   {{0.5,0.5,0.5},"Let's talk about dichroic mirrors!"},
   {{0.5,0.5,0.5},"To get started, try to position the ",{1,0,0},"RED",{0.5,0.5,0.5}," mirror such that the incoming beam will get diverted into the ",{1,0,0},"RED",{0.5,0.5,0.5}," receiver up top. Then turn on the ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," laser with ",{0,0,0},"RIGHT CLICK",{0.5,0.5,0.5},"."}}
 	m.charname = {"Professor Luminario", "Professor Luminario"}
-	m.animation[1] = {}
-	m.animation[1][0] = {4,-1}
-	m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
-	m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
-	m.animation[1][3] = m.animation[1][1]
-	m.animation[2] = m.animation[1]
+	m.animation[1] = ANIMATION_1
+	m.animation[2] = ANIMATION_1
 	m:resize()
 end
 
@@ -68,11 +64,7 @@ function level.update(dt) -- dt is time since last update in seconds
     m = ui_elements.create(UI_DIALOG)
     m.text = {{{0.5,0.5,0.5},"I think you're getting the hang of it! We will experiment with other light mixes in upcoming levels."}}
     m.charname = {"Professor Luminario"}
-    m.animation[1] = {}
-    m.animation[1][0] = {4,-1}
-    m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
-    m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
-    m.animation[1][3] = m.animation[1][1]
+    m.animation[1] = ANIMATION_1
     m:resize()
   end
 
@@ -92,13 +84,9 @@ function level.update(dt) -- dt is time since last update in seconds
 {{0.5,0.5,0.5},"Now try to power all of the receivers again."}
   }
     m.charname = {"Professor Luminario","Professor Luminario","Professor Luminario"}
-    m.animation[1] = {}
-    m.animation[1][0] = {4,-1}
-    m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
-    m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
-    m.animation[1][3] = m.animation[1][1]
-	m.animation[2] = m.animation[1]
-	m.animation[3] = m.animation[1]
+    m.animation[1] = ANIMATION_1
+    m.animation[2] = ANIMATION_1
+    m.animation[3] = ANIMATION_1
     m:resize()
   end
   

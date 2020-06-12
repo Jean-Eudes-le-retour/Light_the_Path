@@ -56,12 +56,8 @@ function level.load()
     {{0.5,0.5,0.5},"Now let's play around with ",{1,1,1},"WHITE",{0.5,0.5,0.5}," light!\nIt is composed of ",{1,0,0},"RED",{0.5,0.5,0.5},", ",{0,1,0},"GREEN",{0.5,0.5,0.5}," and ",{0,0,1},"BLUE",{0.5,0.5,0.5}," light."},
     {{0.5,0.5,0.5},"Just like before, try to activate the ",{0,1,0},"GREEN",{0.5,0.5,0.5}," receiver."}}
     m.charname = {"Professor Luminario", "Professor Luminario"}
-	m.animation[1] = {}
-	m.animation[1][0] = {4,-1}
-	m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
-	m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
-	m.animation[1][3] = m.animation[1][1]
-	m.animation[2] = m.animation[1]
+	m.animation[1] = ANIMATION_1
+	m.animation[2] = ANIMATION_1
 	m:resize()
 end
 
@@ -109,12 +105,8 @@ function level.update(dt) -- dt is time since last update in seconds
 {{0.5,0.5,0.5},"Try to illuminate the ",{0,0,1},"BLUE",{0.5,0.5,0.5}," receiver with the available mirrors!"},
     }
     m.charname = {"Professor Luminario","Professor Luminario","Professor Luminario"}
-    m.animation[1] = {}
-    m.animation[1][0] = {4,-1}
-    m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
-    m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
-    m.animation[1][3] = m.animation[1][1]
-    m.animation[2] = m.animation[1]
+    m.animation[1] = ANIMATION_1
+    m.animation[2] = ANIMATION_1
     m:resize()
   end
   
@@ -128,13 +120,9 @@ function level.update(dt) -- dt is time since last update in seconds
 {{0.5,0.5,0.5},"Oh wait, that's because the ",{0,1,0},"GREEN",{0.5,0.5,0.5}," part of ",{0,1,1},"CYAN",{0.5,0.5,0.5}," is detected!\nWe are going to need the ",{0,1,1},"CYAN",{0.5,0.5,0.5}," mirror later, replace it with the ",{0,1,0},"GREEN",{0.5,0.5,0.5}," one for now."},
     }
     m.charname = {"Professor Luminario","Professor Luminario","Professor Luminario"}
-    m.animation[1] = {}
-    m.animation[1][0] = {4,-1}
-    m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
-    m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
-    m.animation[1][3] = m.animation[1][1]
-    m.animation[2] = m.animation[1]
-    m.animation[3] = m.animation[1]
+    m.animation[1] = ANIMATION_1
+    m.animation[2] = ANIMATION_1
+    m.animation[3] = ANIMATION_1
     m:resize()
   end
   
@@ -148,13 +136,9 @@ function level.update(dt) -- dt is time since last update in seconds
 {{0.5,0.5,0.5},"Oh wait, that's because the ",{0,1,0},"GREEN",{0.5,0.5,0.5}," part of ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," is detected!\nWe are going to need the ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," mirror later, replace it with the ",{0,1,0},"GREEN",{0.5,0.5,0.5}," one for now."},
     }
     m.charname = {"Professor Luminario","Professor Luminario","Professor Luminario"}
-    m.animation[1] = {}
-    m.animation[1][0] = {4,-1}
-    m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
-    m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
-    m.animation[1][3] = m.animation[1][1]
-    m.animation[2] = m.animation[1]
-    m.animation[3] = m.animation[1]
+    m.animation[1] = ANIMATION_1
+    m.animation[2] = ANIMATION_1
+    m.animation[3] = ANIMATION_1
     m:resize()
   end
   
@@ -167,12 +151,8 @@ function level.update(dt) -- dt is time since last update in seconds
 {{0.5,0.5,0.5},"Finally, illuminate the ",{1,0,0},"RED",{0.5,0.5,0.5}," receiver!\nDon't forget that in this laboratory ",{1,1,0},"YELLOW",{0.5,0.5,0.5}," light is made of ",{1,0,0},"RED",{0.5,0.5,0.5}," and ",{0,1,0},"GREEN",{0.5,0.5,0.5},"."},
     }
     m.charname = {"Professor Luminario","Professor Luminario","Professor Luminario"}
-    m.animation[1] = {}
-    m.animation[1][0] = {4,-1}
-    m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
-    m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
-    m.animation[1][3] = m.animation[1][1]
-    m.animation[2] = m.animation[1]
+    m.animation[1] = ANIMATION_1
+    m.animation[2] = ANIMATION_1
     m:resize()
   end
 end

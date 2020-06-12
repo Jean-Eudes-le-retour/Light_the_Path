@@ -48,13 +48,9 @@ function level.load()
   {{0.5,0.5,0.5},"Now let's have some fun! Here is a laser source. You can turn it on by ",{0,0,0},"RIGHT CLICKING",{0.5,0.5,0.5}, " it.\nNotice how it is also welded to a metal sheet and therefore cannot be moved nor turned."} --7 wait for the player to turn on the laser
   }
 	m.charname = {"Professor Luminario"}
-	m.animation[1] = {}
-	m.animation[1][0] = {4,-1}
-	m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
-	m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
-	m.animation[1][3] = m.animation[1][1]
+	m.animation[1] = ANIMATION_1
 	for i=2,9 do
-		m.animation[i] = m.animation[1]
+		m.animation[i] = ANIMATION_1
 		m.charname[i] = "Professor Luminario"
 	end
 	m:resize()
@@ -69,11 +65,7 @@ function level.update(dt) -- dt is time since last update in seconds
     m = ui_elements.create(UI_DIALOG)
     m.text = {{{1,1,0},"You finished your first level!",{0.5,0.5,0.5},"\nI will start to talk about more specialised tools in the next few levels."}}
     m.charname = {"Professor Luminario"}
-    m.animation[1] = {}
-    m.animation[1][0] = {4,-1}
-    m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
-    m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
-    m.animation[1][3] = m.animation[1][1]
+    m.animation[1] = ANIMATION_1
     m:resize()
   end
 
@@ -122,12 +114,8 @@ function level.update(dt) -- dt is time since last update in seconds
 	{{0.5,0.5,0.5},"Now this laser beam has to go somewhere! Let's introduce the receiver. It will turn on when correcty colored light hits it. Most of the time you will need to turn all of the receiver on to finish the challenges.\nTry it out!"} --9 wait for receiver to turn on
 }
     m.charname = {"Professor Luminario","Professor Luminario"}
-    m.animation[1] = {}
-    m.animation[1][0] = {4,-1}
-    m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
-    m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
-    m.animation[1][3] = m.animation[1][1]
-    m.animation[2] = m.animation[1]
+    m.animation[1] = ANIMATION_1
+    m.animation[2] = ANIMATION_1
     m:resize()
   end
   if dialog_num==2 and m.page==2 then

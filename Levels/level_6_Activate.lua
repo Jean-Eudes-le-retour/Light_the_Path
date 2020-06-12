@@ -52,14 +52,9 @@ function level.load()
     {{0.5,0.5,0.5},"As a general rule of thumbs, unless specified otherwise, a receiver with an antenna does not need to be activated to complete a level.\n\n\z
     Now you should know everything necessary to complete this level. So get back to work! I'm not paying you to give you free lectures!"}
   }
-	m.charname = {"Professor Luminario"}
-	m.animation[1] = {}
-	m.animation[1][0] = {4,-1}
-	m.animation[1][1] = love.graphics.newImage("Textures/test1.png")
-	m.animation[1][2] = love.graphics.newImage("Textures/test2.png")
-	m.animation[1][3] = m.animation[1][1]
-	for i=2,5 do
-		m.animation[i] = m.animation[1]
+	m.charname = {}
+	for i=1,5 do
+		m.animation[i] = ANIMATION_1
 		m.charname[i] = "Professor Luminario"
 	end
 	m:resize()

@@ -22,12 +22,7 @@ local m
 local d,s,r
 local flag = {}
 local last_time = game_time
-local anim = {}
 local c = 7
-anim[0] = {4,-1}
-anim[1] = love.graphics.newImage("Textures/test1.png")
-anim[2] = love.graphics.newImage("Textures/test2.png")
-anim[3] = anim[1]
 
 -- IMPORTANT FUNCTIONS --
 function level.load()
@@ -70,7 +65,7 @@ function level.load()
   }
 	m.charname = {}
   for i=1,7 do
-    m.animation[i] = anim
+    m.animation[i] = ANIMATION_1
     m.charname[i] = "Professor Luminario"
   end
   m.isBlocking = true
@@ -83,8 +78,8 @@ function level.update(dt) -- dt is time since last update in seconds
       m = ui_elements.create(UI_DIALOG)
       m.text = {{{0.5,0.5,0.5},"Alright, I'll just run a few tests to see if your contraption works..."}}
       m.charname = {"Professor Luminario","Professor Luminario"}
-      m.animation[1] = anim
-      m.animation[2] = anim
+      m.animation[1] = ANIMATION_1
+      m.animation[2] = ANIMATION_1
       m.noSkip = true
       m:resize()
       last_time = game_time
