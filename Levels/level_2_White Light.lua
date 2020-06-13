@@ -110,7 +110,7 @@ function level.update(dt) -- dt is time since last update in seconds
     m:resize()
   end
   
-  if grid.getState(4, 2)==2 and grid.check(4,2)==TYPE_RECEIVER and dialog_num==1 and grid.getColor(4, 4)==COLOR_CYAN and grid.check(4,4)==TYPE_RECEIVER and alt1 == false then
+  if grid.getState(4, 2)==2 and grid.check(4,2)==TYPE_RECEIVER and dialog_num==1 and grid.getColor(4, 4)==COLOR_CYAN and grid.check(4,4)==TYPE_MIRROR and alt1 == false then
     m:close()
     alt1 = true
     m = ui_elements.create(UI_DIALOG)
@@ -126,7 +126,7 @@ function level.update(dt) -- dt is time since last update in seconds
     m:resize()
   end
   
-  if grid.getState(4, 2)==2 and grid.check(4,2)==TYPE_RECEIVER and dialog_num==1 and grid.getColor(4, 4)==COLOR_YELLOW and grid.check(4,4)==TYPE_RECEIVER and alt2 == false then
+  if grid.getState(4, 2)==2 and grid.check(4,2)==TYPE_RECEIVER and dialog_num==1 and grid.getColor(4, 4)==COLOR_YELLOW and grid.check(4,4)==TYPE_MIRROR and alt2 == false then
     m:close()
     alt2 = true
     m = ui_elements.create(UI_DIALOG)
