@@ -105,7 +105,7 @@ function level.update(dt) -- dt is time since last update in seconds
 	  m.noSkip = true
     end
   end
-  if dialog_num==1 and grid.getState(2,3)==2 then
+  if dialog_num==1 and grid.getState(2,3)==2 and grid.check(2,3)==TYPE_SOURCE then
 	dialog_num=dialog_num+1
     m:close()
     m = ui_elements.create(UI_DIALOG)

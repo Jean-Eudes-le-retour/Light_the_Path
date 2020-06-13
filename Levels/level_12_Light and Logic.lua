@@ -82,7 +82,7 @@ function level.load()
   {1,1,1},"WHITE",{0.5,0.5,0.5}," as the output.\n\nFor any other color, the output can be intuitively understood as the complementary color of the sum of the inputs."},
   {{0.5,0.5,0.5},"Now I'm sure you're meaning to ask: \"But... Professor Luminario, why should I use your intriguing light based logic circuitry over conventional electric \z
   circuits?\"\n\nWell, simply because ",{1,0,0},"R ",{1,0.65,0},"A ",{1,1,0},"I ",{1,1,0},"N ",{0,1,0},"B ",{0,1,1},"O ",{0,0,1},"W ",{1,0,1},"S ",{1,0.1,0.6},"!",
-  {0.5,0.5,0.5},"\n\nQuod Erat Demonstratum."}
+  {0.5,0.5,0.5},"\n\nQuod Erat Demonstrandum."}
   }
 	m.charname = {}
   for i=1,9 do
